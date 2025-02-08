@@ -3,14 +3,17 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include "frc/shuffleboard/Shuffleboard.h"
 
 #include <frc2/command/Commands.h>
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
+    m_climb.SetDefaultCommand(Climb(&m_climb, [=] { return m_joystick.GetY(); }).ToPtr());
 }
 
-void RobotContainer::ConfigureBindings() {}
+void RobotContainer::ConfigureBindings() {
+}
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
   return frc2::cmd::Print("No autonomous command configured");
