@@ -33,8 +33,7 @@ class RobotContainer {
 
   frc::Joystick m_joystick{0};
   frc::XboxController m_controller{1};
-  frc2::JoystickButton m_buttonClimb{&m_controller, 1};
-  frc2::JoystickButton m_buttonInvertClimb{&m_controller, 2};
+  frc2::JoystickButton m_resetEncoder{&m_controller, 1};
 
   DeepClimb m_climb;
 

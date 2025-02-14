@@ -13,7 +13,11 @@ DeepClimb::DeepClimb() {
         .SmartCurrentLimit(DeepClimbConstants::BACK_MOTOR_CURRENT_LIMIT)
         .ClosedLoopRampRate(DeepClimbConstants::BACK_MOTOR_RAMP)
         .VoltageCompensation(DeepClimbConstants::BACK_MOTOR_VOLTAGE_COMPENSATION)
-        .Follow(DeepClimbConstants::FRONT_MOTOR_ID, DeepClimbConstants::BACK_MOTOR_FOLLOW);
+        .Follow(DeepClimbConstants::FRONT_MOTOR_ID, DeepClimbConstants::BACK_MOTOR_FOLLOW)
+        .softLimit.ForwardSoftLimitEnabled(true)
+            .ForwardSoftLimit(DeepClimbConstants::ENCODER_FWD_SOFT_LIMIT)
+            .ReverseSoftLimitEnabled(true)
+            .ReverseSoftLimit(DeepClimbConstants::ENCODER_RVS_SOFT_LIMIT);
     
     m_climbBackMotor.Configure( 
         m_climbBackMotorConfig,
@@ -25,24 +29,22 @@ DeepClimb::DeepClimb() {
         .Inverted(DeepClimbConstants::FRONT_MOTOR_INVERTED)
         .SmartCurrentLimit(DeepClimbConstants::FRONT_MOTOR_CURRENT_LIMIT)
         .ClosedLoopRampRate(DeepClimbConstants::FRONT_MOTOR_RAMP)
-        .VoltageCompensation(DeepClimbConstants::FRONT_MOTOR_VOLTAGE_COMPENSATION);
+        .VoltageCompensation(DeepClimbConstants::FRONT_MOTOR_VOLTAGE_COMPENSATION)
+        .softLimit.ForwardSoftLimitEnabled(true)
+            .ForwardSoftLimit(DeepClimbConstants::ENCODER_FWD_SOFT_LIMIT)
+            .ReverseSoftLimitEnabled(true)
+            .ReverseSoftLimit(DeepClimbConstants::ENCODER_RVS_SOFT_LIMIT);
     
     m_climbFrontMotor.Configure( 
         m_climbFrontMotorConfig,
         rev::spark::SparkBase::ResetMode::kResetSafeParameters,
-        rev::spark::SparkBase::PersistMode::kNoPersistParameters);
-    
-    //tab
-    // .Add("y", 0)
-    // .GetEntry();
-
+        rev::spark::SparkBase::PersistMode::kNoPersistParameters); 
 };
 
 void DeepClimb::Periodic() {}
 
 void DeepClimb::SetClimbSpeed(double speed) {
-    //shuffl.Add("y", speed);
-    std::cout << "speed: " << speed << std::endl;
     frc::SmartDashboard::PutNumber("y", speed);
+    frc::SmartDashboard::PutNumber("encodeur", encoder.GetPosition());
     m_climbFrontMotor.Set(speed);
 }

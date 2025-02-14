@@ -25,4 +25,10 @@ namespace DeepClimbConstants {
         constexpr double BACK_MOTOR_RAMP = 0.5;
         constexpr double BACK_MOTOR_VOLTAGE_COMPENSATION = 10.0;
         constexpr bool BACK_MOTOR_FOLLOW = true;
+    
+    //Encoder
+        constexpr double ENCODER_FWD_SOFT_LIMIT = 0;
+        constexpr double REDUCTION = 1;
+        constexpr double ENCODER_RVS_SOFT_LIMIT = -(42*REDUCTION)/360*112.5;
+
 }

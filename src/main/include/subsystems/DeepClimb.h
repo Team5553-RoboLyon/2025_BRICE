@@ -6,8 +6,8 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-
 #include "rev/SparkMax.h"
+#include "rev/SparkRelativeEncoder.h"
 #include "Constants.h"
 
 
@@ -24,7 +24,8 @@ class DeepClimb : public frc2::SubsystemBase {
   rev::spark::SparkBaseConfig m_climbFrontMotorConfig;
   rev::spark::SparkMax m_climbBackMotor{DeepClimbConstants::BACK_MOTOR_ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_climbBackMotorConfig;
-  ///frc::Shuffleboard::GenericEntry<double> entry;
+
+  rev::spark::SparkRelativeEncoder encoder = m_climbFrontMotor.GetEncoder();
 
   std::function<double()> m_ClimbingSpeed;
 };
