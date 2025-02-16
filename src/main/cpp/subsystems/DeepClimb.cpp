@@ -13,11 +13,7 @@ DeepClimb::DeepClimb() {
         .SmartCurrentLimit(DeepClimbConstants::BACK_MOTOR_CURRENT_LIMIT)
         .ClosedLoopRampRate(DeepClimbConstants::BACK_MOTOR_RAMP)
         .VoltageCompensation(DeepClimbConstants::BACK_MOTOR_VOLTAGE_COMPENSATION)
-        .Follow(DeepClimbConstants::FRONT_MOTOR_ID, DeepClimbConstants::BACK_MOTOR_FOLLOW)
-        .softLimit.ForwardSoftLimitEnabled(true)
-            .ForwardSoftLimit(DeepClimbConstants::ENCODER_FWD_SOFT_LIMIT)
-            .ReverseSoftLimitEnabled(true)
-            .ReverseSoftLimit(DeepClimbConstants::ENCODER_RVS_SOFT_LIMIT);
+        .Follow(DeepClimbConstants::FRONT_MOTOR_ID, DeepClimbConstants::BACK_MOTOR_FOLLOW);
     
     m_climbBackMotor.Configure( 
         m_climbBackMotorConfig,
@@ -29,22 +25,33 @@ DeepClimb::DeepClimb() {
         .Inverted(DeepClimbConstants::FRONT_MOTOR_INVERTED)
         .SmartCurrentLimit(DeepClimbConstants::FRONT_MOTOR_CURRENT_LIMIT)
         .ClosedLoopRampRate(DeepClimbConstants::FRONT_MOTOR_RAMP)
-        .VoltageCompensation(DeepClimbConstants::FRONT_MOTOR_VOLTAGE_COMPENSATION)
-        .softLimit.ForwardSoftLimitEnabled(true)
-            .ForwardSoftLimit(DeepClimbConstants::ENCODER_FWD_SOFT_LIMIT)
-            .ReverseSoftLimitEnabled(true)
-            .ReverseSoftLimit(DeepClimbConstants::ENCODER_RVS_SOFT_LIMIT);
+        .VoltageCompensation(DeepClimbConstants::FRONT_MOTOR_VOLTAGE_COMPENSATION);
     
     m_climbFrontMotor.Configure( 
         m_climbFrontMotorConfig,
         rev::spark::SparkBase::ResetMode::kResetSafeParameters,
         rev::spark::SparkBase::PersistMode::kNoPersistParameters); 
+
+    //configure the encoder
+    m_climbEncoder.SetDistancePerPulse(DeepClimbConstants::DISTANCE_PER_PULSE);
+    m_climbEncoder.Reset();
 };
 
-void DeepClimb::Periodic() {}
+void DeepClimb::Periodic() {
+    frc::SmartDashboard::PutNumber("encodeur", m_climbEncoder.GetDistance());
+};
 
 void DeepClimb::SetClimbSpeed(double speed) {
-    frc::SmartDashboard::PutNumber("y", speed);
-    frc::SmartDashboard::PutNumber("encodeur", encoder.GetPosition());
     m_climbFrontMotor.Set(speed);
+};
+void DeepClimb::StopClimb() {
+    m_climbFrontMotor.Set(0);
+};
+double DeepClimb::GetArmPosition() {
+    return m_climbEncoder.GetDistance();
 }
+void DeepClimb::resetClimberPosition() {
+    //stop quand est en à 90% du max
+    //sinon tourner
+    m_climbEncoder.Reset();
+};

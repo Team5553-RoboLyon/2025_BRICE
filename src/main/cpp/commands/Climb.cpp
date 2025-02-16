@@ -11,21 +11,42 @@ Climb::Climb(DeepClimb *pclimb, std::function<double()> speed) : m_climb(pclimb)
 
 // Called when the command is initially scheduled.
 void Climb::Initialize() {
-  //add a encoder reset here
+  m_climb->resetClimberPosition();
+  m_state = State::Idle;
 }
 
 // Called repeatedly when this Command is scheduled to run
 void Climb::Execute() {
-  double consigne = m_speed();
-  m_climb->SetClimbSpeed(consigne);
+  switch (m_state) {
+    case State::Idle:
+      if(m_climb->isClimbed){ 
+        m_state = State::End;
+      } 
+      else{
+        m_state = State::Climbing;
+      }
+      break;
+    case State::Climbing:
+      m_climb->SetClimbSpeed(m_speed());
+      //until good position is reached
+      //state = end
+      break;
+    case State::End:
+      m_climb->StopClimb();
+      m_climb->isClimbed = true;
+      break;
+  }
 }
 
 // Called once the command ends or is interrupted.
 void Climb::End(bool interrupted) {
-  //add a encoder reset here
+  m_climb->StopClimb();
 }
 
 // Returns true when the command should end.
 bool Climb::IsFinished() {
+  if(m_climb->isClimbed){
+    return true;
+  }
   return false;
 } 

@@ -32,6 +32,12 @@ class Climb
 
   bool IsFinished() override;
   private:
+      enum class State {
+      Idle,
+      Climbing,
+      End
+    };
+    State m_state;
     DeepClimb *m_climb;
-     std::function<double()> m_speed;
+    std::function<double()> m_speed;
 };
