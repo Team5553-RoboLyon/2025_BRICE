@@ -8,6 +8,11 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
+m_drivetrain.SetDefaultCommand(Drive( [=]
+    { return m_joystickForward.GetY(); },
+                                      [=]
+    { return m_joystickRotation.GetZ(); },
+    &m_drivetrain));
 }
 
 void RobotContainer::ConfigureBindings() {}
