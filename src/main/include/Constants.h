@@ -52,6 +52,15 @@ namespace DriveConstants {
 }
 
 namespace ControlPanelConstants {
-    constexpr int JOYSTICK_FORWARD_ID = 0;
-    constexpr int JOYSTICK_ROTATION_ID = 1;
+    namespace Joystick{
+        constexpr int FORWARD_ID = 0;
+        constexpr int ROTATION_ID = 1;
+    }
+    namespace Settings{
+        constexpr double DEADBAND = 0.08;
+        constexpr double RATE_LIMITER_FOWARD = 2.0;
+        constexpr double RATE_LIMITER_ROTATION = 2.0;
+        constexpr double PRE_RATE_LIMITER_FOWARD = 0.05;
+        constexpr double PRE_RATE_LIMITER_ROTATION = 0.05;
+    }
 }

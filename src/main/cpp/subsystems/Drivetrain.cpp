@@ -32,6 +32,12 @@ Drivetrain::Drivetrain() {
     // Set distance per pulse
     m_EncoderLeft.SetDistancePerPulse(DriveConstants::LeftGearbox::Encoder::DISTANCE_PER_PULSE);
     m_EncoderRight.SetDistancePerPulse(DriveConstants::RightGearbox::Encoder::DISTANCE_PER_PULSE);
+
+    m_JoystickPrelimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_FOWARD); // reset des rate limiters
+    m_JoystickLimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::PRE_RATE_LIMITER_FOWARD);
+
+    m_JoystickPrelimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
+    m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::PRE_RATE_LIMITER_ROTATION);
 };
 
 /**

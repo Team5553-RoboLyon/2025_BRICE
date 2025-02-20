@@ -28,8 +28,8 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
  private:
-  frc::Joystick m_joystickForward{ControlPanelConstants::JOYSTICK_FORWARD_ID};
-  frc::Joystick m_joystickRotation{ControlPanelConstants::JOYSTICK_ROTATION_ID};
+  frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
+  frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
   void ConfigureBindings();
   Drivetrain m_drivetrain;
 };
