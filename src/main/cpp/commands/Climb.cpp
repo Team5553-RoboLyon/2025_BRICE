@@ -5,7 +5,7 @@
 #include "commands/Climb.h"
 #include "frc/shuffleboard/Shuffleboard.h"
 
-Climb::Climb(DeepClimb *pclimb, std::function<double()> speed) : m_climb(pclimb), m_speed(speed) {
+Climb::Climb(DeepClimb *pclimb) : m_climb(pclimb){
   AddRequirements({m_climb});
 }
 
@@ -19,7 +19,7 @@ void Climb::Initialize() {
 void Climb::Execute() {
   switch (m_state) {
     case State::Idle:
-      if(m_climb->isClimbed){ 
+      if(m_climb->IsClimbed()){ 
         m_state = State::End;
       } 
       else{
@@ -27,13 +27,12 @@ void Climb::Execute() {
       }
       break;
     case State::Climbing:
-      m_climb->SetClimbSpeed(m_speed());
-      //until good position is reached
-      //state = end
+      if(m_climb->IsClimbed()){ 
+          m_state = State::End;
+        } 
+        m_climb->GoToPosition();
       break;
     case State::End:
-      m_climb->StopClimb();
-      m_climb->isClimbed = true;
       break;
   }
 }
@@ -45,8 +44,5 @@ void Climb::End(bool interrupted) {
 
 // Returns true when the command should end.
 bool Climb::IsFinished() {
-  if(m_climb->isClimbed){
-    return true;
-  }
-  return false;
+  return m_climb->IsClimbed();
 } 

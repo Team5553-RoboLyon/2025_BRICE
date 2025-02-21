@@ -9,34 +9,35 @@
 // Example for macro : #define SQUARE(x) x*x
 
 namespace DeepClimbConstants {
+
+    constexpr double REDUCTION = 10.0/3.0;
+
     namespace Motors {
-        namespace Front {
-            constexpr int ID = 5;
+            constexpr int ID_FRONT = 5;
+            constexpr int ID_BACK = 6;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool INVERTED = false;
             constexpr int CURRENT_LIMIT = 40;
             constexpr double RAMP = 0.5;
             constexpr double VOLTAGE_COMPENSATION = 10.0; //12
-        }
-        namespace Back {
-            constexpr int ID = 6;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool INVERTED = false;
-            constexpr int CURRENT_LIMIT = 40;
-            constexpr double RAMP = 0.5;
-            constexpr double VOLTAGE_COMPENSATION = 10.0; //12
-        }
     }
     namespace Encoder {
-        constexpr double ENCODER_A_ID = 0;
-        constexpr double ENCODER_B_ID = 1;
+        constexpr int ENCODER_A_ID = 0;
+        constexpr int ENCODER_B_ID = 1;
         namespace Settings {
             constexpr bool REVERSED = false;
-            constexpr double DISTANCE_PER_PULSE = 360.0 * 1; //check the reduction
+            constexpr double DISTANCE_PER_PULSE = ( 360.0 / REDUCTION ) / 2048; //2048 is the resolution of the encoder
         }
     }
     namespace HallEffectSensor {
         constexpr int UP = 0;
         constexpr int DOWN = 1;
+    }
+    namespace PID {
+        constexpr double SETPOINT = 0.0;
+        constexpr double KP = 0.1;
+        constexpr double KI = 0.0;
+        constexpr double KD = 0.0;
+        constexpr double TOLERANCE = 0.1;
     }
 }

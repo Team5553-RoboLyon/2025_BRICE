@@ -5,6 +5,7 @@
 #include "Robot.h"
 
 #include <frc2/command/CommandScheduler.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 Robot::Robot() {}
 
@@ -36,7 +37,8 @@ void Robot::TeleopInit() {
   }
 }
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  frc::SmartDashboard::PutNumber("hall effect sensor", m_hallEffectSensor.Get());
 
 void Robot::TeleopExit() {}
 

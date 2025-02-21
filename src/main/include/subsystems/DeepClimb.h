@@ -10,6 +10,7 @@
 #include <frc/Encoder.h>
 #include <frc/DigitalInput.h>
 #include "Constants.h"
+#include "lib/pid_rbl.h"
 
 
 class DeepClimb : public frc2::SubsystemBase {
@@ -17,22 +18,27 @@ class DeepClimb : public frc2::SubsystemBase {
   DeepClimb();
 
   void SetClimbSpeed(double speed);
-  void GoToPosition(double position);
+  void GoToPosition();
   void StopClimb();
-  double GetArmPosition();
+  double GetArmAngle();
   void ResetClimberPosition();
-  bool isClimbed();
-
+  bool IsClimbed();
   void Periodic() override;
+
  private:
-  rev::spark::SparkMax m_climbFrontMotor{DeepClimbConstants::Motors::Front::ID, rev::spark::SparkMax::MotorType::kBrushless};
+
+  PidRBL m_pid{DeepClimbConstants::PID::SETPOINT, DeepClimbConstants::PID::KP, DeepClimbConstants::PID::KI, DeepClimbConstants::PID::KD};
+
+  rev::spark::SparkMax m_climbFrontMotor{DeepClimbConstants::Motors::ID_FRONT, rev::spark::SparkMax::MotorType::kBrushless};
+  rev::spark::SparkMax m_climbBackMotor{DeepClimbConstants::Motors::ID_BACK, rev::spark::SparkMax::MotorType::kBrushless};
+
   rev::spark::SparkBaseConfig m_climbFrontMotorConfig;
-  rev::spark::SparkMax m_climbBackMotor{DeepClimbConstants::Motors::Front::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_climbBackMotorConfig;
 
   frc::Encoder m_climbEncoder{DeepClimbConstants::Encoder::ENCODER_A_ID, DeepClimbConstants::Encoder::ENCODER_B_ID};
+
   frc::DigitalInput m_hallEffectSensorUp{DeepClimbConstants::HallEffectSensor::UP};
   frc::DigitalInput m_hallEffectSensorDown{DeepClimbConstants::HallEffectSensor::DOWN};
 
-  bool isClimbed;
+  bool m_isClimbed = false;
 };

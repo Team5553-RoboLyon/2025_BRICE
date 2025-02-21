@@ -31,5 +31,7 @@ class Robot : public frc::TimedRobot {
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
 
+  frc::DigitalInput m_hallEffectSensor{0};
+
   RobotContainer m_container;
 };

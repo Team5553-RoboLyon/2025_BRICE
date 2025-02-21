@@ -22,7 +22,7 @@ class Climb
   /* You should consider using the more terse Command factories API instead
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
    */
-  Climb(DeepClimb *pclimb,  std::function<double()> speed);
+  Climb(DeepClimb *pclimb);
 
   void Initialize() override;
 
