@@ -39,6 +39,7 @@ void Robot::TeleopInit() {
 
 void Robot::TeleopPeriodic() {
   frc::SmartDashboard::PutNumber("hall effect sensor", m_hallEffectSensor.Get());
+}
 
 void Robot::TeleopExit() {}
 
