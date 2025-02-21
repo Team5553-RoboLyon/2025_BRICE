@@ -8,12 +8,12 @@
 DeepClimb::DeepClimb() {
     //configure the motors
     m_climbBackMotorConfig
-        .SetIdleMode(DeepClimbConstants::BACK_MOTOR_IDLE_MODE)
-        .Inverted(DeepClimbConstants::BACK_MOTOR_INVERTED)
-        .SmartCurrentLimit(DeepClimbConstants::BACK_MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(DeepClimbConstants::BACK_MOTOR_RAMP)
-        .VoltageCompensation(DeepClimbConstants::BACK_MOTOR_VOLTAGE_COMPENSATION)
-        .Follow(DeepClimbConstants::FRONT_MOTOR_ID, DeepClimbConstants::BACK_MOTOR_FOLLOW);
+        .SetIdleMode(DeepClimbConstants::Motors::Back::IDLE_MODE)
+        .Inverted(DeepClimbConstants::Motors::Back::INVERTED)
+        .SmartCurrentLimit(DeepClimbConstants::Motors::Back::CURRENT_LIMIT)
+        .ClosedLoopRampRate(DeepClimbConstants::Motors::Back::RAMP)
+        .VoltageCompensation(DeepClimbConstants::Motors::Back::VOLTAGE_COMPENSATION)
+        .Follow(DeepClimbConstants::Motors::Front::ID, DeepClimbConstants::Motors::Back::INVERTED);
     
     m_climbBackMotor.Configure( 
         m_climbBackMotorConfig,
@@ -21,11 +21,11 @@ DeepClimb::DeepClimb() {
         rev::spark::SparkBase::PersistMode::kNoPersistParameters);
     
     m_climbFrontMotorConfig
-        .SetIdleMode(DeepClimbConstants::FRONT_MOTOR_IDLE_MODE)
-        .Inverted(DeepClimbConstants::FRONT_MOTOR_INVERTED)
-        .SmartCurrentLimit(DeepClimbConstants::FRONT_MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(DeepClimbConstants::FRONT_MOTOR_RAMP)
-        .VoltageCompensation(DeepClimbConstants::FRONT_MOTOR_VOLTAGE_COMPENSATION);
+        .SetIdleMode(DeepClimbConstants::Motors::Front::IDLE_MODE)
+        .Inverted(DeepClimbConstants::Motors::Front::INVERTED)
+        .SmartCurrentLimit(DeepClimbConstants::Motors::Front::CURRENT_LIMIT)
+        .ClosedLoopRampRate(DeepClimbConstants::Motors::Front::RAMP)
+        .VoltageCompensation(DeepClimbConstants::Motors::Front::VOLTAGE_COMPENSATION);
     
     m_climbFrontMotor.Configure( 
         m_climbFrontMotorConfig,
@@ -33,12 +33,12 @@ DeepClimb::DeepClimb() {
         rev::spark::SparkBase::PersistMode::kNoPersistParameters); 
 
     //configure the encoder
-    m_climbEncoder.SetDistancePerPulse(DeepClimbConstants::DISTANCE_PER_PULSE);
+    m_climbEncoder.SetDistancePerPulse(DeepClimbConstants::Encoder::Settings::DISTANCE_PER_PULSE);
     m_climbEncoder.Reset();
 };
 
 void DeepClimb::Periodic() {
-    frc::SmartDashboard::PutNumber("encodeur", m_climbEncoder.GetDistance());
+    //frc::SmartDashboard::PutNumber("climb encoder", m_climbEncoder.GetDistance());
 };
 
 void DeepClimb::SetClimbSpeed(double speed) {
@@ -48,9 +48,10 @@ void DeepClimb::StopClimb() {
     m_climbFrontMotor.Set(0);
 };
 double DeepClimb::GetArmPosition() {
-    return m_climbEncoder.GetDistance();
+    //to do
+    return 0.0;
 }
-void DeepClimb::resetClimberPosition() {
+void DeepClimb::ResetClimberPosition() {
     //stop quand est en à 90% du max
     //sinon tourner
     m_climbEncoder.Reset();

@@ -11,7 +11,7 @@ Climb::Climb(DeepClimb *pclimb, std::function<double()> speed) : m_climb(pclimb)
 
 // Called when the command is initially scheduled.
 void Climb::Initialize() {
-  m_climb->resetClimberPosition();
+  m_climb->ResetClimberPosition();
   m_state = State::Idle;
 }
 

@@ -8,6 +8,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "rev/SparkMax.h"
 #include <frc/Encoder.h>
+#include <frc/DigitalInput.h>
 #include "Constants.h"
 
 
@@ -16,18 +17,22 @@ class DeepClimb : public frc2::SubsystemBase {
   DeepClimb();
 
   void SetClimbSpeed(double speed);
+  void GoToPosition(double position);
   void StopClimb();
   double GetArmPosition();
-  void resetClimberPosition();
+  void ResetClimberPosition();
+  bool isClimbed();
 
   void Periodic() override;
-
-  bool isClimbed;
  private:
-  rev::spark::SparkMax m_climbFrontMotor{DeepClimbConstants::FRONT_MOTOR_ID, rev::spark::SparkMax::MotorType::kBrushless};
+  rev::spark::SparkMax m_climbFrontMotor{DeepClimbConstants::Motors::Front::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_climbFrontMotorConfig;
-  rev::spark::SparkMax m_climbBackMotor{DeepClimbConstants::BACK_MOTOR_ID, rev::spark::SparkMax::MotorType::kBrushless};
+  rev::spark::SparkMax m_climbBackMotor{DeepClimbConstants::Motors::Front::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_climbBackMotorConfig;
 
-  frc::Encoder m_climbEncoder{DeepClimbConstants::ENCODER_A_ID, DeepClimbConstants::ENCODER_B_ID};
+  frc::Encoder m_climbEncoder{DeepClimbConstants::Encoder::ENCODER_A_ID, DeepClimbConstants::Encoder::ENCODER_B_ID};
+  frc::DigitalInput m_hallEffectSensorUp{DeepClimbConstants::HallEffectSensor::UP};
+  frc::DigitalInput m_hallEffectSensorDown{DeepClimbConstants::HallEffectSensor::DOWN};
+
+  bool isClimbed;
 };
