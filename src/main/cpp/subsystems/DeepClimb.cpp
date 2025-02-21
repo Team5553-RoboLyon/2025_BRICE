@@ -56,7 +56,7 @@ double DeepClimb::GetArmAngle() {
 void DeepClimb::ResetClimberPosition() {
     //stop when it is at 90% of the max
     //sinon tourner
-    if (!m_hallEffectSensorDown.Get()){
+    if (m_hallEffectSensorUp.GetVoltage() < 3.0){
         m_climbFrontMotor.Set(0.1);
     }
     else{
@@ -66,7 +66,7 @@ void DeepClimb::ResetClimberPosition() {
 }
 
 void DeepClimb::GoToPosition() {
-    if (!m_hallEffectSensorUp.Get()){
+    if (m_hallEffectSensorUp.GetVoltage() < 3.0){
         SetClimbSpeed(m_pid.Calculate(m_climbEncoder.GetDistance()));
     }
     else{

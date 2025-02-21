@@ -22,8 +22,8 @@ namespace DeepClimbConstants {
             constexpr double VOLTAGE_COMPENSATION = 10.0; //12
     }
     namespace Encoder {
-        constexpr int ENCODER_A_ID = 0;
-        constexpr int ENCODER_B_ID = 1;
+        constexpr int ENCODER_A_ID = 2;
+        constexpr int ENCODER_B_ID = 3;
         namespace Settings {
             constexpr bool REVERSED = false;
             constexpr double DISTANCE_PER_PULSE = ( 360.0 / REDUCTION ) / 2048; //2048 is the resolution of the encoder

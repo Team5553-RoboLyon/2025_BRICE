@@ -8,7 +8,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "rev/SparkMax.h"
 #include <frc/Encoder.h>
-#include <frc/DigitalInput.h>
+#include <frc/AnalogInput.h>
 #include "Constants.h"
 #include "lib/pid_rbl.h"
 
@@ -37,8 +37,8 @@ class DeepClimb : public frc2::SubsystemBase {
 
   frc::Encoder m_climbEncoder{DeepClimbConstants::Encoder::ENCODER_A_ID, DeepClimbConstants::Encoder::ENCODER_B_ID};
 
-  frc::DigitalInput m_hallEffectSensorUp{DeepClimbConstants::HallEffectSensor::UP};
-  frc::DigitalInput m_hallEffectSensorDown{DeepClimbConstants::HallEffectSensor::DOWN};
+  frc::AnalogInput m_hallEffectSensorUp{DeepClimbConstants::HallEffectSensor::UP};
+  frc::AnalogInput m_hallEffectSensorDown{DeepClimbConstants::HallEffectSensor::DOWN};
 
   bool m_isClimbed = false;
 };
