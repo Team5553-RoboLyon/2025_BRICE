@@ -38,46 +38,19 @@ Drivetrain::Drivetrain() {
 
     m_JoystickPrelimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
     m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::PRE_RATE_LIMITER_ROTATION);
-};
+}
 
-/**
- * @brief Sets the power for the drivetrain motors.
- * 
- * This function sets the power level for both the back left and back right motors
- * of the drivetrain to the specified value.
- * 
- * @param v_motor The power level to set for the motors. This value is typically
- *                between -1.0 and 1.0, where -1.0 represents full reverse power,
- *                0.0 represents no power, and 1.0 represents full forward power.
- */
 void Drivetrain::SetPower(double v_motor) {
     m_MotorBackLeft.Set(v_motor);
     m_MotorBackRight.Set(v_motor);
 }
 
-/**
- * Sets the voltage for the left and right motors of the drivetrain.
- *
- * @param voltageLeft The voltage to set for the left motor.
- * @param voltageRight The voltage to set for the right motor.
- */
 void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
     m_MotorBackLeft.Set(voltageLeft / DriveConstants::LeftGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
     m_MotorBackRight.Set(voltageRight / DriveConstants::RightGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
 }
 
-/**
- * @brief Drives the robot autonomously by setting the speed and rotation of the motors.
- *
- * This function sets the speed and rotation for the back left and back right motors
- * to drive the robot autonomously. The speed and rotation values are combined to 
- * determine the final motor outputs.
- *
- * @param speed The forward/backward speed of the robot. Positive values move the robot forward, 
- *              and negative values move it backward.
- * @param rotation The rotational speed of the robot. Positive values rotate the robot clockwise, 
- *                 and negative values rotate it counterclockwise.
- */
+
 void Drivetrain::DriveAuto(double speed, double rotation)
 {
     m_MotorBackLeft.Set(speed + rotation);
@@ -99,53 +72,33 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
     {
         RotateJoystick = 0.0;
     }
-    m_MotorBackLeft.Set(Calcul_De_Notre_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::LeftGearbox::WHEEL_SIDE));
-    m_MotorBackRight.Set(Calcul_De_Notre_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::RightGearbox::WHEEL_SIDE));
+    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::LeftGearbox::WHEEL_SIDE));
+    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::RightGearbox::WHEEL_SIDE));
 }
 
-/**
- * @brief Stops the drivetrain by setting the motor speeds to zero.
- * 
- * This function sets the speed of both the left and right motors to zero,
- * effectively stopping the drivetrain.
- */
+
 void Drivetrain::Stop() {
-    m_MotorBackLeft.Set(0.0);
-    m_MotorBackRight.Set(0.0);
+    m_MotorBackLeft.StopMotor();
+    m_MotorBackRight.StopMotor();
 }
 
 
-/**
- * @brief Calculates the wheel speeds for the drivetrain based on forward and turn inputs.
- *
- * This function computes the speeds for the left and right wheels of the drivetrain
- * using the provided forward and turn inputs. The wheel speeds are normalized to ensure
- * that neither exceeds a magnitude of 1.0.
- *
- * @param forward The forward input value, typically ranging from -1.0 to 1.0.
- * @param turn The turn input value, typically ranging from -1.0 to 1.0.
- * @param wheelSide A boolean indicating which wheel speed to return. If false, the function
- *                  returns the right wheel speed; if true, it returns the left wheel speed.
- * @return The speed of the specified wheel (left or right), normalized to a maximum magnitude of 1.0.
- */
-double Drivetrain::Calcul_De_Notre_Cher_JM(double forward, double turn, bool wheelSide) {
-    double m_forward = forward;
-    double m_turn = turn;
 
-    double left_wheel = m_forward + m_turn * m_sigma;
-    double right_wheel = m_forward - m_turn * m_sigma;
+double Drivetrain::Calcul_Of_Our_Cher_JM(double forward, double turn, bool wheelSide) {
+
+    double left_wheel = forward + turn * m_sigma;
+    double right_wheel = forward - turn * m_sigma;
 
     double k;
     k = 1.0 / (NMAX(1, NMAX(NABS(left_wheel), NABS(right_wheel))));
     left_wheel *= k;
     right_wheel *= k;
 
-    if (wheelSide == 0)
+    if (wheelSide == false)
         return right_wheel;
     else
         return left_wheel;
-
-};
+}
 
 // This method will be called once per scheduler run
 void Drivetrain::Periodic() {}
