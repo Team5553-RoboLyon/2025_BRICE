@@ -5,10 +5,12 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
-#include "rev/SparkMax.h"
-#include "Constants.h"
+#include <frc/shuffleboard/Shuffleboard.h>
+#include <networktables/NetworkTableEntry.h>
 #include <frc/AnalogInput.h>
 #include <frc/Encoder.h>
+#include "rev/SparkMax.h"
+#include "Constants.h"
 #include "lib/UtilsRBL.h"
 #include "lib/pid_rbl.h"
 
@@ -40,5 +42,11 @@ class Elevator : public frc2::SubsystemBase {
 
   PidRBL m_pid{0.1, 0.0, 0.0};
 
+  //debug variables
 
+  nt::GenericEntry* ElevatorHeightEntry;
+  nt::GenericEntry* encoderVelocityEntry;
+  nt::GenericEntry* topLimitEntry;
+  nt::GenericEntry* bottomLimitEntry;
+  nt::GenericEntry* middleLimitEntry;
 };

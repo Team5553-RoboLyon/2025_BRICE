@@ -19,10 +19,41 @@ Elevator::Elevator(){
 
     m_ElevatorEncoder.Reset();
     m_ElevatorEncoder.SetDistancePerPulse(elevatorConstants::Encoder::DISTANCE_PER_PULSE);
+
+    //debug 
+
+    frc::ShuffleboardTab& ElevatorTab = frc::Shuffleboard::GetTab("elevator");
+    ElevatorHeightEntry = ElevatorTab.Add("Elevator Height", 0.0)
+                        .WithWidget(frc::BuiltInWidgets::kNumberBar)
+                        .GetEntry();
+
+    encoderVelocityEntry = ElevatorTab.Add("Encoder Velocity", 0.0)
+                        .WithWidget(frc::BuiltInWidgets::kGraph)
+                        .GetEntry();
+
+    topLimitEntry = ElevatorTab.Add("Top Limit", false)
+                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
+                        .GetEntry();
+    
+    bottomLimitEntry = ElevatorTab.Add("Bottom Limit", false)
+                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
+                        .GetEntry();
+    
+    middleLimitEntry = ElevatorTab.Add("Middle Limit", false) 
+                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
+                        .GetEntry();
 }
 
 // This method will be called once per scheduler run
-void Elevator::Periodic() {}
+void Elevator::Periodic() {
+
+    //debug
+    ElevatorHeightEntry->SetDouble(GetCurrentElevatorHeight());
+    encoderVelocityEntry->SetDouble(GetEncoderVelocity());
+    topLimitEntry->SetBoolean(IsAtTopLimit());
+    bottomLimitEntry->SetBoolean(IsAtBottomLimit());
+    middleLimitEntry->SetBoolean(m_MiddleHallEffectSensor.GetVoltage()>elevatorConstants::Sensor::TOLERANCE);
+}
 
 void Elevator::SetSpeed(double speed) {
   m_elevatorMotor.Set(speed);
