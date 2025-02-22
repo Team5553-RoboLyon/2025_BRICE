@@ -12,9 +12,9 @@
 #include "lib/UtilsRBL.h"
 #include "lib/pid_rbl.h"
 
-class elevator : public frc2::SubsystemBase {
+class Elevator : public frc2::SubsystemBase {
  public:
-  elevator();
+  Elevator();
   void SetSpeed(double speed);
   void StopMotor();
   void GoToPosition(double position);
@@ -37,6 +37,8 @@ class elevator : public frc2::SubsystemBase {
   frc::AnalogInput m_BottomHallEffectSensor{elevatorConstants::Sensor::ID_BOTTOM};
 
   frc::Encoder m_ElevatorEncoder{elevatorConstants::Encoder::ENCODER_A_ID, elevatorConstants::Encoder::ENCODER_B_ID};
+
+  PidRBL m_pid{0.1, 0.0, 0.0};
 
 
 };

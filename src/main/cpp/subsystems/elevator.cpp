@@ -4,7 +4,7 @@
 
 #include "subsystems/elevator.h"
 
-elevator::elevator(){
+Elevator::Elevator(){
     m_elevatorMotorConfig
                 .VoltageCompensation(elevatorConstants::Motors::VOLTAGE_COMP)
                 .Inverted(elevatorConstants::Motors::INVERTED)
@@ -22,41 +22,46 @@ elevator::elevator(){
 }
 
 // This method will be called once per scheduler run
-void elevator::Periodic() {}
+void Elevator::Periodic() {}
 
-void elevator::SetSpeed(double speed) {
+void Elevator::SetSpeed(double speed) {
   m_elevatorMotor.Set(speed);
 }
 
-void elevator::StopMotor() {
+void Elevator::StopMotor() {
   m_elevatorMotor.StopMotor();
 }
 
-void elevator::GoToPosition(double position) {
-    
+void Elevator::GoToPosition(double position) {
+    if (!IsAtTopLimit()){
+        SetSpeed(m_pid.Calculate(m_ElevatorEncoder.GetDistance(), position));
+    }
+    else{
+        StopMotor();
+    }
 }
 
-void elevator::ResetEncoder() {
+void Elevator::ResetEncoder() {
   m_ElevatorEncoder.Reset();
 }
 
-double elevator::GetCurrentElevatorHeight() {
+double Elevator::GetCurrentElevatorHeight() {
   return m_ElevatorEncoder.GetDistance();
 }
 
-double elevator::GetEncoderVelocity() {
+double Elevator::GetEncoderVelocity() {
   return m_ElevatorEncoder.GetRate();
 }
 
-bool elevator::IsAtPosition(double targetPosition, double tolerance) {
+bool Elevator::IsAtPosition(double targetPosition, double tolerance) {
   return NABS(targetPosition - GetCurrentElevatorHeight()) < tolerance;
 }
 
-bool elevator::IsAtTopLimit() {
+bool Elevator::IsAtTopLimit() {
   return m_TopHallEffectSensor.GetVoltage() > elevatorConstants::Sensor::TOLERANCE;
 }
 
-bool elevator::IsAtBottomLimit() {
+bool Elevator::IsAtBottomLimit() {
   return m_BottomHallEffectSensor.GetVoltage() > elevatorConstants::Sensor::TOLERANCE;
 }
 
