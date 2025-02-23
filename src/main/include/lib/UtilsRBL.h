@@ -35,21 +35,10 @@
 #define NCLAMP(mn, a, mx) (((a) < (mn)) ? (mn) : ((a) > (mx)) ? (mx) \
                                                               : (a))
 #define NLERP(a, b, t) (a + (b - a) * t)
+#define NORMALIZE_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : (std::fmod((angle_rad), NF64_2PI)))
 
 // ########################## table de  bites ##########################
 #define BITSET(val, bit_id) ((val) |= (1 << (bit_id)))
 #define BITCLEAR(val, bit_id) ((val) &= ~(1 << (bit_id)))
 // #define BITGET(val,bit_id)        ((val) &  (1 << (bit_id)))
 #define BITGET(val, bit_id) (((val) >> (bit_id)) & 1) // 0 or 1
-
-
-/**
- * Normalizes an angle in radians to the range [0, 2π[.
- *
- * @param angle_rad The angle in radians to be normalized.
- * @return The normalized angle in the range [0, 2π[.
- */
-inline double NormalizeAngle0to2Pi(double angle_rad) {
-    double result = std::fmod(angle_rad, NF64_2PI);
-    return result < 0 ? (result + NF64_2PI) : (result);
-}
