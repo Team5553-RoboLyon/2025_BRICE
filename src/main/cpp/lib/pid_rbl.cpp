@@ -55,7 +55,7 @@ void PidRBL::Reset(double setpoint)
 bool PidRBL::AtSetpoint()
 {
     // return true if the error is within the tolerance
-    return abs(m_error) <= m_tolerance;
+    return NABS(m_error) <= m_tolerance;
 }
 double PidRBL::SaturateOutput()
 {
