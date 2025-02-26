@@ -33,11 +33,8 @@ Drivetrain::Drivetrain() {
     m_EncoderLeft.SetDistancePerPulse(DriveConstants::LeftGearbox::Encoder::DISTANCE_PER_PULSE);
     m_EncoderRight.SetDistancePerPulse(DriveConstants::RightGearbox::Encoder::DISTANCE_PER_PULSE);
 
-    m_JoystickPrelimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_FOWARD); // reset des rate limiters
-    m_JoystickLimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::PRE_RATE_LIMITER_FOWARD);
-
-    m_JoystickPrelimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
-    m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::PRE_RATE_LIMITER_ROTATION);
+    m_JoystickLimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_FOWARD);
+    m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
 }
 
 void Drivetrain::SetPower(double v_motor) {
@@ -53,22 +50,22 @@ void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
 
 void Drivetrain::DriveAuto(double speed, double rotation)
 {
-    m_MotorBackLeft.Set(speed + rotation);
-    m_MotorBackRight.Set(speed - rotation);
+    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::LeftGearbox::WHEEL_SIDE));
+    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::RightGearbox::WHEEL_SIDE));
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
-    m_JoystickLimited_V.Update(m_JoystickPrelimited_V.Update(FwdJoystick));
-    m_JoystickLimited_W.Update(m_JoystickPrelimited_W.Update(RotateJoystick));
+    m_JoystickLimited_V.Update(FwdJoystick);
+    m_JoystickLimited_W.Update(RotateJoystick);
 
 
-    m_sigma = NLERP(0.5, 0.5, NABS(FwdJoystick)); // 0401
+    m_sigma = NLERP(0.5, 0.5, NABS(FwdJoystick)); // Constant : 0.5
 
-    if (utils::epsilonEquals(FwdJoystick, 0.0, 0.08))
+    if (utils::epsilonEquals(FwdJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
     {
         FwdJoystick = 0.0;
     }
-    if (utils::epsilonEquals(RotateJoystick, 0.0, 0.08))
+    if (utils::epsilonEquals(RotateJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
     {
         RotateJoystick = 0.0;
     }

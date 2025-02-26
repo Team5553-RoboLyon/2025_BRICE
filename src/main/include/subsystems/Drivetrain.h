@@ -107,17 +107,8 @@ class Drivetrain : public frc2::SubsystemBase {
   frc::Encoder m_EncoderLeft{DriveConstants::LeftGearbox::Encoder::ID_ENCODER_A, DriveConstants::LeftGearbox::Encoder::ID_ENCODER_B, DriveConstants::LeftGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
   frc::Encoder m_EncoderRight{DriveConstants::RightGearbox::Encoder::ID_ENCODER_A, DriveConstants::RightGearbox::Encoder::ID_ENCODER_B, DriveConstants::RightGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
 
-  /**
-   * @brief A variable used to accumulate some value over time.
-   * 
-   * This variable is used within the drivetrain subsystem to keep track of a cumulative value,
-   * which may be used for various calculations or state tracking.
-   */
-  double m_sigma = 0.0;
+  double m_sigma = 0.0; //rotation weighting factor
 
-  RateLimiter m_JoystickPrelimited_V; // First rate limiter for joystick forward/backward input to smooth out sudden changes
-  RateLimiter m_JoystickLimited_V;    // joystick V rate limiter 2, used to smooth out the joystick input for forward/backward movement
-
-  RateLimiter m_JoystickPrelimited_W; // First rate limiter for joystick rotation input to smooth out sudden changes
-  RateLimiter m_JoystickLimited_W;    // Second rate limiter for joystick rotation input to further smooth out changes
+  RateLimiter m_JoystickLimited_V;    // joystick V rate limiter, used to smooth out the joystick input for forward/backward movement
+  RateLimiter m_JoystickLimited_W;    // joystick W rate limiter, used to smooth out the joystick input for rotation movement
 };

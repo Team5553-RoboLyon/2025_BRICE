@@ -1,5 +1,6 @@
 #pragma once
 #include "rev/SparkMax.h"
+#include "lib/UtilsRBL.h"
 
 // Write ALL your robot-specific constants here
 // Use namespacing to group constants together depending on the subsystems
@@ -58,9 +59,7 @@ namespace ControlPanelConstants {
     }
     namespace Settings{
         constexpr double DEADBAND = 0.08;
-        constexpr double RATE_LIMITER_FOWARD = 2.0;
-        constexpr double RATE_LIMITER_ROTATION = 2.0;
-        constexpr double PRE_RATE_LIMITER_FOWARD = 0.05;
-        constexpr double PRE_RATE_LIMITER_ROTATION = 0.05;
+        constexpr double RATE_LIMITER_FOWARD = PERCENTAGE_TO_RATE_LIMITER(100.0);
+        constexpr double RATE_LIMITER_ROTATION = PERCENTAGE_TO_RATE_LIMITER(100.0);
     }
 }

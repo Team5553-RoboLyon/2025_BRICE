@@ -35,8 +35,11 @@
 #define NCLAMP(mn, a, mx) (((a) < (mn)) ? (mn) : ((a) > (mx)) ? (mx) \
                                                               : (a))
 #define NLERP(a, b, t) (a + (b - a) * t)
-#define NORMALIZE_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : (std::fmod((angle_rad), NF64_2PI)))
+#define NORMALIZE_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? \
+                                            (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : \
+                                            (std::fmod((angle_rad), NF64_2PI)))
 
+#define PERCENTAGE_TO_RATE_LIMITER(percentage) ((NABS(percentage) * 0.5)/ 100.0)
 // ########################## table de  bites ##########################
 #define BITSET(val, bit_id) ((val) |= (1 << (bit_id)))
 #define BITCLEAR(val, bit_id) ((val) &= ~(1 << (bit_id)))
