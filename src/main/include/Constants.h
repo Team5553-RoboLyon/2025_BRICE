@@ -16,7 +16,7 @@ namespace DriveConstants {
             constexpr int FRONT_MOTOR_ID = 1;
             constexpr int BACK_MOTOR_ID = 2;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = false;
+            constexpr bool MOTOR_INVERTED = true;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
@@ -36,7 +36,7 @@ namespace DriveConstants {
             constexpr int FRONT_MOTOR_ID = 3;
             constexpr int BACK_MOTOR_ID = 4;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = true;
+            constexpr bool MOTOR_INVERTED = false;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
