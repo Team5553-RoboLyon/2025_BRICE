@@ -30,6 +30,8 @@ class RobotContainer {
  private:
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
+  frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
+
   void ConfigureBindings();
   Drivetrain m_drivetrain;
 };

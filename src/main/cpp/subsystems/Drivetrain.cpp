@@ -55,9 +55,12 @@ void Drivetrain::DriveAuto(double speed, double rotation)
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
+    if(m_reversedDrive) {
+        FwdJoystick = -FwdJoystick;
+        RotateJoystick = -RotateJoystick;
+    }
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
-
 
     m_sigma = NLERP(0.5, 0.5, NABS(FwdJoystick)); // Constant : 0.5
 
@@ -95,6 +98,10 @@ double Drivetrain::Calcul_Of_Our_Cher_JM(double forward, double turn, bool wheel
         return right_wheel;
     else
         return left_wheel;
+}
+
+void Drivetrain::ReverseDrive() {
+    m_reversedDrive = !m_reversedDrive;
 }
 
 // This method will be called once per scheduler run

@@ -89,6 +89,8 @@ class Drivetrain : public frc2::SubsystemBase {
 
   void Reset();
 
+  void ReverseDrive();
+
   void Periodic() override;
 
  private:
@@ -109,6 +111,7 @@ class Drivetrain : public frc2::SubsystemBase {
   frc::Encoder m_EncoderRight{DriveConstants::RightGearbox::Encoder::ID_ENCODER_A, DriveConstants::RightGearbox::Encoder::ID_ENCODER_B, DriveConstants::RightGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
 
   double m_sigma = 0.0; //rotation weighting factor
+  bool m_reversedDrive = false; //flag to indicate if the drive direction is reversed
 
   RateLimiter m_JoystickLimited_V;    // joystick V rate limiter, used to smooth out the joystick input for forward/backward movement
   RateLimiter m_JoystickLimited_W;    // joystick W rate limiter, used to smooth out the joystick input for rotation movement
