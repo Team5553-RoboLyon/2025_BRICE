@@ -47,10 +47,10 @@ void PidRBL::Reset(double setpoint)
 {
     m_setpoint = setpoint;
     m_lastError = m_error;
-    m_error = 0.0f;
-    m_output = 0.0f;
-    m_integrative = 0.0f;
-    m_derivative = 0.0f;
+    m_error = 0.0;
+    m_output = 0.0;
+    m_integrative = 0.0;
+    m_derivative = 0.0;
 }
 bool PidRBL::AtSetpoint()
 {
