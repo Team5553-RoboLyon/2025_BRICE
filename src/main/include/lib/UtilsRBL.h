@@ -39,6 +39,8 @@
 
 // ########################## table de  bites ##########################
 #define BITSET(val, bit_id) ((val) |= (1 << (bit_id)))
+#define BITSSET(bits, setVal) ((bits) | (setVal))
 #define BITCLEAR(val, bit_id) ((val) &= ~(1 << (bit_id)))
 // #define BITGET(val,bit_id)        ((val) &  (1 << (bit_id)))
 #define BITGET(val, bit_id) (((val) >> (bit_id)) & 1) // 0 or 1
+#define BITSGET(val, mask) ((val) & (mask))

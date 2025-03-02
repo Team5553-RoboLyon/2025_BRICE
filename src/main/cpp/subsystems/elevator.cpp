@@ -4,9 +4,9 @@
 
 #include "subsystems/elevator.h"
 
-Elevator::Elevator(){
+Elevator::Elevator(){ //ok
     m_elevatorMotorConfig
-                .VoltageCompensation(elevatorConstants::Motors::VOLTAGE_COMP)
+                .VoltageCompensation(elevatorConstants::Motors::VOLTAGE_COMPENSATION)
                 .Inverted(elevatorConstants::Motors::INVERTED)
                 .SmartCurrentLimit(elevatorConstants::Motors::CURRENT_LIMIT)
                 .ClosedLoopRampRate(elevatorConstants::Motors::RAMP_RATE)
@@ -18,81 +18,91 @@ Elevator::Elevator(){
                 rev::spark::SparkBase::PersistMode::kNoPersistParameters);
 
     m_ElevatorEncoder.Reset();
-    m_ElevatorEncoder.SetDistancePerPulse(elevatorConstants::Encoder::DISTANCE_PER_PULSE);
+    m_ElevatorEncoder.SetDistancePerPulse(elevatorConstants::Sensor::Encoder::DISTANCE_PER_PULSE);
 
-    //debug 
+    m_pid.SetTolerance(elevatorConstants::PID::TOLERANCE);
+    m_pid.Reset(elevatorConstants::PID::SETPOINT);
+    m_pid.SetOutputLimits(elevatorConstants::Speed::MAX_SPEED, elevatorConstants::Speed::MIN_SPEED);
 
-    frc::ShuffleboardTab& ElevatorTab = frc::Shuffleboard::GetTab("elevator");
-    ElevatorHeightEntry = ElevatorTab.Add("Elevator Height", 0.0)
-                        .WithWidget(frc::BuiltInWidgets::kNumberBar)
-                        .GetEntry();
-
-    encoderVelocityEntry = ElevatorTab.Add("Encoder Velocity", 0.0)
-                        .WithWidget(frc::BuiltInWidgets::kGraph)
-                        .GetEntry();
-
-    topLimitEntry = ElevatorTab.Add("Top Limit", false)
-                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
-                        .GetEntry();
-    
-    bottomLimitEntry = ElevatorTab.Add("Bottom Limit", false)
-                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
-                        .GetEntry();
-    
-    middleLimitEntry = ElevatorTab.Add("Middle Limit", false) 
-                        .WithWidget(frc::BuiltInWidgets::kBooleanBox)
-                        .GetEntry();
+    m_state = 0b000'000'000; // Set the Initial State to rest postion at L1
 }
 
+
+void Elevator::SelectWantedStage(int8_t stage) {
+  switch (stage) {
+  case 0:
+    m_state = GET_DESIRED_POSITION(m_state);
+    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L1Desired);
+    break;
+  case 1:
+    m_state = GET_DESIRED_POSITION(m_state);
+    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L2Desired);
+    break;
+  case 2:
+    m_state = GET_DESIRED_POSITION(m_state);
+    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L3Desired);
+    break;
+  case 3:
+    m_state = GET_DESIRED_POSITION(m_state);
+    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L4Desired);
+  default:
+    break;
+  }
+}
+void Elevator::SelectCurrentPosition(int8_t position) {
+  switch (position) {
+  case 0:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL1);
+    break;
+  case 1:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL1L2);
+    break;
+  case 2:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL2);
+    break;
+  case 3:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL2L3);
+    break;
+  case 4:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL3);
+    break;
+  case 5:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL3L4);
+    break;
+  case 6:
+    m_state = GET_CURRENT_POSITION(m_state);
+    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL4);
+    break;
+  default:
+    break;
+  }
+}
+void Elevator::SelectMoving(int8_t movingType) {
+  switch (movingType) {
+  case 0:
+    m_state = GET_MOVING_TYPE(m_state);
+    m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
+    break;
+  case 1:
+    m_state = GET_MOVING_TYPE(m_state);
+    m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Up);
+    break;
+  case 2:
+    m_state = GET_MOVING_TYPE(m_state);
+    m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Down);
+    break;
+  default:
+    break;
+  }
+}
 // This method will be called once per scheduler run
 void Elevator::Periodic() {
-
-    //debug
-    ElevatorHeightEntry->SetDouble(GetCurrentElevatorHeight());
-    encoderVelocityEntry->SetDouble(GetEncoderVelocity());
-    topLimitEntry->SetBoolean(IsAtTopLimit());
-    bottomLimitEntry->SetBoolean(IsAtBottomLimit());
-    middleLimitEntry->SetBoolean(m_MiddleHallEffectSensor.GetVoltage()>elevatorConstants::Sensor::TOLERANCE);
-}
-
-void Elevator::SetSpeed(double speed) {
-  m_elevatorMotor.Set(speed);
-}
-
-void Elevator::StopMotor() {
-  m_elevatorMotor.StopMotor();
-}
-
-void Elevator::GoToPosition(double position) {
-    if (!IsAtTopLimit()){
-        SetSpeed(m_pid.Calculate(m_ElevatorEncoder.GetDistance(), position));
-    }
-    else{
-        StopMotor();
-    }
-}
-
-void Elevator::ResetEncoder() {
-  m_ElevatorEncoder.Reset();
-}
-
-double Elevator::GetCurrentElevatorHeight() {
-  return m_ElevatorEncoder.GetDistance();
-}
-
-double Elevator::GetEncoderVelocity() {
-  return m_ElevatorEncoder.GetRate();
-}
-
-bool Elevator::IsAtPosition(double targetPosition, double tolerance) {
-  return NABS(targetPosition - GetCurrentElevatorHeight()) < tolerance;
-}
-
-bool Elevator::IsAtTopLimit() {
-  return m_TopHallEffectSensor.GetVoltage() > elevatorConstants::Sensor::TOLERANCE;
-}
-
-bool Elevator::IsAtBottomLimit() {
-  return m_BottomHallEffectSensor.GetVoltage() > elevatorConstants::Sensor::TOLERANCE;
+  frc::SmartDashboard::PutString("state", std::bitset<9>(m_state).to_string());
 }
 
