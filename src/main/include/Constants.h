@@ -68,42 +68,44 @@ namespace elevatorConstants
         constexpr double MIN_SPEED = -1.0;
     }
     namespace Stage {
-        constexpr int8_t L1 = 0;
-        constexpr int8_t L2 = 1;
-        constexpr int8_t L3 = 2;
-        constexpr int8_t L4 = 3;
+        constexpr uint8_t L1 = 0;
+        constexpr uint8_t L2 = 1;
+        constexpr uint8_t L3 = 2;
+        constexpr uint8_t L4 = 3;
     }
 
     namespace State {
-        constexpr int16_t m_maskMovingType = 0x3F;
-        constexpr int16_t m_maskCurrentPosition = 0x1C7;
-        constexpr int16_t m_maskDesiredPosition = 0x1F8;
+        constexpr uint16_t m_maskDesiredPosition = 0xF;      // 0000 0000 0000 0000 0000 0000 0000 1111
+        constexpr uint16_t m_maskCurrentPosition = 0xF << 4; // 0000 0000 0000 0000 0000 0000 1111 0000
+        constexpr uint16_t m_maskMovingType = 0xF << 8;      // 0000 0000 0000 0000 0000 1111 0000 0000
 
-        constexpr int8_t m_L1Desired =  0b000;
-        constexpr int8_t m_L2Desired =  0b010;
-        constexpr int8_t m_L3Desired =  0b100;
-        constexpr int8_t m_L4Desired =  0b110;
+        constexpr uint16_t m_L1Desired =  0b0000;
+        constexpr uint16_t m_L2Desired =  0b0010;
+        constexpr uint16_t m_L3Desired =  0b0100;
+        constexpr uint16_t m_L4Desired =  0b0110;
 
-        constexpr int8_t m_AtL1 =      0b000   << 3;
-        constexpr int8_t m_AtL1L2 =    0b001   << 3;
-        constexpr int8_t m_AtL2 =      0b010   << 3;
-        constexpr int8_t m_AtL2L3 =    0b011   << 3;
-        constexpr int8_t m_AtL3 =      0b100   << 3;
-        constexpr int8_t m_AtL3L4 =    0b101   << 3;
-        constexpr int8_t m_AtL4 =      0b110   << 3;
+        constexpr uint16_t m_AtL1 =      0b0000   << 4;
+        constexpr uint16_t m_AtL1L2 =    0b0001   << 4;
+        constexpr uint16_t m_AtL2 =      0b0010   << 4;
+        constexpr uint16_t m_AtL2L3 =    0b0011   << 4;
+        constexpr uint16_t m_AtL3 =      0b0100   << 4;
+        constexpr uint16_t m_AtL3L4 =    0b0101   << 4;
+        constexpr uint16_t m_AtL4 =      0b0110   << 4;
 
-        constexpr int8_t Rest =         0b000   << 6;
-        constexpr int8_t Up =           0b001   << 6;
-        constexpr int16_t Down =        0b010   << 6;
+        constexpr uint16_t Rest =         0b0000   << 8;
+        constexpr uint16_t Up =           0b0001   << 8;
+        constexpr uint16_t Down =        0b0010    << 8;
     }
-    #define CLEAR_DESIRED_POSITION(val) BITSGET(val, elevatorConstants::State::m_maskDesiredPosition)
-    #define CLEAR_CURRENT_POSITION(val) BITSGET(val,  elevatorConstants::State::m_maskCurrentPosition)
-    #define CLEAR_MOVING_TYPE(val) BITSGET(val,  elevatorConstants::State::m_maskMovingType)
-    #define GET_DESIRED_POSITION(val) BITSGET(val, !elevatorConstants::State::m_maskDesiredPosition)
-    #define GET_CURRENT_POSITION(val) BITSGET(val,  !elevatorConstants::State::m_maskCurrentPosition) >> 3
-    #define GET_MOVING_TYPE(val) BITSGET(val,  !elevatorConstants::State::m_maskMovingType) >> 6
+    #define MAKE_STATE(desiredPosition, currentPosition, movingType) ((desiredPosition) | ((currentPosition) << 4) | ((movingType) << 8))
+    // #define CLEAR_DESIRED_POSITION(val) (BITSGET(val, ~elevatorConstants::State::m_maskDesiredPosition))
+    // #define CLEAR_CURRENT_POSITION(val) (BITSGET(val,  ~elevatorConstants::State::m_maskCurrentPosition))
+    // #define CLEAR_MOVING_TYPE(val) (BITSGET(val, ~elevatorConstants::State::m_maskMovingType))
 
-    #define SET_DESIRED_POSITION(bits, setValue) BITSSET(bits, setValue)
-    #define SET_CURRENT_POSITION(bits, setValue) BITSSET(bits, setValue)
-    #define SET_MOVING_TYPE(bits, setValue) BITSSET(bits, setValue)
+    #define GET_DESIRED_POSITION(val) BITSGET(val, elevatorConstants::State::m_maskDesiredPosition)
+    #define GET_CURRENT_POSITION(val) (BITSGET(val,  elevatorConstants::State::m_maskCurrentPosition) >> 4)
+    #define GET_MOVING_TYPE(val) (BITSGET(val,  elevatorConstants::State::m_maskMovingType) >> 8)
+
+    #define SET_DESIRED_POSITION(bits, setValue) (BITSSET((BITSGET(bits, ~elevatorConstants::State::m_maskDesiredPosition)), setValue))
+    #define SET_CURRENT_POSITION(bits, setValue) (BITSSET((BITSGET(bits, ~elevatorConstants::State::m_maskCurrentPosition)), setValue))
+    #define SET_MOVING_TYPE(bits, setValue) (BITSSET((BITSGET(bits, ~elevatorConstants::State::m_maskMovingType)), setValue))
 }

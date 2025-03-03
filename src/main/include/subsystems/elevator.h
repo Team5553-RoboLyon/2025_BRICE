@@ -127,34 +127,34 @@ class Elevator : public frc2::SubsystemBase {
   frc::Encoder m_ElevatorEncoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
 
   PidRBL m_pid{elevatorConstants::PID::KD, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
-  int32_t m_state;
+  u_int32_t m_state;
 };
-// 3 bits par partie sur un total de 32 bits
-// 0000 0000 0000 0000 0000 0000 0000 0111 : Desired Position
-// 0000 0000 0000 0000 0000 0000 0011 1000 : Current Position
-// 0000 0000 0000 0000 0000 0001 1100 0000 : Moving Type
+// 1 nibble par partie sur un total de 32 bits
+// 0000 0000 0000 0000 0000 0000 0000 1111 : Desired Position
+// 0000 0000 0000 0000 0000 0000 1111 0000 : Current Position
+// 0000 0000 0000 0000 0000 1111 0000 0000 : Moving Type
 //
 // DESIRED POSITION
-// 000 : L1
-// 010 : L2
-// 100 : L3
-// 110 : L4
+// 0000 : L1
+// 0010 : L2
+// 0100 : L3
+// 0110 : L4
 //
 // CURRENT POSITION
-// 000 : L1
-// 001 : L1/L2
-// 010 : L2
-// 011 : L2/L3
-// 100 : L3
-// 101 : L3/L4
-// 110 : L4
+// 0000 : L1
+// 0001 : L1/L2
+// 0010 : L2
+// 0011 : L2/L3
+// 0100 : L3
+// 0101 : L3/L4
+// 0110 : L4
 //
 // MOVING TYPE
-// 000 : Rest
-// 001 : Up
-// 010 : Down
+// 0000 : Rest
+// 0001 : Up
+// 0010 : Down
 //
 // Masks
-// 0000 0000 0000 0000 0000 0001 1111 1000 : Desired Position
-// 0000 0000 0000 0000 0000 0001 1100 0111 : Current Position
-// 0000 0000 0000 0000 0000 0000 0011 1111 : Moving Type
+// 0000 0000 0000 0000 0000 0000 0000 1111 : Desired Position (0xF)
+// 0000 0000 0000 0000 0000 0000 1111 0000 : Current Position (0xF0)
+// 0000 0000 0000 0000 0000 1111 0000 0000 : Moving Type (0xF00)
