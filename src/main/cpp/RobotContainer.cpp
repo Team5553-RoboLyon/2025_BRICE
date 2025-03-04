@@ -9,12 +9,10 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
+  m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }).ToPtr());
 }
 
 void RobotContainer::ConfigureBindings() {
-  // Configure your button bindings here
-  // Example: m_buttonA.WhenPressed(new ExampleCommand());
-  m_climButton.WhileTrue(Climb(&m_climb).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

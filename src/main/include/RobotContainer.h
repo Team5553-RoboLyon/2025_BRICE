@@ -21,7 +21,6 @@
 #include <frc2/command/button/CommandGenericHID.h>
 
 #include "subsystems/DeepClimb.h"
-#include "commands/Climb.h"
 
 class RobotContainer {
  public:
@@ -32,8 +31,6 @@ class RobotContainer {
   void ConfigureBindings();
 
   frc::Joystick m_joystick{0};
-  frc::XboxController m_controller{1};
-  frc2::JoystickButton m_climButton{&m_controller, 1};
 
   DeepClimb m_climb;
 
