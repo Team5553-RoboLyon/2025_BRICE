@@ -8,13 +8,13 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
+  m_elevator.SetDefaultCommand(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L1).ToPtr());
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_L1.WhileTrue(frc2::InstantCommand([this] { m_elevator.SelectWantedStage(elevatorConstants::State::L1);}).ToPtr());
-  m_L2.WhileTrue(frc2::InstantCommand([this] { m_elevator.SelectWantedStage(elevatorConstants::State::L2);}).ToPtr());
-  m_L3.WhileTrue(frc2::InstantCommand([this] { m_elevator.SelectWantedStage(elevatorConstants::State::L3);}).ToPtr());
-  m_L4.WhileTrue(frc2::InstantCommand([this] { m_elevator.SelectWantedStage(elevatorConstants::State::L4);}).ToPtr());
+  m_L2.WhileTrue(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L2).ToPtr());
+  m_L3.WhileTrue(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L3).ToPtr());
+  m_L4.WhileTrue(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L4).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

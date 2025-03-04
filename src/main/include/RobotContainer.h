@@ -20,6 +20,7 @@
 #include <frc2/command/button/POVButton.h>
 #include <frc2/command/button/CommandGenericHID.h>
 
+#include "commands/MoveElevatorToLevel.h"
 #include "subsystems/elevator.h"
 #include "Constants.h"
 
@@ -29,21 +30,10 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
-  frc::Joystick joystick{0};
-  frc2::JoystickButton m_L1{&joystick, 1};
-  frc2::JoystickButton m_L2{&joystick, 2};
-  frc2::JoystickButton m_L3{&joystick, 3};
-  frc2::JoystickButton m_L4{&joystick, 4};
-  frc2::JoystickButton m_atL1{&joystick, 5};
-  frc2::JoystickButton m_atL1l2{&joystick, 6};
-  frc2::JoystickButton m_atL2{&joystick, 7};
-  frc2::JoystickButton m_atL2l3{&joystick, 8};
-  frc2::JoystickButton m_atL3{&joystick, 9};
-  frc2::JoystickButton m_atL3l4{&joystick, 10};
-  frc2::JoystickButton m_atL4{&joystick, 11};
-  frc2::JoystickButton m_movingUp{&joystick, 12};
-  frc2::JoystickButton m_movingDown{&joystick, 13};
-  frc2::JoystickButton m_stop{&joystick, 14};
+  frc::XboxController m_xboxControllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
+  frc2::JoystickButton m_L2{&m_xboxControllerCopilot, ControlPanelConstants::Button::L2};
+  frc2::JoystickButton m_L3{&m_xboxControllerCopilot, ControlPanelConstants::Button::L3};
+  frc2::JoystickButton m_L4{&m_xboxControllerCopilot, ControlPanelConstants::Button::L4};
   Elevator m_elevator;
  private:
   void ConfigureBindings();

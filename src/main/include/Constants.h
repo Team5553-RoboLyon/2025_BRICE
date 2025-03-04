@@ -43,8 +43,8 @@ namespace elevatorConstants
             constexpr int B_ID = 7;
             //TODO : Check these values
             constexpr double REDUCTION = 30.0/26.0;
-            constexpr double RADIUS = 1.0;
-            constexpr double DISTANCE_PER_PULSE = 2.0 * M_PI * RADIUS / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
+            constexpr double RADIUS = (3.3615)/2.0;
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
         }
         namespace LimitSwitch
         {
@@ -118,4 +118,17 @@ namespace elevatorConstants
     //     return 1.0 - ((value - elevatorConstants::Sensor::HallEffect::THRESHOLD) / 2.0);
     // }
     #define IS_TRANSITION_POSITION(val) ((val) & 1)
+}
+
+namespace ControlPanelConstants {
+    namespace Joystick{
+        constexpr int FORWARD_ID = 0;
+        constexpr int ROTATION_ID = 1;
+        constexpr int XBOX_CONTROLLER_ID = 2;
+    }
+    namespace Button {
+        constexpr int L2 = 1;
+        constexpr int L3 = 2;
+        constexpr int L4 = 4;
+    }
 }
