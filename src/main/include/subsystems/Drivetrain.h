@@ -88,14 +88,16 @@ class Drivetrain : public frc2::SubsystemBase {
 
   void Reset();
 
+  void ReverseDrive();
+
   void Periodic() override;
 
  private:
   //Definition of the motors
-  rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorBackLeft{DriveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorFrontRight{DriveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorBackRight{DriveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackLeft{DriveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontRight{DriveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackRight{DriveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
 
   //Definition of the motors' configurations
   rev::spark::SparkBaseConfig m_MotorFrontLeftConfig{};
@@ -108,6 +110,7 @@ class Drivetrain : public frc2::SubsystemBase {
   frc::Encoder m_EncoderRight{DriveConstants::RightGearbox::Encoder::ID_ENCODER_A, DriveConstants::RightGearbox::Encoder::ID_ENCODER_B, DriveConstants::RightGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
 
   double m_sigma = 0.0; //rotation weighting factor
+  bool m_reversedDrive = false; //flag to indicate if the drive direction is reversed
 
   RateLimiter m_JoystickLimited_V;    // joystick V rate limiter, used to smooth out the joystick input for forward/backward movement
   RateLimiter m_JoystickLimited_W;    // joystick W rate limiter, used to smooth out the joystick input for rotation movement

@@ -13,8 +13,8 @@ namespace DriveConstants {
 
     namespace LeftGearbox{
         namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 1;
-            constexpr int BACK_MOTOR_ID = 2;
+            constexpr int FRONT_MOTOR_ID = 2;
+            constexpr int BACK_MOTOR_ID = 3;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool MOTOR_INVERTED = true;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
@@ -26,15 +26,15 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 2048.0f;
+            constexpr double DISTANCE_PER_PULSE = 2048.0;
         }
         constexpr bool WHEEL_SIDE = true;
     }
 
     namespace RightGearbox{
         namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 3;
-            constexpr int BACK_MOTOR_ID = 4;
+            constexpr int FRONT_MOTOR_ID = 4;
+            constexpr int BACK_MOTOR_ID = 5;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool MOTOR_INVERTED = false;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
@@ -46,7 +46,7 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 2;
             constexpr int ID_ENCODER_B = 3;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 2048.0f;
+            constexpr double DISTANCE_PER_PULSE = 2048.0;
         }
         constexpr bool WHEEL_SIDE = false;
     }
@@ -56,6 +56,9 @@ namespace ControlPanelConstants {
     namespace Joystick{
         constexpr int FORWARD_ID = 0;
         constexpr int ROTATION_ID = 1;
+    }
+    namespace Button {
+        constexpr int REVERSED_DRIVE_BUTTON = 1;
     }
     namespace Settings{
         constexpr double DEADBAND = 0.08;
