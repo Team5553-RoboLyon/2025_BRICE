@@ -33,7 +33,5 @@ class RobotContainer {
   frc::Joystick m_joystick{0};
 
   DeepClimb m_climb;
-
-  bool m_auto;
  private:
 };

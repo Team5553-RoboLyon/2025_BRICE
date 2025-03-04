@@ -9,7 +9,7 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
-  m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }).ToPtr());
+  m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
 }
 
 void RobotContainer::ConfigureBindings() {
