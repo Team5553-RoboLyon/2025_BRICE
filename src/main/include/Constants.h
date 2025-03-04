@@ -13,8 +13,8 @@ namespace DriveConstants {
 
     namespace LeftGearbox{
         namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 1;
-            constexpr int BACK_MOTOR_ID = 2;
+            constexpr int FRONT_MOTOR_ID = 2;
+            constexpr int BACK_MOTOR_ID = 3;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool MOTOR_INVERTED = true;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
@@ -33,8 +33,8 @@ namespace DriveConstants {
 
     namespace RightGearbox{
         namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 3;
-            constexpr int BACK_MOTOR_ID = 4;
+            constexpr int FRONT_MOTOR_ID = 4;
+            constexpr int BACK_MOTOR_ID = 5;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool MOTOR_INVERTED = false;
             constexpr int MOTOR_CURRENT_LIMIT = 40;

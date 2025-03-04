@@ -7,7 +7,6 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc/Encoder.h>
 #include "rev/SparkFlex.h"
-#include "rev/SparkMax.h"
 #include "Constants.h"
 #include "lib/UtilsRBL.h"
 #include "lib/rate_limiter.h"
@@ -95,10 +94,10 @@ class Drivetrain : public frc2::SubsystemBase {
 
  private:
   //Definition of the motors
-  rev::spark::SparkMax m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkMax m_MotorBackLeft{DriveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkMax m_MotorFrontRight{DriveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
-  rev::spark::SparkMax m_MotorBackRight{DriveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkLowLevel::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackLeft{DriveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontRight{DriveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackRight{DriveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
 
   //Definition of the motors' configurations
   rev::spark::SparkBaseConfig m_MotorFrontLeftConfig{};

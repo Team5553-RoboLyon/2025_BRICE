@@ -55,10 +55,8 @@ void Drivetrain::DriveAuto(double speed, double rotation)
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
-    if(m_reversedDrive) {
+    if(m_reversedDrive)
         FwdJoystick = -FwdJoystick;
-        RotateJoystick = -RotateJoystick;
-    }
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
