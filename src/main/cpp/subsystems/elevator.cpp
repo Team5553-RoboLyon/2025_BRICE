@@ -79,11 +79,21 @@ void Elevator::Periodic() {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
         SetDesiredSetpoint();
       }
+      else if(GET_ELEVATOR_CURRENT_POSITION(m_state) > GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Down);
+        SetDesiredSetpoint();
+        SetNextCurrentPosition(false);
+      }
       break;
     case elevatorConstants::State::Down:
       if(GET_ELEVATOR_CURRENT_POSITION(m_state) == GET_ELEVATOR_DESIRED_POSITION(m_state)) {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
         SetDesiredSetpoint();
+      }
+      else if(GET_ELEVATOR_CURRENT_POSITION(m_state) < GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Up);
+        SetDesiredSetpoint();
+        SetNextCurrentPosition(true);
       }
       break;
   default:
@@ -96,17 +106,17 @@ void Elevator::Periodic() {
   Dashboard();
 }
 void Elevator::ActualizeCurrentPosition() {
-  if(m_bottomLimitSwitch.Get())
-    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L1);
-  else if(m_topLimitSwitch.Get())
-    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L4);
+  if(!m_bottomLimitSwitch.Get())
+    m_state = SET_ELEVATOR_REST_AT_POSITION(elevatorConstants::State::L1);
+  else if(!m_topLimitSwitch.Get())
+    m_state = SET_ELEVATOR_REST_AT_POSITION(elevatorConstants::State::L4);
   else {
       for (u_int i = 0; i < std::size(m_distanceEncoder); i++) {
         if (GetHight() >= m_distanceEncoder[i][0] && GetHight() <= m_distanceEncoder[i][1]) {
           m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
           break;
-    }
-  }
+        }
+      }
   }
 }
 void Elevator::ExecuteTask() {
@@ -115,7 +125,7 @@ void Elevator::ExecuteTask() {
 }
 double Elevator::GetHight() {
   double result = m_ElevatorEncoder.GetDistance() - m_EncoderDriftFilter.get();
-  assert((result < m_distanceEncoder[0][0] && result > m_distanceEncoder[6][1])&& "distance is out of range");
+  assert((result >= m_distanceEncoder[0][0] && result <= m_distanceEncoder[6][1])&& "distance is out of range");
   return result;
 }
 void Elevator::SetDesiredSetpoint() {
@@ -141,6 +151,8 @@ void Elevator::Dashboard() {
   frc::SmartDashboard::PutNumber("Elevator Current", m_elevatorMotor.GetOutputCurrent());
   // frc::SmartDashboard::PutNumber("Elevator L2 Hall Effect", m_stageL2HallEffectSensor.GetVoltage());
   // frc::SmartDashboard::PutNumber("Elevator L3 Hall Effect", m_stageL3HallEffectSensor.GetVoltage());
+  frc::SmartDashboard::PutBoolean("Elevator Bottom Limit Switch", !m_bottomLimitSwitch.Get());
+  frc::SmartDashboard::PutBoolean("Elevator Top Limit Switch", !m_topLimitSwitch.Get());
   switch (GET_ELEVATOR_DESIRED_POSITION(m_state))
   {
   case elevatorConstants::State::L1:

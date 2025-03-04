@@ -43,7 +43,7 @@ namespace elevatorConstants
             constexpr int B_ID = 7;
             //TODO : Check these values
             constexpr double REDUCTION = 30.0/26.0;
-            constexpr double RADIUS = (3.3615)/2.0;
+            constexpr double RADIUS = (3.60*3.0/M_PI)/2.0;
             constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
         }
         namespace LimitSwitch
@@ -112,7 +112,7 @@ namespace elevatorConstants
     #define SET_ELEVATOR_DESIRED_POSITION(bits, setValue) ((((bits) & (~elevatorConstants::State::maskDesiredPosition)) | (setValue)))
     #define SET_ELEVATOR_CURRENT_POSITION(bits, setValue) ((((bits) & (~elevatorConstants::State::maskCurrentPosition)) | ((setValue) <<4)))
     #define SET_ELEVATOR_MOVING_TYPE(bits, setValue) ((((bits) & (~elevatorConstants::State::maskMovingType)) | ((setValue) << 8)))
-    #define SET_ELEVATOR_REST_AT_POSITION(bits, setValue) (SET_ELEVATOR_CURRENT_POSITION((bits), (setValue))) | (SET_ELEVATOR_MOVING_TYPE((bits), (elevatorConstants::State::Rest)))
+    #define SET_ELEVATOR_REST_AT_POSITION(setValue) (MAKE_ELEVATOR_STATE((setValue), (setValue), elevatorConstants::State::Rest))
 
     // inline double ELEVATOR_SLOWER(double value) {
     //     return 1.0 - ((value - elevatorConstants::Sensor::HallEffect::THRESHOLD) / 2.0);
