@@ -24,217 +24,169 @@ Elevator::Elevator(){ //ok
     m_pid.Reset(elevatorConstants::PID::SETPOINT);
     m_pid.SetOutputLimits(elevatorConstants::Speed::MAX_SPEED, elevatorConstants::Speed::MIN_SPEED);
 
-    m_state = 0b000'000'000; // Set the Initial State to rest postion at L1
+    // Set the Initial State to rest postion at L1
+    m_state = MAKE_ELEVATOR_STATE(elevatorConstants::State::L1, elevatorConstants::State::L1, elevatorConstants::State::Rest);
 }
 
-void Elevator::SelectWantedStage(int8_t stage) {
+void Elevator::SelectWantedStage(u_int16_t stage) {
   switch (stage) {
-  case 0:
-    m_state = CLEAR_DESIRED_POSITION(m_state);
-    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L1Desired);
+  case elevatorConstants::State::L1:
+    if(m_counter > elevatorConstants::TIMEOUT) {
+      m_state = SET_ELEVATOR_DESIRED_POSITION(m_state, elevatorConstants::State::L1);
+    }
+    else {
+      m_counter++;
+    }
     break;
-  case 1:
-    m_state = CLEAR_DESIRED_POSITION(m_state);
-    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L2Desired);
+  case elevatorConstants::State::L2:
+    m_counter = 0;
+    m_state = SET_ELEVATOR_DESIRED_POSITION(m_state, elevatorConstants::State::L2);
     break;
-  case 2:
-    m_state = CLEAR_DESIRED_POSITION(m_state);
-    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L3Desired);
+  case elevatorConstants::State::L3:
+    m_counter = 0;
+    m_state = SET_ELEVATOR_DESIRED_POSITION(m_state, elevatorConstants::State::L3);
     break;
-  case 3:
-    m_state = CLEAR_DESIRED_POSITION(m_state);
-    m_state = SET_DESIRED_POSITION(m_state, elevatorConstants::State::m_L4Desired);
+  case elevatorConstants::State::L4:
+    m_counter = 0;
+    m_state = SET_ELEVATOR_DESIRED_POSITION(m_state, elevatorConstants::State::L4);
   default:
+    m_counter++;
     break;
   }
 }
 
 void Elevator::Periodic() {
-  actualizeCurrentPosition();
-  if(GET_CURRENT_POSITION(m_state) < GET_DESIRED_POSITION(m_state)) {
-    SetGoingUp();
+  ActualizeCurrentPosition();
+
+  switch (GET_ELEVATOR_MOVING_TYPE(m_state)) {
+    case elevatorConstants::State::Rest:
+      if(GET_ELEVATOR_CURRENT_POSITION(m_state) == GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        SetDesiredSetpoint();
+      }
+      else if(GET_ELEVATOR_CURRENT_POSITION(m_state) < GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Up);
+        SetDesiredSetpoint();
+        SetNextCurrentPosition(true);
+      }
+      else /*if(GET_ELEVATOR_CURRENT_POSITION(m_state) > GET_ELEVATOR_DESIRED_POSITION(m_state))*/ {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Down);
+        SetDesiredSetpoint();
+        SetNextCurrentPosition(false);
+      }
+      break;
+    case elevatorConstants::State::Up:
+      if(GET_ELEVATOR_CURRENT_POSITION(m_state) == GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
+        SetDesiredSetpoint();
+      }
+      break;
+    case elevatorConstants::State::Down:
+      if(GET_ELEVATOR_CURRENT_POSITION(m_state) == GET_ELEVATOR_DESIRED_POSITION(m_state)) {
+        m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
+        SetDesiredSetpoint();
+      }
+      break;
+  default:
+    assert(false && "void Elevator::Periodic() -> moving type undefined");
+    break;
   }
-  else if(GET_CURRENT_POSITION(m_state) > GET_DESIRED_POSITION(m_state)) {
-    SetGoingDown();
-  }
-  else if(GET_CURRENT_POSITION(m_state) == GET_DESIRED_POSITION(m_state)) {
-    SetRestPosition();
-  }
+
+  // ----------------- Movement -----------------
   ExecuteTask();
   Dashboard();
 }
-void Elevator::actualizeCurrentPosition() {
-  if(NABS(m_ElevatorEncoder.GetDistance() - elevatorConstants::Sensor::Encoder::Distance::L1) < elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL1);
-  } 
-  else if(NABS(m_ElevatorEncoder.GetDistance() - elevatorConstants::Sensor::Encoder::Distance::L2) < elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL2);
-  } 
-  else if(NABS(m_ElevatorEncoder.GetDistance() - elevatorConstants::Sensor::Encoder::Distance::L3) < elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL3);
-  } 
-  else if(NABS(m_ElevatorEncoder.GetDistance() - elevatorConstants::Sensor::Encoder::Distance::L4) < elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL4);
+void Elevator::ActualizeCurrentPosition() {
+  if(m_bottomLimitSwitch.Get())
+    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L1);
+  else if(m_topLimitSwitch.Get())
+    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L4);
+  else {
+      for (u_int i = 0; i < std::size(m_distanceEncoder); i++) {
+        if (GetHight() >= m_distanceEncoder[i][0] && GetHight() <= m_distanceEncoder[i][1]) {
+          m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
+          break;
+    }
   }
-  else if((elevatorConstants::Sensor::Encoder::Distance::L1 + elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE ) < m_ElevatorEncoder.GetDistance() && m_ElevatorEncoder.GetDistance() < (elevatorConstants::Sensor::Encoder::Distance::L2 - elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE)) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL1L2);
-  } 
-  else if((elevatorConstants::Sensor::Encoder::Distance::L2 + elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE ) < m_ElevatorEncoder.GetDistance() && m_ElevatorEncoder.GetDistance() < (elevatorConstants::Sensor::Encoder::Distance::L3 - elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE)) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL2L3);
-  } 
-  else if((elevatorConstants::Sensor::Encoder::Distance::L3 + elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE ) < m_ElevatorEncoder.GetDistance() && m_ElevatorEncoder.GetDistance() < (elevatorConstants::Sensor::Encoder::Distance::L4 - elevatorConstants::Sensor::Encoder::Distance::TOLERANCE_PER_STAGE)) {
-    m_state = CLEAR_CURRENT_POSITION(m_state);
-    m_state = SET_CURRENT_POSITION(m_state, elevatorConstants::State::m_AtL3L4);
   }
 }
 void Elevator::ExecuteTask() {
-  switch (GET_DESIRED_POSITION(m_state))
-  {
-  case elevatorConstants::State::m_L1Desired:
-    switch (GET_MOVING_TYPE(m_state)){
-      case elevatorConstants::State::Rest:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L1);
-        m_elevatorMotor.StopMotor();
-        break;
-      case elevatorConstants::State::Up:
-        m_state = CLEAR_MOVING_TYPE(m_state);
-        m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
-        m_elevatorMotor.StopMotor();
-        break;
-      case elevatorConstants::State::Down:
-        //TODO : Check if the hall effect sensor is sensoring
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L1);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-    default:
-      break;
-    }
-    break;
-  case elevatorConstants::State::m_L2Desired:
-    switch (GET_MOVING_TYPE(m_state)) {
-      case elevatorConstants::State::Rest:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L2);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Up:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L2);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Down:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L2);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-    }
-    break;
-  case elevatorConstants::State::m_L3Desired:
-    switch (GET_MOVING_TYPE(m_state)) {
-      case elevatorConstants::State::Rest:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L3);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Up:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L3);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Down:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L3);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-    }
-    break;
-  case elevatorConstants::State::m_L4Desired:
-    switch (GET_MOVING_TYPE(m_state)) {
-      case elevatorConstants::State::Rest:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L4);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Up:
-        m_pid.SetSetpoint(elevatorConstants::Sensor::Encoder::Distance::L4);
-        m_elevatorMotor.Set(m_pid.Calculate(m_ElevatorEncoder.GetDistance()));
-        break;
-      case elevatorConstants::State::Down:
-        m_state = CLEAR_MOVING_TYPE(m_state);
-        m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
-        break;
-    }
-    break;
-  default:
-    break;
+  //motion profile
+    m_elevatorMotor.Set(m_pid.Calculate(GetHight()));
+}
+double Elevator::GetHight() {
+  double result = m_ElevatorEncoder.GetDistance() - m_EncoderDriftFilter.get();
+  assert((result < m_distanceEncoder[0][0] && result > m_distanceEncoder[6][1])&& "distance is out of range");
+  return result;
+}
+void Elevator::SetDesiredSetpoint() {
+    int i = GET_ELEVATOR_DESIRED_POSITION(m_state);
+    assert(!IS_TRANSITION_POSITION(i) && "void Elevator::SetDesiredSetpoint() -> desired position not found");
+    m_pid.SetSetpoint(m_distanceEncoder[i][2]);
   }
+void Elevator::SetNextCurrentPosition(bool isUpside) {
+  if(isUpside) {
+      int i = GET_ELEVATOR_CURRENT_POSITION(m_state) +1;
+      assert(i <= elevatorConstants::State::L4 && "void Elevator::SetNextCurrentPosition() -> current position not found or impossible");
+      m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
+    }
+  else {
+      int i = GET_ELEVATOR_CURRENT_POSITION(m_state) -1;
+      assert(i >= elevatorConstants::State::L1 && "void Elevator::SetNextCurrentPosition() -> current position not found or impossible");
+      m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
+    } 
 }
-
-void Elevator::SetRestPosition() {
-  m_state = CLEAR_MOVING_TYPE(m_state);
-  m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Rest);
-}
-void Elevator::SetGoingUp() {
-  m_state = CLEAR_MOVING_TYPE(m_state);
-  m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Up);
-}
-void Elevator::SetGoingDown() {
-    m_state = CLEAR_MOVING_TYPE(m_state);
-    m_state = SET_MOVING_TYPE(m_state, elevatorConstants::State::Down);
-}
-
 void Elevator::Dashboard() {
-  frc::SmartDashboard::PutString("binary state", std::bitset<9>(m_state).to_string());
-  frc::SmartDashboard::PutNumber("Elevator Encoder", m_ElevatorEncoder.GetDistance());
+  frc::SmartDashboard::PutString("binary state", std::bitset<12>(m_state).to_string());
+  frc::SmartDashboard::PutNumber("Elevator Encoder", GetHight());
   frc::SmartDashboard::PutNumber("Elevator Current", m_elevatorMotor.GetOutputCurrent());
-  frc::SmartDashboard::PutNumber("Elevator Top Hall Effect", m_TopHallEffectSensor.GetVoltage());
-  frc::SmartDashboard::PutNumber("Elevator Middle Hall Effect", m_MiddleHallEffectSensor.GetVoltage());
-  frc::SmartDashboard::PutNumber("Elevator Bottom Hall Effect", m_BottomHallEffectSensor.GetVoltage());
-  switch (GET_DESIRED_POSITION(m_state))
+  // frc::SmartDashboard::PutNumber("Elevator L2 Hall Effect", m_stageL2HallEffectSensor.GetVoltage());
+  // frc::SmartDashboard::PutNumber("Elevator L3 Hall Effect", m_stageL3HallEffectSensor.GetVoltage());
+  switch (GET_ELEVATOR_DESIRED_POSITION(m_state))
   {
-  case elevatorConstants::State::m_L1Desired:
+  case elevatorConstants::State::L1:
     frc::SmartDashboard::PutString("Desired Position", "L1");
     break;
-  case elevatorConstants::State::m_L2Desired:
+  case elevatorConstants::State::L2:
     frc::SmartDashboard::PutString("Desired Position", "L2");
     break;
-  case elevatorConstants::State::m_L3Desired:
+  case elevatorConstants::State::L3:
     frc::SmartDashboard::PutString("Desired Position", "L3");
     break;
-  case elevatorConstants::State::m_L4Desired:
+  case elevatorConstants::State::L4:
     frc::SmartDashboard::PutString("Desired Position", "L4");
     break;
   default:
-    frc::SmartDashboard::PutString("Desired Position", "! ERROR, NOT GOOD !");
+    assert(false  && "void Elevator::Dashboard() -> desired position not found ");
     break;
   }
-  switch (GET_CURRENT_POSITION(m_state))
+  switch (GET_ELEVATOR_CURRENT_POSITION(m_state))
   {
-  case elevatorConstants::State::m_AtL1:
+  case elevatorConstants::State::L1:
     frc::SmartDashboard::PutString("Current Position", "L1");
     break;
-  case elevatorConstants::State::m_AtL1L2:
+  case elevatorConstants::State::L1L2:
     frc::SmartDashboard::PutString("Current Position", "L1/L2");
     break;
-  case elevatorConstants::State::m_AtL2:  
+  case elevatorConstants::State::L2:  
     frc::SmartDashboard::PutString("Current Position", "L2");
     break;
-  case elevatorConstants::State::m_AtL2L3:
+  case elevatorConstants::State::L2L3:
     frc::SmartDashboard::PutString("Current Position", "L2/L3");
     break;
-  case elevatorConstants::State::m_AtL3:
+  case elevatorConstants::State::L3:
     frc::SmartDashboard::PutString("Current Position", "L3");
     break;
-  case elevatorConstants::State::m_AtL3L4:  
+  case elevatorConstants::State::L3L4:  
     frc::SmartDashboard::PutString("Current Position", "L3/L4");
     break;
-  case elevatorConstants::State::m_AtL4:  
+  case elevatorConstants::State::L4:  
     frc::SmartDashboard::PutString("Current Position", "L4");
     break;
   default:
-    frc::SmartDashboard::PutString("Current Position", "! ERROR, NOT GOOD !");
+    assert(false && "void Elevator::Dashboard() -> current position not found");
     break;
   }
-  switch (GET_MOVING_TYPE(m_state))
+  switch (GET_ELEVATOR_MOVING_TYPE(m_state))
   {
   case elevatorConstants::State::Rest:
     frc::SmartDashboard::PutString("Moving Type", "Rest");
@@ -246,7 +198,7 @@ void Elevator::Dashboard() {
     frc::SmartDashboard::PutString("Moving Type", "Down");
     break;
   default:
-    frc::SmartDashboard::PutString("Moving Type", "! ERROR, NOT GOOD !");
+    assert(false && "void Elevator::Dashboard() -> moving type not found ");
     break;
   }
 }

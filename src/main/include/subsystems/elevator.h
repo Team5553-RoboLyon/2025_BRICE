@@ -6,6 +6,9 @@
 
 #include <bitset>
 #include <string>
+#include <cassert>
+#include <array>
+
 #include <frc2/command/SubsystemBase.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -13,9 +16,12 @@
 #include <frc/AnalogInput.h>
 #include <frc/Encoder.h>
 #include "rev/SparkMax.h"
+#include <frc/DigitalInput.h>
+
 #include "Constants.h"
 #include "lib/UtilsRBL.h"
 #include "lib/pid_rbl.h"
+#include "lib/NRollingAverage.h"
 
 class Elevator : public frc2::SubsystemBase {
  public:
@@ -33,15 +39,13 @@ class Elevator : public frc2::SubsystemBase {
  *
  * @param stage The desired stage (0 to 3).
  */
-  void SelectWantedStage(int8_t stage);
+  void SelectWantedStage(u_int16_t stage);
   /**
  * @brief Periodically updates the state of the elevator subsystem.
  * 
  * This function is called periodically and performs the following tasks:
  * - Updates the current position of the elevator.
- * - Checks if the current position is less than the desired position and sets the elevator to move up if true.
- * - Checks if the current position is greater than the desired position and sets the elevator to move down if true.
- * - Checks if the current position is equal to the desired position and sets the elevator to the rest position if true.
+ * - Update the moving type.
  * - Executes the movement task based on the current state and the desired state.
  * - Updates the dashboard.
  */
@@ -49,71 +53,51 @@ class Elevator : public frc2::SubsystemBase {
 
  private:
   /**
- * @brief Updates the current position state of the elevator based on the encoder distance.
+ * @brief Updates the current position of the elevator based on the state of the limit switches and encoder distance.
  * 
- * This function checks the current distance measured by the elevator encoder and updates
- * the elevator's state to reflect its current position. The position is determined by 
- * comparing the encoder distance to predefined levels (L1, L2, L3, L4). 
- * If the encoder distance falls within the tolerance range of a level, the 
- * elevator's state is updated to that level. If the distance falls between two levels, 
- * the state is updated to reflect the intermediate position.
- * 
- * The function performs the following checks in order:
- * @return - If the distance is within the tolerance range of L1, set state to m_AtL1.
- * @return - If the distance is within the tolerance range of L2, set state to m_AtL2.
- * @return - If the distance is within the tolerance range of L3, set state to m_AtL3.
- * @return - If the distance is within the tolerance range of L4, set state to m_AtL4.
- * @return - If the distance is between L1 and L2 (excluding tolerance ranges), set state to m_AtL1L2.
- * @return - If the distance is between L2 and L3 (excluding tolerance ranges), set state to m_AtL2L3.
- * @return - If the distance is between L3 and L4 (excluding tolerance ranges), set state to m_AtL3L4.
+ * This function checks the state of the bottom and top limit switches to determine if the elevator is at its lowest
+ * or highest position, respectively. If neither limit switch is triggered, it iterates through predefined encoder
+ * distance ranges to set the current position of the elevator based on the encoder's distance reading.
  */
-  void actualizeCurrentPosition();
+  void ActualizeCurrentPosition();
   /**
- * @brief Executes the task for the elevator subsystem based on the current state.
- * 
- * This function handles the elevator's movement by setting the appropriate setpoints
- * and controlling the motor based on the desired position and movement type.
- * 
- * The function uses a state machine to determine the desired position and movement type,
- * and then performs the necessary actions to move the elevator to the desired position.
- * 
- * The states and movement types are defined in the elevatorConstants::State namespace.
- * 
- * The function handles the following desired positions:
- * - m_L1Desired: Level 1
- * - m_L2Desired: Level 2
- * - m_L3Desired: Level 3
- * - m_L4Desired: Level 4
- * 
- * The function handles the following movement types:
- * - Rest: The elevator is at rest.
- * - Up: The elevator is moving up.
- * - Down: The elevator is moving down.
- * 
- * The function uses a PID controller to calculate the motor output based on the encoder distance.
+ * @brief Executes the dynamic task for controlling the elevator motor.
  */
   void ExecuteTask();
+
   /**
-   * @brief Sets the elevator state to resting.
-   *
-   * This function clears the current moving type state of the elevator
-   * and sets it to the "Rest" state as defined in the elevatorConstants::State.
+   * @brief Retrieves the current height of the elevator.
+   * 
+   * @return The current height of the elevator based on the encoder input as a double.
    */
-  void SetRestPosition();
+  double GetHight();
   /**
- * @brief Sets the elevator state to moving up.
+ * @brief Sets the desired setpoint for the elevator based on the current state.
  *
- * This function clears the current moving type state of the elevator
- * and sets it to the "Up" state as defined in the elevatorConstants::State.
+ * This function retrieves the desired position for the elevator from the current state,
+ * checks that the position is not a transition position, and then sets the PID controller's
+ * setpoint to the corresponding distance encoder value.
+ *
+ * @throws std::runtime_error if the desired position is a transition position.
  */
-  void SetGoingUp();
+  void SetDesiredSetpoint();
   /**
- * @brief Sets the elevator state to moving down.
+ * @brief Sets the next current position of the elevator.
  *
- * This function clears the current moving type state of the elevator
- * and sets it to the "Down" state as defined in the elevatorConstants::State.
+ * This function updates the current position of the elevator based on the 
+ * direction specified by the parameter `isUpside`. If `isUpside` is true, 
+ * the position is incremented. If `isUpside` is false, the position is 
+ * decremented. The function ensures that the new position is within the 
+ * valid range defined by `elevatorConstants::State::L1` and 
+ * `elevatorConstants::State::L4`.
+ *
+ * @param isUpside A boolean indicating the direction to move the elevator.
+ *                 - true: Move the elevator up (increment position).
+ *                 - false: Move the elevator down (decrement position).
+ *
+ * @throws Assertion failure if the new position is out of the valid range.
  */
-  void SetGoingDown();
+  void SetNextCurrentPosition(bool isUpside);
   /**
   * @brief Updates the SmartDashboard with all the relevant information about the elevator (eg. encoder position, state, etc.)
   */
@@ -121,13 +105,29 @@ class Elevator : public frc2::SubsystemBase {
   rev::spark::SparkMax m_elevatorMotor{elevatorConstants::Motors::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_elevatorMotorConfig;
 
-  frc::AnalogInput m_TopHallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_TOP};
-  frc::AnalogInput m_MiddleHallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_MIDDLE};
-  frc::AnalogInput m_BottomHallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_BOTTOM};
+  //TODO : add verif Hall Fx later
+  // frc::AnalogInput m_stageL2HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L2};
+  // frc::AnalogInput m_stageL3HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L3};
   frc::Encoder m_ElevatorEncoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
+  frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
+  frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
 
   PidRBL m_pid{elevatorConstants::PID::KD, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
+  NdoubleRollingAverage m_EncoderDriftFilter{5};
+
   u_int32_t m_state;
+  u_int8_t m_counter;
+
+  double m_distanceEncoder[7][3]   // {min, max, setpoint}
+  {
+    {0.0, 0.5, 0.0},    // L1
+    {0.5, 1.0, 0.5},    // L1/L2
+    {1.0, 1.5, 1.0},    // L2
+    {1.5, 2.0, 1.5},    // L2/L3
+    {2.0, 2.5, 2.0},    // L3
+    {2.5, 3.0, 2.5},    // L3/L4
+    {3.0, 3.5, 3.0}     // L4
+  };
 };
 // 1 nibble par partie sur un total de 32 bits
 // 0000 0000 0000 0000 0000 0000 0000 1111 : Desired Position
