@@ -30,6 +30,7 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
+  frc::Joystick m_joystick{0};
   frc::XboxController m_xboxControllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
   frc2::JoystickButton m_L2{&m_xboxControllerCopilot, ControlPanelConstants::Button::L2};
   frc2::JoystickButton m_L3{&m_xboxControllerCopilot, ControlPanelConstants::Button::L3};

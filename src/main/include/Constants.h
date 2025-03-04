@@ -24,7 +24,7 @@ namespace elevatorConstants
         constexpr double VOLTAGE_COMPENSATION = 12.0;
         constexpr double CURRENT_LIMIT = 40.0;
         constexpr double RAMP_RATE = 0.2;
-        constexpr bool INVERTED = false;
+        constexpr bool INVERTED = true;
         constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
 
     }
@@ -43,7 +43,7 @@ namespace elevatorConstants
             constexpr int B_ID = 7;
             //TODO : Check these values
             constexpr double REDUCTION = 30.0/26.0;
-            constexpr double RADIUS = (3.60*3.0/M_PI)/2.0;
+            constexpr double RADIUS = (0.0360*3.0/M_PI)/2.0;
             constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
         }
         namespace LimitSwitch
@@ -54,10 +54,10 @@ namespace elevatorConstants
     }
     namespace PID {
         //TODO : Tune these values
-        constexpr double KP = 0.1;
+        constexpr double KP = 5.0;
         constexpr double KI = 0.0;
-        constexpr double KD = 0.0;
-        constexpr double TOLERANCE = 0.1;
+        constexpr double KD = 0.00;
+        constexpr double TOLERANCE = 0.000;
         constexpr double SETPOINT = 0.0;
     }
     namespace Speed {

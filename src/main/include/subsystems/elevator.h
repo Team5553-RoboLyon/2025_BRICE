@@ -25,6 +25,7 @@
 
 class Elevator : public frc2::SubsystemBase {
  public:
+  void Test(double value);
   Elevator();
   /**
  * @brief Selects the desired stage for the elevator and updates the state.
@@ -51,6 +52,7 @@ class Elevator : public frc2::SubsystemBase {
  */
   void Periodic() override;
 
+  void setSpeed(double speed);
  private:
   /**
  * @brief Updates the current position of the elevator based on the state of the limit switches and encoder distance.
@@ -70,7 +72,7 @@ class Elevator : public frc2::SubsystemBase {
    * 
    * @return The current height of the elevator based on the encoder input as a double.
    */
-  double GetHight();
+  double GetHeight();
   /**
  * @brief Sets the desired setpoint for the elevator based on the current state.
  *
@@ -112,7 +114,7 @@ class Elevator : public frc2::SubsystemBase {
   frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
   frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
 
-  PidRBL m_pid{elevatorConstants::PID::KD, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
+  PidRBL m_pid{elevatorConstants::PID::KP, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
   NdoubleRollingAverage m_EncoderDriftFilter{5};
 
   u_int32_t m_state;
@@ -126,7 +128,7 @@ class Elevator : public frc2::SubsystemBase {
     {1.5, 2.0, 1.5},    // L2/L3
     {2.0, 2.5, 2.0},    // L3
     {2.5, 3.0, 2.5},    // L3/L4
-    {3.0, 3.5, 3.0}     // L4
+    {3.0, 100, 3.0}     // L4
   };
 };
 // 1 nibble par partie sur un total de 32 bits
