@@ -41,6 +41,7 @@ namespace elevatorConstants
         {
             constexpr int A_ID = 6;
             constexpr int B_ID = 7;
+            constexpr bool REVERSED = true;
             //TODO : Check these values
             constexpr double REDUCTION = 30.0/26.0;
             constexpr double RADIUS = (0.0360*3.0/M_PI)/2.0;
@@ -57,7 +58,7 @@ namespace elevatorConstants
         constexpr double KP = 5.0;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
-        constexpr double TOLERANCE = 0.000;
+        constexpr double TOLERANCE = 0.0015;
         constexpr double SETPOINT = 0.0;
     }
     namespace Speed {

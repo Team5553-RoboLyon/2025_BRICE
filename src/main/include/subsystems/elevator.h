@@ -8,6 +8,7 @@
 #include <string>
 #include <cassert>
 #include <array>
+#include <iostream>
 
 #include <frc2/command/SubsystemBase.h>
 #include <frc/shuffleboard/Shuffleboard.h>
@@ -111,8 +112,8 @@ class Elevator : public frc2::SubsystemBase {
   // frc::AnalogInput m_stageL2HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L2};
   // frc::AnalogInput m_stageL3HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L3};
   frc::Encoder m_ElevatorEncoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
-  frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
-  frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
+  // frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
+  // frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
 
   PidRBL m_pid{elevatorConstants::PID::KP, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
   NdoubleRollingAverage m_EncoderDriftFilter{5};
@@ -122,13 +123,13 @@ class Elevator : public frc2::SubsystemBase {
 
   double m_distanceEncoder[7][3]   // {min, max, setpoint}
   {
-    {0.0, 0.5, 0.0},    // L1
-    {0.5, 1.0, 0.5},    // L1/L2
-    {1.0, 1.5, 1.0},    // L2
-    {1.5, 2.0, 1.5},    // L2/L3
-    {2.0, 2.5, 2.0},    // L3
-    {2.5, 3.0, 2.5},    // L3/L4
-    {3.0, 100, 3.0}     // L4
+    {0.0, 0.01, 0.006},      // L1 
+    {0.01, 0.08, 0.045},     // L1/L2
+    {0.08, 0.09, 0.085},     // L2
+    {0.09, 0.17, 0.13},      // L2/L3
+    {0.17, 0.18, 0.175},     // L3
+    {0.18, 0.24, 0.21},      // L3/L4
+    {0.24, 0.25, 0.243}      // L4 //max de 0.475
   };
 };
 // 1 nibble par partie sur un total de 32 bits
