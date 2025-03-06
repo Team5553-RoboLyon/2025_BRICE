@@ -13,8 +13,8 @@ namespace DeepClimbConstants {
     constexpr double REDUCTION = 10.0/3.0;
 
     namespace Motors {
-            constexpr int ID_FRONT = 5;
-            constexpr int ID_BACK = 6;
+            constexpr int ID_FRONT = 6;
+            constexpr int ID_BACK = 7;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
             constexpr bool INVERTED = false;
             constexpr int CURRENT_LIMIT = 40;
