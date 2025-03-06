@@ -62,7 +62,7 @@ namespace ControlPanelConstants {
     }
     namespace Settings{
         constexpr double DEADBAND = 0.08;
-        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(1.0);
-        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(1.0);
+        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(1.5);
+        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(1.5);
     }
 }
