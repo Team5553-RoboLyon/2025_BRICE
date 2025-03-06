@@ -24,6 +24,19 @@
 #include "lib/pid_rbl.h"
 #include "lib/NRollingAverage.h"
 
+#define SET_UPPER_ELEVATOR_POSITION(state) \
+    ([&]() { \
+        int i = GET_ELEVATOR_CURRENT_POSITION(state) + 1; \
+        assert(i <= elevatorConstants::State::L4 && "void Elevator::SET_UPPER_ELEVATOR_POSITION -> current position not found or impossible"); \
+        return SET_ELEVATOR_CURRENT_POSITION(state, i); \
+    })()
+#define SET_LOWER_ELEVATOR_POSITION(state) \
+    ([&]() { \
+        int i = GET_ELEVATOR_CURRENT_POSITION(state) - 1; \
+        assert(i >= elevatorConstants::State::L1 && "void Elevator::SET_LOWER_ELEVATOR_POSITION -> current position not found or impossible"); \
+        return SET_ELEVATOR_CURRENT_POSITION(state, i); \
+    })()
+
 class Elevator : public frc2::SubsystemBase {
  public:
   void Test(double value);
@@ -46,34 +59,14 @@ class Elevator : public frc2::SubsystemBase {
  * @brief Periodically updates the state of the elevator subsystem.
  * 
  * This function is called periodically and performs the following tasks:
+ * - Saves the sensor values.
  * - Updates the current position of the elevator.
- * - Update the moving type.
- * - Executes the movement task based on the current state and the desired state.
+ * - Updates Machine State.
+ * - Executes the movement task.
  * - Updates the dashboard.
  */
   void Periodic() override;
-
-  void setSpeed(double speed);
- private:
-  /**
- * @brief Updates the current position of the elevator based on the state of the limit switches and encoder distance.
- * 
- * This function checks the state of the bottom and top limit switches to determine if the elevator is at its lowest
- * or highest position, respectively. If neither limit switch is triggered, it iterates through predefined encoder
- * distance ranges to set the current position of the elevator based on the encoder's distance reading.
- */
-  void ActualizeCurrentPosition();
-  /**
- * @brief Executes the dynamic task for controlling the elevator motor.
- */
-  void ExecuteTask();
-
-  /**
-   * @brief Retrieves the current height of the elevator.
-   * 
-   * @return The current height of the elevator based on the encoder input as a double.
-   */
-  double GetHeight();
+  private:
   /**
  * @brief Sets the desired setpoint for the elevator based on the current state.
  *
@@ -85,51 +78,42 @@ class Elevator : public frc2::SubsystemBase {
  */
   void SetDesiredSetpoint();
   /**
- * @brief Sets the next current position of the elevator.
- *
- * This function updates the current position of the elevator based on the 
- * direction specified by the parameter `isUpside`. If `isUpside` is true, 
- * the position is incremented. If `isUpside` is false, the position is 
- * decremented. The function ensures that the new position is within the 
- * valid range defined by `elevatorConstants::State::L1` and 
- * `elevatorConstants::State::L4`.
- *
- * @param isUpside A boolean indicating the direction to move the elevator.
- *                 - true: Move the elevator up (increment position).
- *                 - false: Move the elevator down (decrement position).
- *
- * @throws Assertion failure if the new position is out of the valid range.
- */
-  void SetNextCurrentPosition(bool isUpside);
-  /**
   * @brief Updates the SmartDashboard with all the relevant information about the elevator (eg. encoder position, state, etc.)
   */
   void Dashboard();
   rev::spark::SparkMax m_elevatorMotor{elevatorConstants::Motors::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_elevatorMotorConfig;
 
-  //TODO : add verif Hall Fx later
-  // frc::AnalogInput m_stageL2HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L2};
-  // frc::AnalogInput m_stageL3HallEffectSensor{elevatorConstants::Sensor::HallEffect::ID_L3};
-  frc::Encoder m_ElevatorEncoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
-  // frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
-  // frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
+  frc::Encoder m_elevatorEncoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
+  frc::DigitalInput m_elevatorBottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};
+  frc::DigitalInput m_elevatorTopLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
 
-  PidRBL m_pid{elevatorConstants::PID::KP, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
-  NdoubleRollingAverage m_EncoderDriftFilter{5};
+  PidRBL m_elevatorPID{elevatorConstants::PID::KP, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
+  // NdoubleRollingAverage m_EncoderDriftFilter{5};
 
   u_int32_t m_state;
   u_int8_t m_counter;
+  bool m_isTopLimitSwitchTriggered;
+  bool m_isBottomLimitSwitchTriggered;
+  double m_elevatorHeight;
 
-  double m_distanceEncoder[7][3]   // {min, max, setpoint}
+  double elevatorPositionMapping[7][3]   // {min, max, setpoint}
   {
     {0.0, 0.01, 0.006},      // L1 
     {0.01, 0.08, 0.045},     // L1/L2
     {0.08, 0.09, 0.085},     // L2
     {0.09, 0.17, 0.13},      // L2/L3
     {0.17, 0.18, 0.175},     // L3
-    {0.18, 0.24, 0.21},      // L3/L4
-    {0.24, 0.25, 0.243}      // L4 //max de 0.475
+    {0.18, 0.46, 0.21},      // L3/L4
+    {0.46, 0.47, 0.465}      // L4 //max de 0.475
+
+    // {0.0, 0.01, 0.},      // L1 
+    // {0.01, 0.08, 0.},     // L1/L2
+    // {0.08, 0.09, 0.},     // L2
+    // {0.09, 0.17, 0.},      // L2/L3
+    // {0.17, 0.18, 0.},     // L3
+    // {0.18, 0.24, 0.},      // L3/L4
+    // {0.24, 0.25, 0.}      // L4
   };
 };
 // 1 nibble par partie sur un total de 32 bits

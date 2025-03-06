@@ -21,12 +21,11 @@ namespace elevatorConstants
     namespace Motors
     {
         constexpr int ID = 8;
-        constexpr double VOLTAGE_COMPENSATION = 12.0;
+        constexpr double VOLTAGE_COMPENSATION = 10.0;
         constexpr double CURRENT_LIMIT = 40.0;
         constexpr double RAMP_RATE = 0.2;
         constexpr bool INVERTED = true;
         constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-
     }
     namespace Sensor
     {
@@ -51,14 +50,15 @@ namespace elevatorConstants
         {
             constexpr int BOTTOM_ID = 11;
             constexpr int TOP_ID = 12;
+            constexpr bool IS_TRIGGERED = true;
         }
     }
     namespace PID {
         //TODO : Tune these values
-        constexpr double KP = 5.0;
+        constexpr double KP = 7.0;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
-        constexpr double TOLERANCE = 0.0015;
+        constexpr double TOLERANCE = 0.001;
         constexpr double SETPOINT = 0.0;
     }
     namespace Speed {
@@ -70,23 +70,6 @@ namespace elevatorConstants
         constexpr uint16_t maskDesiredPosition = 0xF;      // 0000 0000 0000 0000 0000 0000 0000 1111
         constexpr uint16_t maskCurrentPosition = 0xF << 4; // 0000 0000 0000 0000 0000 0000 1111 0000
         constexpr uint16_t maskMovingType = 0xF << 8;      // 0000 0000 0000 0000 0000 1111 0000 0000
-
-        // constexpr uint16_t m_L1Desired =  0b0000;
-        // constexpr uint16_t m_L2Desired =  0b0010;
-        // constexpr uint16_t m_L3Desired =  0b0100;
-        // constexpr uint16_t m_L4Desired =  0b0110;
-
-        // constexpr uint16_t m_AtL1 =      0b0000   << 4;
-        // constexpr uint16_t m_AtL1L2 =    0b0001   << 4;
-        // constexpr uint16_t m_AtL2 =      0b0010   << 4;
-        // constexpr uint16_t m_AtL2L3 =    0b0011   << 4;
-        // constexpr uint16_t m_AtL3 =      0b0100   << 4;
-        // constexpr uint16_t m_AtL3L4 =    0b0101   << 4;
-        // constexpr uint16_t m_AtL4 =      0b0110   << 4;
-
-        // constexpr uint16_t Rest =         0b0000   << 8;
-        // constexpr uint16_t Up =           0b0001   << 8;
-        // constexpr uint16_t Down =        0b0010    << 8;
 
         constexpr uint16_t L1 =      0b0000;
         constexpr uint16_t L1L2 =    0b0001;
@@ -113,7 +96,7 @@ namespace elevatorConstants
     #define SET_ELEVATOR_DESIRED_POSITION(bits, setValue) ((((bits) & (~elevatorConstants::State::maskDesiredPosition)) | (setValue)))
     #define SET_ELEVATOR_CURRENT_POSITION(bits, setValue) ((((bits) & (~elevatorConstants::State::maskCurrentPosition)) | ((setValue) <<4)))
     #define SET_ELEVATOR_MOVING_TYPE(bits, setValue) ((((bits) & (~elevatorConstants::State::maskMovingType)) | ((setValue) << 8)))
-    #define SET_ELEVATOR_REST_AT_POSITION(setValue) (MAKE_ELEVATOR_STATE((setValue), (setValue), elevatorConstants::State::Rest))
+    #define SET_ELEVATOR_REST_AT_POSITION(bits, setValue) (MAKE_ELEVATOR_STATE((GET_ELEVATOR_DESIRED_POSITION(bits)), (setValue), (elevatorConstants::State::Rest)))
 
     // inline double ELEVATOR_SLOWER(double value) {
     //     return 1.0 - ((value - elevatorConstants::Sensor::HallEffect::THRESHOLD) / 2.0);

@@ -17,13 +17,13 @@ Elevator::Elevator(){ //ok
                 rev::spark::SparkBase::ResetMode::kResetSafeParameters,
                 rev::spark::SparkBase::PersistMode::kNoPersistParameters);
 
-    m_ElevatorEncoder.Reset();
-    m_ElevatorEncoder.SetDistancePerPulse(elevatorConstants::Sensor::Encoder::DISTANCE_PER_PULSE);
-    m_ElevatorEncoder.SetReverseDirection(elevatorConstants::Sensor::Encoder::REVERSED);
+    m_elevatorEncoder.Reset();
+    m_elevatorEncoder.SetDistancePerPulse(elevatorConstants::Sensor::Encoder::DISTANCE_PER_PULSE);
+    m_elevatorEncoder.SetReverseDirection(elevatorConstants::Sensor::Encoder::REVERSED);
 
-    m_pid.SetTolerance(elevatorConstants::PID::TOLERANCE);
-    m_pid.Reset(elevatorConstants::PID::SETPOINT);
-    m_pid.SetOutputLimits(elevatorConstants::Speed::MIN_SPEED, elevatorConstants::Speed::MAX_SPEED);
+    m_elevatorPID.SetTolerance(elevatorConstants::PID::TOLERANCE);
+    m_elevatorPID.Reset(elevatorConstants::PID::SETPOINT);
+    m_elevatorPID.SetOutputLimits(elevatorConstants::Speed::MIN_SPEED, elevatorConstants::Speed::MAX_SPEED);
 
     // Set the Initial State to rest postion at L1
     m_state = MAKE_ELEVATOR_STATE(elevatorConstants::State::L1, elevatorConstants::State::L1, elevatorConstants::State::Rest);
@@ -57,8 +57,28 @@ void Elevator::SelectWantedStage(u_int16_t stage) {
 }
 
 void Elevator::Periodic() {
-  ActualizeCurrentPosition();
+  // ----------------- Save sensors value -----------------
+  m_isBottomLimitSwitchTriggered = m_elevatorBottomLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED;
+  m_isTopLimitSwitchTriggered = m_elevatorTopLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED; 
+  m_elevatorHeight = (m_elevatorEncoder.GetDistance() /*- m_EncoderDriftFilter.get()*/);
+    assert((m_elevatorHeight >= elevatorPositionMapping[0][0] && m_elevatorHeight <= elevatorPositionMapping[6][1])&& "distance is out of range");
+    
+  // ----------------- Actualize current Position -----------------
+  // Updates the current position of the elevator based on the state of the limit switches and encoder distance.
+  if(m_isBottomLimitSwitchTriggered)
+    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L1);
+  else if(m_isTopLimitSwitchTriggered)
+    m_state = SET_ELEVATOR_REST_AT_POSITION(m_state, elevatorConstants::State::L4);
+  else {
+      for (u_int i = 0; i < std::size(elevatorPositionMapping); i++) {
+        if (m_elevatorHeight >= elevatorPositionMapping[i][0] && m_elevatorHeight <= elevatorPositionMapping[i][1]) {
+          m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
+          break;
+        }
+      }
+  }
 
+  // ----------------- Updates Machine State -----------------
   switch (GET_ELEVATOR_MOVING_TYPE(m_state)) {
     case elevatorConstants::State::Rest:
       if(GET_ELEVATOR_CURRENT_POSITION(m_state) == GET_ELEVATOR_DESIRED_POSITION(m_state)) {
@@ -67,12 +87,12 @@ void Elevator::Periodic() {
       else if(GET_ELEVATOR_CURRENT_POSITION(m_state) < GET_ELEVATOR_DESIRED_POSITION(m_state)) {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Up);
         SetDesiredSetpoint();
-        SetNextCurrentPosition(true);
+        m_state = SET_UPPER_ELEVATOR_POSITION(m_state);
       }
       else /*if(GET_ELEVATOR_CURRENT_POSITION(m_state) > GET_ELEVATOR_DESIRED_POSITION(m_state))*/ {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Down);
         SetDesiredSetpoint();
-        SetNextCurrentPosition(false);
+        m_state = SET_LOWER_ELEVATOR_POSITION(m_state);
       }
       break;
     case elevatorConstants::State::Up:
@@ -83,7 +103,7 @@ void Elevator::Periodic() {
       else if(GET_ELEVATOR_CURRENT_POSITION(m_state) > GET_ELEVATOR_DESIRED_POSITION(m_state)) {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Down);
         SetDesiredSetpoint();
-        SetNextCurrentPosition(false);
+        m_state = SET_LOWER_ELEVATOR_POSITION(m_state);
       }
       break;
     case elevatorConstants::State::Down:
@@ -94,80 +114,39 @@ void Elevator::Periodic() {
       else if(GET_ELEVATOR_CURRENT_POSITION(m_state) < GET_ELEVATOR_DESIRED_POSITION(m_state)) {
         m_state = SET_ELEVATOR_MOVING_TYPE(m_state, elevatorConstants::State::Up);
         SetDesiredSetpoint();
-        SetNextCurrentPosition(true);
+        m_state = SET_UPPER_ELEVATOR_POSITION(m_state);
       }
       break;
   default:
-    // assert(false && "void Elevator::Periodic() -> moving type undefined");
+    assert(false && "void Elevator::Periodic() -> moving type undefined");
     break;
   }
 
-  // ----------------- Movement -----------------
-  ExecuteTask();
+  // ----------------- Dynamic -----------------
+  // Executes the dynamic task for controlling the elevator motor.
+  assert(m_elevatorHeight > -0.00025 && "descente non voulue");
+  double output = m_elevatorPID.Calculate(m_elevatorHeight);
+  if(m_elevatorBottomLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED && output < 0.0)
+    output = 0.0;
+  else if(m_elevatorTopLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED && output > 0.0)
+    output = 0.0;
+  m_elevatorMotor.Set(output);
   Dashboard();
-}
-void Elevator::ActualizeCurrentPosition() {
-  // if(!m_bottomLimitSwitch.Get())
-  //   m_state = SET_ELEVATOR_REST_AT_POSITION(elevatorConstants::State::L1);
-  // else if(!m_topLimitSwitch.Get())
-  //   m_state = SET_ELEVATOR_REST_AT_POSITION(elevatorConstants::State::L4);
-  // else {
-      for (u_int i = 0; i < std::size(m_distanceEncoder); i++) {
-        if (GetHeight() >= m_distanceEncoder[i][0] && GetHeight() <= m_distanceEncoder[i][1]) {
-          m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
-          break;
-        }
-      }
-  // }
-}
-void Elevator::Test(double value) {
-  // //test 1
-  setSpeed(value);
-  frc::SmartDashboard::SmartDashboard::PutNumber("j", value);
-}
-void Elevator::setSpeed(double speed) {
-  if(GetHeight() < -0.05) {
-        m_elevatorMotor.Set(0);
-    assert(false && "descente non voulu");
-   }
-  else 
-    m_elevatorMotor.Set(speed);
-  frc::SmartDashboard::PutNumber("sortie moteur",speed);
-}
-void Elevator::ExecuteTask() {
-  //motion profile
-  setSpeed(m_pid.Calculate(GetHeight()));
-}
-double Elevator::GetHeight() {
-  double result = (m_ElevatorEncoder.GetDistance() /*- m_EncoderDriftFilter.get()*/);
-  assert((result >= m_distanceEncoder[0][0] && result <= m_distanceEncoder[6][1])&& "distance is out of range");
-  return result;
 }
 void Elevator::SetDesiredSetpoint() {
     int i = GET_ELEVATOR_DESIRED_POSITION(m_state);
     assert(!IS_TRANSITION_POSITION(i) && "void Elevator::SetDesiredSetpoint() -> desired position not found");
-    m_pid.SetSetpoint(m_distanceEncoder[i][2]);
+    m_elevatorPID.SetSetpoint(elevatorPositionMapping[i][2]);
   }
-void Elevator::SetNextCurrentPosition(bool isUpside) {
-  if(isUpside) {
-      int i = GET_ELEVATOR_CURRENT_POSITION(m_state) +1;
-      assert(i <= elevatorConstants::State::L4 && "void Elevator::SetNextCurrentPosition() -> current position not found or impossible");
-      m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
-    }
-  else {
-      int i = GET_ELEVATOR_CURRENT_POSITION(m_state) -1;
-      assert(i >= elevatorConstants::State::L1 && "void Elevator::SetNextCurrentPosition() -> current position not found or impossible");
-      m_state = SET_ELEVATOR_CURRENT_POSITION(m_state, i);
-    } 
-}
 void Elevator::Dashboard() {
   frc::SmartDashboard::PutString("binary state", std::bitset<12>(m_state).to_string());
-  frc::SmartDashboard::PutNumber("Elevator Encoder", GetHeight());
+  frc::SmartDashboard::PutNumber("Elevator Encoder", m_elevatorHeight);
   frc::SmartDashboard::PutNumber("Elevator Current", m_elevatorMotor.GetOutputCurrent());
   // frc::SmartDashboard::PutNumber("Elevator L2 Hall Effect", m_stageL2HallEffectSensor.GetVoltage());
   // frc::SmartDashboard::PutNumber("Elevator L3 Hall Effect", m_stageL3HallEffectSensor.GetVoltage());
-  // frc::SmartDashboard::PutBoolean("Elevator Bottom Limit Switch", !m_bottomLimitSwitch.Get());
-  // frc::SmartDashboard::PutBoolean("Elevator Top Limit Switch", !m_topLimitSwitch.Get());
+  frc::SmartDashboard::PutBoolean("Elevator Bottom Limit Switch", m_elevatorBottomLimitSwitch.Get());
+  frc::SmartDashboard::PutBoolean("Elevator Top Limit Switch", m_elevatorTopLimitSwitch.Get());
+  frc::SmartDashboard::PutNumber("sortie moteur",m_elevatorMotor.Get());
   switch (GET_ELEVATOR_DESIRED_POSITION(m_state))
   {
   case elevatorConstants::State::L1:

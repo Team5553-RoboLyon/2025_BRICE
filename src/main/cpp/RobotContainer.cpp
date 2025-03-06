@@ -8,10 +8,7 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
-  // m_elevator.SetDefaultCommand(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L1).ToPtr());
-  // m_elevator.SetDefaultCommand(frc2::InstantCommand([this] {
-  //   m_elevator.Test((m_joystick.GetY()/2.0));
-  // }, {&m_elevator}));
+  m_elevator.SetDefaultCommand(MoveElevatorToLevel(&m_elevator, elevatorConstants::State::L1).ToPtr());
 }
 
 void RobotContainer::ConfigureBindings() {
