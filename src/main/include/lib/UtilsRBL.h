@@ -39,7 +39,7 @@
                                             (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : \
                                             (std::fmod((angle_rad), NF64_2PI)))
 
-#define PERCENTAGE_TO_RATE_LIMITER(percentage) ((NABS(percentage) * 0.5)/ 100.0)
+#define TIME_TO_REACH_MAX(time) (0.02 / (time)) // from time to reach max to rate limiter
 // ########################## table de  bites ##########################
 #define BITSET(val, bit_id) ((val) |= (1 << (bit_id)))
 #define BITCLEAR(val, bit_id) ((val) &= ~(1 << (bit_id)))
