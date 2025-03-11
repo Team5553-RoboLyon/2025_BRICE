@@ -35,7 +35,7 @@
 #define NCLAMP(mn, a, mx) (((a) < (mn)) ? (mn) : ((a) > (mx)) ? (mx) \
                                                               : (a))
 #define NLERP(a, b, t) (a + (b - a) * t)
-#define NORMALIZE_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? \
+#define WRAP_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? \
                                             (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : \
                                             (std::fmod((angle_rad), NF64_2PI)))
 

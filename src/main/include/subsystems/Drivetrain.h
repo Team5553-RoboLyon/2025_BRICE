@@ -92,6 +92,8 @@ class Drivetrain : public frc2::SubsystemBase {
 
   void Periodic() override;
 
+  bool slower = false;
+
  private:
   //Definition of the motors
   rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};

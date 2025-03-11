@@ -16,7 +16,7 @@ namespace DriveConstants {
             constexpr int FRONT_MOTOR_ID = 2;
             constexpr int BACK_MOTOR_ID = 3;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = true;
+            constexpr bool MOTOR_INVERTED = false;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
@@ -25,7 +25,7 @@ namespace DriveConstants {
         namespace Encoder{
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
-            constexpr bool REVERSE_ENCODER = false;
+            constexpr bool REVERSE_ENCODER = true;
             constexpr double DISTANCE_PER_PULSE = 2048.0;
         }
         constexpr bool WHEEL_SIDE = true;
@@ -59,9 +59,11 @@ namespace ControlPanelConstants {
     }
     namespace Button {
         constexpr int REVERSED_DRIVE_BUTTON = 1;
+        constexpr int SLOW_DRIVE_BUTTON = 1;
     }
     namespace Settings{
-        constexpr double DEADBAND = 0.08;
+        constexpr double SLOW_RATE = 2.0;
+        constexpr double DEADBAND = 0.1;
         constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(1.5);
         constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(1.5);
     }
