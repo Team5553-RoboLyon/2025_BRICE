@@ -4,13 +4,13 @@
 double RateLimiter::Update(double target) { // on update le current
    m_target = target; 
 
-   if(m_current < m_target - m_speed) // si le current est plus petit que le target - la vitesse
+   if(m_current < m_target - m_speedUp) // si le current est plus petit que le target - la vitesse
    {
-        m_current += m_speed; // on ajoute la vitesse au current
+        m_current += m_speedUp; // on ajoute la vitesse au current
    }
-   else if (m_current > m_target + m_speed) // si le current est plus grand que le target + la vitesse
+   else if (m_current > m_target + m_speedDown) // si le current est plus grand que le target + la vitesse
    {
-        m_current -= m_speed; // on enleve la vitesse au current
+        m_current -= m_speedDown; // on enleve la vitesse au current
    }
    else
    {
@@ -20,13 +20,13 @@ double RateLimiter::Update(double target) { // on update le current
 }
 
 double RateLimiter::Update() {
-   if(m_current < m_target - m_speed) // si le current est plus petit que le target - la vitesse
+   if(m_current < m_target - m_speedUp) // si le current est plus petit que le target - la vitesse
    {
-        m_current += m_speed; // on ajoute la vitesse au current
+        m_current += m_speedUp; // on ajoute la vitesse au current
    }
-   else if (m_current > m_target + m_speed) // si le current est plus grand que le target + la vitesse
+   else if (m_current > m_target + m_speedDown) // si le current est plus grand que le target + la vitesse
    {
-        m_current -= m_speed; // on enleve la vitesse au current
+        m_current -= m_speedDown; // on enleve la vitesse au current
    }
    else
    {
@@ -43,13 +43,26 @@ void RateLimiter::SetCurrent(double current) { // on set le current
 }
 
 void RateLimiter::SetSpeed (double speed) { // on set la vitesse
-  m_speed = speed;
+  m_speedDown = speed;
+  m_speedUp = speed;
+}
+void RateLimiter::SetSpeed(double speedUp, double speedDown) {
+     m_speedUp = speedUp;
+     m_speedDown = speedDown;
 }
 
 void RateLimiter::Reset(double target, double current, double speed) { // on reset tout
   m_target = target;
   m_current = current;
-  m_speed = speed;
+  m_speedUp = speed;
+  m_speedDown = speed;
+}
+ 
+void RateLimiter::Reset(double target, double current, double speedUp, double speedDown) {
+     m_target = target;
+     m_current = current;
+     m_speedDown = speedDown;
+     m_speedUp = speedUp;
 }
 
 // void RateLimiter::SetRecul(double current, double speed_1, double speed_2) { // on set le recul
