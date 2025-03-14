@@ -47,8 +47,9 @@ namespace ManipulatorConstants
         //     constexpr double SETPOINT = 0.0;
         // }
         namespace Speed {
-            constexpr double UP = 0.5;
-            constexpr double DOWN = -0.5;
+            constexpr double UP = 0.4;
+            constexpr double DOWN = -0.4;
+            constexpr double CALIBRATION = -0.3;
             constexpr double REST = 0.0;
         }
         namespace State {
@@ -93,8 +94,8 @@ namespace ManipulatorConstants
             constexpr double SETPOINT = 0.0;
         }
         namespace Speed {
-            constexpr double MAX = 0.5;
-            constexpr double MIN = -0.5;
+            constexpr double MAX = 0.3;
+            constexpr double MIN = -0.3;
             constexpr double REST = 0.0;
         }
         namespace State {
@@ -176,8 +177,8 @@ namespace DriveConstants {
         namespace Encoder{
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
-            constexpr bool REVERSE_ENCODER = true; // TODO : check sens
-            constexpr double DISTANCE_PER_PULSE = 2048.0;
+            constexpr bool REVERSE_ENCODER = true; 
+            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION;
         }
         constexpr bool WHEEL_SIDE = true;
     }
@@ -187,7 +188,7 @@ namespace DriveConstants {
             constexpr int FRONT_MOTOR_ID = 4;
             constexpr int BACK_MOTOR_ID = 5;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = false;
+            constexpr bool MOTOR_INVERTED = true;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
@@ -197,7 +198,7 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 2;
             constexpr int ID_ENCODER_B = 3;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 2048.0; // TODO : set appropriate distance
+            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION; // TODO : set appropriate distance
         }
         constexpr bool WHEEL_SIDE = false;
     }
@@ -224,8 +225,9 @@ namespace ControlPanelConstants {
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;
-        constexpr double DEADBAND = 0.1;
-        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(1.5);
-        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(1.5);
+        constexpr double DEADBAND = 0.17;
+        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(0.45);
+        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(0.7
+        );
     }
 }

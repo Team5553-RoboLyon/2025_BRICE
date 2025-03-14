@@ -36,8 +36,8 @@ class RobotContainer {
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
   frc::XboxController m_xboxControllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
-  frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
-  frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
+  frc2::JoystickButton m_SlowDriveButton{&m_joystickForward, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
+  frc2::JoystickButton m_ReversedDriveButton{&m_joystickRotation, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
 
   frc2::JoystickButton m_L2{&m_xboxControllerCopilot, ControlPanelConstants::Button::L2};
   frc2::JoystickButton m_L3{&m_xboxControllerCopilot, ControlPanelConstants::Button::L3};

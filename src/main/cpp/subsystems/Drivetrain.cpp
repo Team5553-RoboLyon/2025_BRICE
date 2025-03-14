@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "subsystems/Drivetrain.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 Drivetrain::Drivetrain() {
     // Set the back left motor configs
@@ -50,6 +51,8 @@ void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
 
 void Drivetrain::DriveAuto(double speed, double rotation)
 {
+    // m_MotorBackLeft.Set(speed);
+    // m_MotorBackRight.Set(speed);
     m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::LeftGearbox::WHEEL_SIDE));
     m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::RightGearbox::WHEEL_SIDE));
 }
@@ -76,6 +79,17 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
     }
     m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::LeftGearbox::WHEEL_SIDE));
     m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::RightGearbox::WHEEL_SIDE));
+    frc::SmartDashboard::PutNumber("Back left", m_MotorBackLeft.Get());
+    frc::SmartDashboard::PutNumber("back right", m_MotorBackRight.Get());
+    frc::SmartDashboard::PutNumber("front left", m_MotorFrontLeft.Get());
+    frc::SmartDashboard::PutNumber("front right", m_MotorFrontRight.Get());
+
+    frc::SmartDashboard::PutNumber("encoder left", m_EncoderLeft.GetDistance());
+    frc::SmartDashboard::PutNumber("encoder right", m_EncoderRight.GetDistance());
+
+    frc::SmartDashboard::PutBoolean("reversed drive", m_reversedDrive);
+    frc::SmartDashboard::PutBoolean("slower", slower);
+    frc::SmartDashboard::PutNumber("sigma", m_sigma);
 }
 
 

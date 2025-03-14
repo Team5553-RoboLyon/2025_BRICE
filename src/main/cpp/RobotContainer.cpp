@@ -20,7 +20,7 @@ void RobotContainer::ConfigureBindings() {
   m_SlowDriveButton.WhileTrue(frc2::InstantCommand([this] {m_drivetrain.slower = true;}).ToPtr());
   m_SlowDriveButton.WhileFalse(frc2::InstantCommand([this] {m_drivetrain.slower = false;}).ToPtr());
 
-  m_L2.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L2,   [=]{ return m_Gripper.Get();}).ToPtr());
+  // m_L2.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L2,   [=]{ return m_Gripper.Get();}).ToPtr()); DO NOT USE THIS
   m_L3.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L3,   [=]{ return m_Gripper.Get();}).ToPtr());
   m_L4.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L4,   [=]{ return m_Gripper.Get();}).ToPtr());
   m_CoralStation.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::CoralStation, [=]{ return m_Gripper.Get();}).ToPtr());

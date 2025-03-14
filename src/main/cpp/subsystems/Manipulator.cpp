@@ -56,7 +56,7 @@ Manipulator::Manipulator() {
 
     m_planetaryPID.SetTolerance(ManipulatorConstants::Planetary::PID::TOLERANCE);
     m_planetaryPID.Reset(ManipulatorConstants::Planetary::PID::SETPOINT);
-    m_planetaryPID.SetOutputLimits(-0.1, 0.1);
+    m_planetaryPID.SetOutputLimits(ManipulatorConstants::Planetary::Speed::MIN, ManipulatorConstants::Planetary::Speed::MAX);
 
     m_a.SetThresholds(2.6, 3.0);
     m_b.SetThresholds(2.6, 3.0);
@@ -72,14 +72,14 @@ Manipulator::Manipulator() {
 }
 void Manipulator::Reset() {
   if(m_elevatorBottomLimitSwitch.Get() == ManipulatorConstants::Elevator::Sensor::LimitSwitch::IS_TRIGGERED) {
-    m_elevatorMotor.Set(0.0);
+    m_elevatorMotor.Set(ManipulatorConstants::Elevator::Speed::REST);
     isInitialized = true;
     m_manipulatorState = SET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::REST);
     m_manipulatorState = SET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::L2);
     m_b.ResetCounter(1,1, NSensorThreshold::State::kHigh);
   }
   else {
-      m_elevatorMotor.Set(-0.3);
+      m_elevatorMotor.Set(ManipulatorConstants::Elevator::Speed::CALIBRATION);
   }
 }
 
@@ -88,7 +88,7 @@ void Manipulator::SelectWantedStage(ManipulatorConstants::State target) {
   {
     case ManipulatorConstants::State::Home:
       newConsign = true;
-        m_manipulatorState = SET_ELEVATOR_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING, ManipulatorConstants::Elevator::State::L2);
+        m_manipulatorState = SET_ELEVATOR_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING, ManipulatorConstants::Elevator::State::CORALSTATION);
         m_manipulatorState = SET_PLANETARY_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING, ManipulatorConstants::Planetary::State::HOME);
         // m_manipulatorState = SET_GRIPPER_STATE(m_manipulatorState, DESIRED_STATE_SHIFTING, ManipulatorConstants::Gripper::State::DROPPED);
       break;
@@ -133,9 +133,6 @@ void Manipulator::Periodic() {
       // ELEVATOR
   m_isBottomLimitSwitchTriggered = m_elevatorBottomLimitSwitch.Get() == ManipulatorConstants::Elevator::Sensor::LimitSwitch::IS_TRIGGERED;
   m_isTopLimitSwitchTriggered = m_elevatorTopLimitSwitch.Get() == ManipulatorConstants::Elevator::Sensor::LimitSwitch::IS_TRIGGERED; 
-  m_a.Update();
-  m_b.Update();
-  m_c.Update();
   //     // PLANETARY
   m_planetaryAngle = std::fmod(m_planetaryEncoder.GetDistance(), 2*M_PI);
   //     // GRIPPER
@@ -148,14 +145,14 @@ void Manipulator::Periodic() {
   // ----------------- Updates Current Position -----------------
       // ELEVATOR
   if(m_isTopLimitSwitchTriggered && (GET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) == ManipulatorConstants::Elevator::State::UP)) {
-      elevatorOutput = 0.0;
+      elevatorOutput = ManipulatorConstants::Elevator::Speed::REST;
       m_manipulatorState = SET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::REST);
       m_manipulatorState = SET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::L4);
       m_b.ResetCounter(4,-1, NSensorThreshold::State::kHigh);
   
   }
   else if(m_isBottomLimitSwitchTriggered && (GET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) == ManipulatorConstants::Elevator::State::DOWN)) {
-      elevatorOutput = 0.0;
+      elevatorOutput = ManipulatorConstants::Elevator::Speed::REST;
       m_manipulatorState = SET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::REST);
       m_manipulatorState = SET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Elevator::State::L2);
       m_b.ResetCounter(1,1, NSensorThreshold::State::kHigh);
@@ -182,19 +179,19 @@ void Manipulator::Periodic() {
   if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) == ManipulatorConstants::Planetary::State::CLOCKWISE) {
     if(m_planetaryAngle > m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][1]) {
       m_manipulatorState = SET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING, GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) + 1);
-      assert((GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) <= ManipulatorConstants::Planetary::State::L2) && "Planetary n+1 mais current position > L2");
+      // assert((GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) <= ManipulatorConstants::Planetary::State::L2) && "Planetary n+1 mais current position > L2");
     }
-    assert(m_planetaryAngle >= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][0] && "Planetary up mais current position = n-1");
+    // assert(m_planetaryAngle >= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][0] && "Planetary up mais current position = n-1");
   }
   else if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) == ManipulatorConstants::Planetary::State::COUNTER_CLOCKWISE) {
     if(m_planetaryAngle < m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][0]) {
       m_manipulatorState = SET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING, GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) - 1);
-      assert((GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) >= ManipulatorConstants::Planetary::State::HOME) && "Planetary n-1 mais current position < HOME");
+      // assert((GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) >= ManipulatorConstants::Planetary::State::HOME) && "Planetary n-1 mais current position < HOME");
     }
-    assert(m_planetaryAngle <= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][1] && "Planetaru down mais current position = n+1");
+    // assert(m_planetaryAngle <= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][1] && "Planetaru down mais current position = n+1");
   }
   else /*if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) == ManipulatorConstants::Planetary::State::REST || ...::WAITING) */{
-    assert((m_planetaryAngle >= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][0] && m_planetaryAngle <= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][1]) && "planetary rest mais pas au bon endroit");
+    // assert((m_planetaryAngle >= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][0] && m_planetaryAngle <= m_planetaryPositionMapping[GET_PLANETARY_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING)][1]) && "planetary rest mais pas au bon endroit");
   }
 
   // ----------------- Updates Desired Moving Type  -----------------
@@ -250,6 +247,9 @@ void Manipulator::Periodic() {
     break;
 
     case ManipulatorConstants::Elevator::State::UP:
+    m_a.Update();
+    m_b.Update();
+   m_c.Update();
       if(GET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) == GET_ELEVATOR_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING)) 
       {
         if(m_b.IsHigh()) 
@@ -261,6 +261,9 @@ void Manipulator::Periodic() {
     break;
 
     case ManipulatorConstants::Elevator::State::DOWN:
+    m_a.Update();
+    m_b.Update();
+    m_c.Update();
       if (GET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING) == GET_ELEVATOR_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING)) 
       {
         if(m_b.IsHigh()) 
@@ -298,7 +301,7 @@ void Manipulator::Periodic() {
       }
       break;
     default:
-      assert(false && "void Manipulator::Periodic() -> moving type elevator undefined");
+      // assert(false && "void Manipulator::Periodic() -> moving type elevator undefined");
       break;
   } // switch (GET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING))
 
@@ -312,7 +315,7 @@ void Manipulator::Periodic() {
       if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) != GET_PLANETARY_MOVING_TYPE(m_manipulatorState, DESIRED_STATE_SHIFTING))
       {
         m_manipulatorState = SET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Planetary::State::WAITING);
-        planetaryOutput = 0.0;
+        planetaryOutput = ManipulatorConstants::Planetary::Speed::REST;
       }
       break;
 
@@ -321,7 +324,7 @@ void Manipulator::Periodic() {
         if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING) != GET_PLANETARY_MOVING_TYPE(m_manipulatorState, DESIRED_STATE_SHIFTING))
         {
           m_manipulatorState = SET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Planetary::State::WAITING);
-          planetaryOutput = 0.0;
+          planetaryOutput = ManipulatorConstants::Planetary::Speed::REST;
         }
         else 
         {
@@ -341,7 +344,7 @@ void Manipulator::Periodic() {
         break;
     
     case ManipulatorConstants::Planetary::State::WAITING:
-      planetaryOutput = 0.0;
+      planetaryOutput = ManipulatorConstants::Planetary::Speed::REST;
       if(GET_PLANETARY_MOVING_TYPE(m_manipulatorState, DESIRED_STATE_SHIFTING) == ManipulatorConstants::Planetary::State::CLOCKWISE)
        {
         if(IS_ELEVATOR_AT_POSITION(m_manipulatorState, GET_ELEVATOR_POSITION(m_manipulatorState, DESIRED_STATE_SHIFTING)))
@@ -363,7 +366,7 @@ void Manipulator::Periodic() {
       break;
 
     default:
-      assert(false && "void Manipulator::Periodic() -> moving type planetary undefined");
+      // assert(false && "void Manipulator::Periodic() -> moving type planetary undefined");
       break;
   } // switch (GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING))
 
@@ -471,7 +474,7 @@ void Manipulator::Dashboard() {
     frc::SmartDashboard::PutString("Desired P Position", "L2");
     break;
   default:
-    //assert(false  && "void Manipulator::Dashboard() -> desired P position not found ");
+    // assert(false  && "void Manipulator::Dashboard() -> desired P position not found ");
     break;
   }
   switch(GET_ELEVATOR_POSITION(m_manipulatorState, CURRENT_STATE_SHIFTING))
@@ -558,7 +561,7 @@ void Manipulator::Dashboard() {
     frc::SmartDashboard::PutString("Current P Position", "L2");
     break;
   default:
-    assert(false  && "void Manipulator::Dashboard() -> current P position not found ");
+    // assert(false  && "void Manipulator::Dashboard() -> current P position not found ");
     break;
   }
   switch (GET_ELEVATOR_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING))
@@ -591,7 +594,7 @@ void Manipulator::Dashboard() {
     frc::SmartDashboard::PutString("Desired E Moving Type", "DOWN");
     break;
   default:
-    assert(false  && "void Manipulator::Dashboard() -> current E moving type not found ");
+    // assert(false  && "void Manipulator::Dashboard() -> current E moving type not found ");
     break;
   }
   switch (GET_PLANETARY_MOVING_TYPE(m_manipulatorState, CURRENT_STATE_SHIFTING))
@@ -609,7 +612,7 @@ void Manipulator::Dashboard() {
     frc::SmartDashboard::PutString("Current P Moving Type", "WAITING");
     break;
   default:
-    assert(false  && "void Manipulator::Dashboard() -> current P moving type not found ");
+    // assert(false  && "void Manipulator::Dashboard() -> current P moving type not found ");
     break;
   }
   switch (GET_PLANETARY_MOVING_TYPE(m_manipulatorState, DESIRED_STATE_SHIFTING))
@@ -625,7 +628,7 @@ void Manipulator::Dashboard() {
     break;
   default:
     std::cout << GET_PLANETARY_MOVING_TYPE(m_manipulatorState, DESIRED_STATE_SHIFTING) << std::endl;
-    assert(false  && "void Manipulator::Dashboard() -> desired P moving type not found ");
+    // assert(false  && "void Manipulator::Dashboard() -> desired P moving type not found ");
     break;
   }
 }

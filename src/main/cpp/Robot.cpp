@@ -5,6 +5,7 @@
 #include "Robot.h"
 
 #include <frc2/command/CommandScheduler.h>
+#include <iostream>
 
 Robot::Robot() {}
 
@@ -28,9 +29,19 @@ void Robot::AutonomousInit() {
   }
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  // if(count< 1000) {
+  //   m_container.m_drivetrain.DriveAuto(0.25, 0.0);
+  //   count++;
+  // }
+  // else {
+  //     m_container.m_drivetrain.DriveAuto(0.0, 0.0);
+  // }
+  // m_container.m_drivetrain.DriveAuto(0.1,0.0);
+}
 
-void Robot::AutonomousExit() {}
+void Robot::AutonomousExit() {
+}
 
 void Robot::TeleopInit() {
   if (m_autonomousCommand) {
