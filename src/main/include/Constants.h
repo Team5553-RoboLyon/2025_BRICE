@@ -8,6 +8,157 @@
 // Example for variable : constexpr int kMOTOR_DRIVE = 0;
 // Example for macro : #define SQUARE(x) x*x
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+constexpr double ENCODER_TICKS_PER_REVOLUTION = 2048.0;
+
+namespace ManipulatorConstants
+{
+    namespace Elevator {
+        namespace Motors{
+            constexpr int ID = 8;
+            constexpr double VOLTAGE_COMPENSATION = 12.0;
+            constexpr double CURRENT_LIMIT = 40.0;
+            constexpr double RAMP_RATE = 0.0;
+            constexpr bool INVERTED = true;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+        }
+        namespace Sensor {
+            namespace Encoder {
+                constexpr int A_ID = 6;
+                constexpr int B_ID = 7;
+                constexpr bool REVERSED = true;
+                constexpr double REDUCTION = 30.0/26.0;
+                constexpr double RADIUS = (0.0360*3.0/M_PI)/2.0;
+                constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
+            }
+            namespace LimitSwitch {
+                constexpr int BOTTOM_ID = 11;
+                constexpr int TOP_ID = 12;
+                constexpr bool IS_TRIGGERED = true;
+            }
+        }
+        // namespace PID {
+        //     constexpr double KP = 8.0;
+        //     constexpr double KI = 0.0;
+        //     constexpr double KD = 0.00;
+        //     constexpr double TOLERANCE = 0.001;
+        //     constexpr double SETPOINT = 0.0;
+        // }
+        namespace Speed {
+            constexpr double UP = 0.5;
+            constexpr double DOWN = -0.5;
+            constexpr double REST = 0.0;
+        }
+        namespace State {
+            constexpr u_int8_t L2 = 0;
+            constexpr u_int8_t L2_CORALSTATION = 1;
+            constexpr u_int8_t CORALSTATION = 2;
+            constexpr u_int8_t CORALSTATION_L3 = 3;
+            constexpr u_int8_t L3 = 4;
+            constexpr u_int8_t L3_L4 = 5;
+            constexpr u_int8_t L4 = 6;
+
+            constexpr u_int8_t REST = 0;
+            constexpr u_int8_t UP = 1;
+            constexpr u_int8_t DOWN = 2;
+            constexpr u_int8_t WAITING = 3;
+        }
+
+    }
+    namespace Planetary {
+        namespace Motors {
+            constexpr int ID = 9;
+            constexpr double VOLTAGE_COMPENSATION = 10.0;
+            constexpr double CURRENT_LIMIT = 40.0;
+            constexpr double RAMP_RATE = 0.1;
+            constexpr bool INVERTED = true;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+        }
+        namespace Sensor {
+            namespace Encoder {
+                constexpr int A_ID = 8;
+                constexpr int B_ID = 9;
+                constexpr bool REVERSED = false; 
+                constexpr double REDUCTION = -4.0;
+                constexpr double DISTANCE_PER_PULSE = NF64_2PI / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
+            }
+        }
+        namespace PID {
+            constexpr double KP = 1.25;
+            constexpr double KI = 0.0;
+            constexpr double KD = 0.00;
+            constexpr double TOLERANCE = 0.02;
+            constexpr double SETPOINT = 0.0;
+        }
+        namespace Speed {
+            constexpr double MAX = 0.5;
+            constexpr double MIN = -0.5;
+            constexpr double REST = 0.0;
+        }
+        namespace State {
+            constexpr u_int8_t HOME = 0;              
+            constexpr u_int8_t HOME_CORALSTATION = 1;  
+            constexpr u_int8_t CORALSTATION = 2;       
+            constexpr u_int8_t CORALSTATION_L4 = 3;    
+            constexpr u_int8_t L4 = 4;                 
+            constexpr u_int8_t L4_L3 = 5;              
+            constexpr u_int8_t L3 = 6;                 
+            constexpr u_int8_t L3_L2 = 7;              
+            constexpr u_int8_t L2 = 8;                 
+            constexpr u_int8_t REST = 0;
+            constexpr u_int8_t CLOCKWISE = 1;
+            constexpr u_int8_t COUNTER_CLOCKWISE = 2;
+            constexpr u_int8_t WAITING = 3;
+        }
+    }
+    namespace Gripper {
+        constexpr int TIMEOUT = 2000/20;
+        namespace Motors {
+            constexpr int ID_TOP = 10;
+            constexpr int ID_BOTTOM = 11;
+            constexpr double VOLTAGE_COMPENSATION = 12.0;   
+            constexpr double CURRENT_LIMIT = 20.0;
+            constexpr double RAMP_RATE = 0.1;
+            constexpr bool INVERTED = true;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+        }
+        namespace Sensor {
+            constexpr int IR_BREAKER_ID = 10;
+            constexpr bool IS_TRIGGERED = false;
+        }
+        namespace Speed {
+            constexpr double CATCH = -1.0;
+            constexpr double DROP = 1.0;
+            constexpr double REST = 0.0;
+            // constexpr double MOVE_TO_BACK = -0.5;
+            // constexpr double MOVE_TO_MIDDLE = 0.5;
+        }
+        namespace State {
+            constexpr u_int8_t REST = 0;
+            constexpr u_int8_t CATCHING = 1;
+            constexpr u_int8_t DROPPING = 2;
+        }
+    }
+    namespace mask {
+        constexpr uint16_t maskElevatorPosition = 0xF;             // 0000 0000 0000 1111
+        constexpr uint16_t maskElevatorMovingType = 0x30;          // 0000 0000 0011 0000
+        constexpr uint16_t maskPlanetaryPosition = 0x3C0;          // 0000 0011 1100 0000
+        constexpr uint16_t maskPlanetaryMovingType = 0xC00;        // 0000 1100 0000 0000
+        constexpr uint16_t maskGripperState = 0xF000;              // 1111 0000 0000 0000
+        constexpr uint16_t maskElevatorState = 0x3F;               // 0000 0000 0011 1111
+        constexpr uint16_t maskPlanetaryState = 0xFC0;             // 0000 1111 1100 0000
+        constexpr uint16_t maskState = 0xFFFF;                     // 1111 1111 1111 1111
+    }
+    enum class State {
+        Home =0,
+        L2 =1,
+        CoralStation =2,
+        L3 =3,
+        L4 =4
+    };
+}
 
 namespace DriveConstants {
 
@@ -25,7 +176,7 @@ namespace DriveConstants {
         namespace Encoder{
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
-            constexpr bool REVERSE_ENCODER = true;
+            constexpr bool REVERSE_ENCODER = true; // TODO : check sens
             constexpr double DISTANCE_PER_PULSE = 2048.0;
         }
         constexpr bool WHEEL_SIDE = true;
@@ -46,7 +197,7 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 2;
             constexpr int ID_ENCODER_B = 3;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 2048.0;
+            constexpr double DISTANCE_PER_PULSE = 2048.0; // TODO : set appropriate distance
         }
         constexpr bool WHEEL_SIDE = false;
     }
@@ -56,10 +207,20 @@ namespace ControlPanelConstants {
     namespace Joystick{
         constexpr int FORWARD_ID = 0;
         constexpr int ROTATION_ID = 1;
+        constexpr int XBOX_CONTROLLER_ID = 2;
     }
     namespace Button {
+        // FORWARD Joystick
         constexpr int REVERSED_DRIVE_BUTTON = 1;
+        // ROTATION Joystick
         constexpr int SLOW_DRIVE_BUTTON = 1;
+        // XBOX_CONTROLLER 
+        constexpr int L2 = 1; // DO NOT USE !
+        constexpr int L3 = 2;
+        constexpr int L4 = 4;
+        constexpr int CORALSTATION = 3;
+        constexpr int GRIPPER = 5;
+        constexpr int ALGAE = 6;
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;

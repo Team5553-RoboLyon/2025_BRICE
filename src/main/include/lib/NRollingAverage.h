@@ -10,7 +10,7 @@
 // **																					**
 // ***************************************************************************************
 // ***************************************************************************************
-class NdoubleRollingAverage
+class NdoubleRollingAverage // unnecessary now
 {
 public:
 	NdoubleRollingAverage();
@@ -67,4 +67,3 @@ public:
 
 
 #endif // __NROLLINGAVERAGE_H 
-

@@ -1,7 +1,7 @@
 #pragma once
 
 typedef struct Dynamic Dynamic; 
-struct Dynamic
+struct Dynamic // unnecessary now
 {
     Dynamic() : m_current(0.0), m_delta(0.0){};
     Dynamic(double initialvalue) : m_current(initialvalue), m_delta(0.0){};

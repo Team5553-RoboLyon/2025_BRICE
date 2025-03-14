@@ -14,7 +14,9 @@ void Robot::RobotPeriodic() {
 
 void Robot::DisabledInit() {}
 
-void Robot::DisabledPeriodic() {}
+void Robot::DisabledPeriodic() {
+  m_container.m_manipulator.isInitialized = false;
+}
 
 void Robot::DisabledExit() {}
 
