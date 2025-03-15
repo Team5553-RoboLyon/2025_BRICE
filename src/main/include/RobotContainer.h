@@ -5,18 +5,22 @@
 #pragma once
 
 #include <frc2/command/CommandPtr.h>
-#include <frc2/command/button/JoystickButton.h>
-#include <frc/XboxController.h>
 #include <frc/Joystick.h>
+#include <frc/XboxController.h>
 #include <frc2/command/Command.h>
+#include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/ParallelCommandGroup.h>
+#include <frc2/command/Command.h>
+#include <frc2/command/CommandPtr.h>
+#include <frc2/command/Commands.h>
 #include <frc2/command/RunCommand.h>
 #include <frc2/command/button/CommandXboxController.h>
 #include <frc2/command/button/POVButton.h>
 #include <frc2/command/button/CommandGenericHID.h>
 
+#include "subsystems/DeepClimb.h"
 #include "commands/Drive.h"
 #include "commands/MoveManipulator.h"
 #include "commands/DropCoral.h"
@@ -24,7 +28,6 @@
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Manipulator.h"
 #include "subsystems/Gripper.h"
-#include "Constants.h"
 
 class RobotContainer {
  public:
@@ -35,6 +38,7 @@ class RobotContainer {
     Drivetrain m_drivetrain;
     Manipulator m_manipulator;
     Gripper m_Gripper;
+    DeepClimb m_climb;
 
  private:
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
@@ -46,4 +50,5 @@ class RobotContainer {
   frc2::JoystickButton Drop{&m_xboxControllerCopilot, ControlPanelConstants::Button::DROP};
   frc2::JoystickButton Catch{&m_xboxControllerCopilot, ControlPanelConstants::Button::CATCH};
   void ConfigureBindings();
+ private:
 };

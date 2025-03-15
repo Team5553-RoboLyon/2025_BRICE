@@ -3,12 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include "frc/shuffleboard/Shuffleboard.h"
 
 #include <frc2/command/Commands.h>
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
-m_drivetrain.SetDefaultCommand(Drive( [=]
+  m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
+  
+  m_drivetrain.SetDefaultCommand(Drive( [=]
     { return m_joystickForward.GetY(); },
                                       [=]
     { return m_joystickRotation.GetZ(); },
@@ -23,9 +26,6 @@ void RobotContainer::ConfigureBindings() {
 
   Drop.WhileTrue(DropCoral(&m_Gripper).ToPtr());
   Catch.WhileTrue(TakeCoral(&m_Gripper).ToPtr());
-
-
-
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
