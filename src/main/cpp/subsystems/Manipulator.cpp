@@ -44,8 +44,8 @@ void Manipulator::Reset() {
   }
 }
 void Manipulator::Move(double ElevatorSpeed, double PlanetarySpeed) {
-  elevatorOutput = ElevatorSpeed / 2.5;
-  planetaryOutput = PlanetarySpeed / 10.0;
+  elevatorOutput = ElevatorSpeed / 1.0;
+  planetaryOutput = PlanetarySpeed / 5.0;
 }
 
 void Manipulator::Periodic() {
@@ -68,10 +68,10 @@ void Manipulator::Periodic() {
   else if(m_isBottomLimitSwitchTriggered && elevatorOutput < 0.0) {
     elevatorOutput = 0.0;
   }
-  if(planetaryOutput < 0.0 & m_planetaryAngle < 0.0)
-  { 
-    planetaryOutput = 0.0;
-  }
+  // if(planetaryOutput < 0.0 & m_planetaryAngle < 0.0)
+  // { 
+  //   planetaryOutput = 0.0;
+  // }
   // if(planetaryOutput < 0.0)
   m_elevatorMotor.Set(elevatorOutput);
   m_planetaryMotor.Set(planetaryOutput);
