@@ -114,34 +114,6 @@ namespace ManipulatorConstants
             constexpr u_int8_t WAITING = 3;
         }
     }
-    namespace Gripper {
-        constexpr int TIMEOUT = 2000/20;
-        namespace Motors {
-            constexpr int ID_TOP = 10;
-            constexpr int ID_BOTTOM = 11;
-            constexpr double VOLTAGE_COMPENSATION = 12.0;   
-            constexpr double CURRENT_LIMIT = 20.0;
-            constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = true;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-        namespace Sensor {
-            constexpr int IR_BREAKER_ID = 10;
-            constexpr bool IS_TRIGGERED = false;
-        }
-        namespace Speed {
-            constexpr double CATCH = -1.0;
-            constexpr double DROP = 1.0;
-            constexpr double REST = 0.0;
-            // constexpr double MOVE_TO_BACK = -0.5;
-            // constexpr double MOVE_TO_MIDDLE = 0.5;
-        }
-        namespace State {
-            constexpr u_int8_t REST = 0;
-            constexpr u_int8_t CATCHING = 1;
-            constexpr u_int8_t DROPPING = 2;
-        }
-    }
     namespace mask {
         constexpr uint16_t maskElevatorPosition = 0xF;             // 0000 0000 0000 1111
         constexpr uint16_t maskElevatorMovingType = 0x30;          // 0000 0000 0011 0000
@@ -159,6 +131,29 @@ namespace ManipulatorConstants
         L3 =3,
         L4 =4
     };
+}
+
+namespace GrippperConstants {
+    namespace Motors {
+        constexpr int ID_TOP = 10;
+        constexpr int ID_BOTTOM = 11;
+        constexpr double VOLTAGE_COMPENSATION = 12.0;   
+        constexpr double CURRENT_LIMIT = 20.0;
+        constexpr double RAMP_RATE = 0.1;
+        constexpr bool INVERTED = true;
+        constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+    }
+    namespace Sensor {
+        constexpr int IR_BREAKER_ID = 10;
+        constexpr bool IS_TRIGGERED = false;
+    }
+    namespace Speed {
+        constexpr double CATCH = -1.0;
+        constexpr double DROP = 1.0;
+        constexpr double REST = 0.0;
+        // constexpr double MOVE_TO_BACK = -0.5;
+        // constexpr double MOVE_TO_MIDDLE = 0.5;
+    }
 }
 
 namespace DriveConstants {
@@ -216,12 +211,8 @@ namespace ControlPanelConstants {
         // ROTATION Joystick
         constexpr int SLOW_DRIVE_BUTTON = 1;
         // XBOX_CONTROLLER 
-        constexpr int L2 = 1; // DO NOT USE !
-        constexpr int L3 = 2;
-        constexpr int L4 = 4;
-        constexpr int CORALSTATION = 3;
-        constexpr int GRIPPER = 5;
-        constexpr int ALGAE = 6;
+        constexpr int DROP = 1;
+        constexpr int CATCH = 2;
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;

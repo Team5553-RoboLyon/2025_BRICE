@@ -19,8 +19,11 @@
 
 #include "commands/Drive.h"
 #include "commands/MoveManipulator.h"
+#include "commands/DropCoral.h"
+#include "commands/TakeCoral.h"
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Manipulator.h"
+#include "subsystems/Gripper.h"
 #include "Constants.h"
 
 class RobotContainer {
@@ -31,6 +34,7 @@ class RobotContainer {
 
     Drivetrain m_drivetrain;
     Manipulator m_manipulator;
+    Gripper m_Gripper;
 
  private:
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
@@ -39,11 +43,7 @@ class RobotContainer {
   frc2::JoystickButton m_SlowDriveButton{&m_joystickForward, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
   frc2::JoystickButton m_ReversedDriveButton{&m_joystickRotation, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
 
-  frc2::JoystickButton m_L2{&m_xboxControllerCopilot, ControlPanelConstants::Button::L2};
-  frc2::JoystickButton m_L3{&m_xboxControllerCopilot, ControlPanelConstants::Button::L3};
-  frc2::JoystickButton m_L4{&m_xboxControllerCopilot, ControlPanelConstants::Button::L4};
-  frc2::JoystickButton m_CoralStation{&m_xboxControllerCopilot, ControlPanelConstants::Button::CORALSTATION};
-  frc2::JoystickButton m_Gripper{&m_xboxControllerCopilot, ControlPanelConstants::Button::GRIPPER};
-  // frc2::JoystickButton m_alguae{&m_xboxControllerCopilot, ControlPanelConstants::Button::ALGAE};
+  frc2::JoystickButton Drop{&m_xboxControllerCopilot, ControlPanelConstants::Button::DROP};
+  frc2::JoystickButton Catch{&m_xboxControllerCopilot, ControlPanelConstants::Button::CATCH};
   void ConfigureBindings();
 };
