@@ -7,13 +7,16 @@
 #include <frc2/command/CommandScheduler.h>
 #include <iostream>
 
-Robot::Robot() {}
+Robot::Robot() {
+  frc::CameraServer::StartAutomaticCapture();
+}
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
 }
 
-void Robot::DisabledInit() {}
+void Robot::DisabledInit() {
+}
 
 void Robot::DisabledPeriodic() {
   m_container.m_manipulator.isInitialized = false;

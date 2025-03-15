@@ -379,11 +379,16 @@ void Manipulator::Periodic() {
     { 
       #define TIMEOUT 100
         case ManipulatorConstants::Gripper::State::CATCHING:
-        m_gripperCounter++;
-        if(m_gripperCounter > TIMEOUT)
-          m_manipulatorState = SET_GRIPPER_STATE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Gripper::State::REST);
+        if(m_isIRBreakerTriggered) {
+          m_gripperMotorTop.Set(ManipulatorConstants::Gripper::Speed::REST);
+        }
         else {
-          m_gripperMotorTop.Set(ManipulatorConstants::Gripper::Speed::CATCH);
+          m_gripperCounter++;
+          if(m_gripperCounter > TIMEOUT)
+            m_manipulatorState = SET_GRIPPER_STATE(m_manipulatorState, CURRENT_STATE_SHIFTING, ManipulatorConstants::Gripper::State::REST);
+          else {
+            m_gripperMotorTop.Set(ManipulatorConstants::Gripper::Speed::CATCH);
+          }
         }
         break;
     

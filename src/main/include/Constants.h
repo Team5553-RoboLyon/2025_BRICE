@@ -227,7 +227,6 @@ namespace ControlPanelConstants {
         constexpr double SLOW_RATE = 2.0;
         constexpr double DEADBAND = 0.17;
         constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(0.45);
-        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(0.7
-        );
+        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(0.5);
     }
 }
