@@ -9,14 +9,14 @@
 
 RobotContainer::RobotContainer() {
   ConfigureBindings();
-  m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
+  // m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
   
   m_drivetrain.SetDefaultCommand(Drive( [=]
     { return m_joystickForward.GetY(); },
                                       [=]
     { return m_joystickRotation.GetZ(); },
     &m_drivetrain));
-  m_manipulator.SetDefaultCommand(MoveManipulator(&m_manipulator, [=]{ return m_xboxControllerCopilot.GetLeftY(); }, [=]{ return m_xboxControllerCopilot.GetRightX(); }));
+  m_manipulator.SetDefaultCommand(MoveManipulator(&m_manipulator, [=]{ return m_xboxControllerCopilot.GetY(); }, [=]{ return m_xboxControllerCopilot.GetZ(); }));
 }
 
 void RobotContainer::ConfigureBindings() {

@@ -45,14 +45,14 @@ void Manipulator::Reset() {
 }
 void Manipulator::Move(double ElevatorSpeed, double PlanetarySpeed) {
   elevatorOutput = ElevatorSpeed / 2.5;
-  planetaryOutput = PlanetarySpeed / 3.25;
+  planetaryOutput = PlanetarySpeed / 10.0;
 }
 
 void Manipulator::Periodic() {
-  if(!isInitialized) {
-      Reset();
-      return;
-  }
+  // if(!isInitialized) {
+  //     Reset();
+  //     return;
+  // }
   // ----------------- Save sensors value -----------------
       // ELEVATOR
   m_isBottomLimitSwitchTriggered = m_elevatorBottomLimitSwitch.Get() == ManipulatorConstants::Elevator::Sensor::LimitSwitch::IS_TRIGGERED;
@@ -68,6 +68,11 @@ void Manipulator::Periodic() {
   else if(m_isBottomLimitSwitchTriggered && elevatorOutput < 0.0) {
     elevatorOutput = 0.0;
   }
+  if(planetaryOutput < 0.0 & m_planetaryAngle < 0.0)
+  { 
+    planetaryOutput = 0.0;
+  }
+  // if(planetaryOutput < 0.0)
   m_elevatorMotor.Set(elevatorOutput);
   m_planetaryMotor.Set(planetaryOutput);
   Dashboard();

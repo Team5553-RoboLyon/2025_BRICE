@@ -1,11 +1,3 @@
-
-#include <math.h>
-
-class PidRBL {
-    public :
-    PidRBL(double setpoint, double kp, double ki, double kd);
-    /**
-=======
 #include "lib/UtilsRBL.h"
 
 class PidRBL {
@@ -51,14 +43,6 @@ class PidRBL {
    */
   double Calculate(double setpoint, double measurement);
   /**
-   * @brief Resets the PID controller.
-   * @param error The initial error value.
-   * @param lastError The initial last error value.
-   * @param integrative The initial integrative value.
-   * @param derivative The initial derivative value.
-   * @param output The initial output value.
-   */
-  void Reset(double error = 0.0, double lastError = 0.0, double integrative = 0.0, double derivative = 0.0, double output = 0.0);
    * @brief Calculates the output of the PID controller based on the error.
    * @param error The current error.
    * @return The calculated output.
@@ -79,7 +63,7 @@ class PidRBL {
    * @param tolerance The tolerance value.
    */
   void SetTolerance(double tolerance);
-  /*
+  /**
   * @brief Sets the output limits for the PID controller.
   * 
   * This function sets the minimum and maximum output values that the PID controller
@@ -94,6 +78,7 @@ class PidRBL {
    * @return True if the measurement is at the setpoint, false otherwise.
    */
   bool AtSetpoint();
+
 private:
 
   double m_setpoint;    // Desired setpoint.

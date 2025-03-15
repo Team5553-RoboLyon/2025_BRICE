@@ -26,7 +26,7 @@
 class MoveManipulator
     : public frc2::CommandHelper<frc2::Command, MoveManipulator> {
  public:
-  MoveManipulator(Manipulator *manipulator, std::function<bool()> elevator, std::function<bool()> planetary);
+  MoveManipulator(Manipulator *manipulator, std::function<double()> elevator, std::function<double()> planetary);
 
   void Initialize() override;
 
@@ -38,8 +38,8 @@ class MoveManipulator
 
   private:
     Manipulator *m_manipulator;
-    std::function<bool()> m_elevator;
+    std::function<double()> m_elevator;
     double m_elevatorSpeed;
-    std::function<bool()> m_planetary;
+    std::function<double()> m_planetary;
     double m_planetarySpeed;
 };

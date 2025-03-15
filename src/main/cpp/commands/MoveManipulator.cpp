@@ -4,7 +4,7 @@
 
 #include "commands/MoveManipulator.h"
 
-MoveManipulator::MoveManipulator(Manipulator *manipulator, std::function<bool()> elevator, std::function<bool()> planetary) : m_manipulator(manipulator), m_elevator(elevator), m_planetary(planetary) 
+MoveManipulator::MoveManipulator(Manipulator *manipulator, std::function<double()> elevator, std::function<double()> planetary) : m_manipulator(manipulator), m_elevator(elevator), m_planetary(planetary) 
 {
   AddRequirements({m_manipulator});
 }
@@ -17,7 +17,9 @@ void MoveManipulator::Initialize() {
 void MoveManipulator::Execute() {
   
   m_elevatorSpeed = -m_elevator();
-  m_planetarySpeed = -m_planetary();
+  m_planetarySpeed = m_planetary();
+  frc::SmartDashboard::PutNumber("e", m_elevatorSpeed);
+  frc::SmartDashboard::PutNumber("p", m_planetarySpeed);
   m_manipulator->Move(m_elevatorSpeed, m_planetarySpeed);
 
 }
