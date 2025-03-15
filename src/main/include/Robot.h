@@ -34,4 +34,6 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   // int count = 0;
   RobotContainer m_container;
+  double initialPosition;
+  double target = 3.0; // in meters
 };

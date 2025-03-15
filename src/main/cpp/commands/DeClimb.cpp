@@ -5,7 +5,6 @@
 #include "commands/DeClimb.h"
 
 DeClimb::DeClimb(DeepClimb *deepClimb) : m_deepClimb(deepClimb){
-  // Use addRequirements() here to declare subsystem dependencies.
   AddRequirements(m_deepClimb);
 }
 

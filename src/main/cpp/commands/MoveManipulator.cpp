@@ -18,8 +18,6 @@ void MoveManipulator::Execute() {
   
   m_elevatorSpeed = -m_elevator();
   m_planetarySpeed = m_planetary();
-  frc::SmartDashboard::PutNumber("e", m_elevatorSpeed);
-  frc::SmartDashboard::PutNumber("p", m_planetarySpeed);
   m_manipulator->Move(m_elevatorSpeed, m_planetarySpeed);
 
 }

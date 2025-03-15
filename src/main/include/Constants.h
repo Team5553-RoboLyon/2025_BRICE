@@ -173,7 +173,8 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
             constexpr bool REVERSE_ENCODER = true; 
-            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION;
+            constexpr double RADIUS = 0.0254 *2;
+            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
         }
         constexpr bool WHEEL_SIDE = true;
     }
@@ -193,7 +194,8 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 2;
             constexpr int ID_ENCODER_B = 3;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION; // TODO : set appropriate distance
+            constexpr double RADIUS = 0.0254 *2;
+            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
         }
         constexpr bool WHEEL_SIDE = false;
     }

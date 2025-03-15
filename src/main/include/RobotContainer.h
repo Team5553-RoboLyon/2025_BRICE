@@ -38,7 +38,6 @@ class RobotContainer {
     Manipulator m_manipulator;
     Gripper m_Gripper;
     DeepClimb m_climb;
-
  private:
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};

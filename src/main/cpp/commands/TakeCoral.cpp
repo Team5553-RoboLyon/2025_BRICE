@@ -5,7 +5,6 @@
 #include "commands/TakeCoral.h"
 
 TakeCoral::TakeCoral(Gripper *gripper) :  m_gripper{gripper} {
-  // Use addRequirements() here to declare subsystem dependencies.
   AddRequirements({gripper});
 }
 

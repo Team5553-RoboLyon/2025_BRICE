@@ -6,10 +6,8 @@
 #include "frc/shuffleboard/Shuffleboard.h"
 
 #include <frc2/command/Commands.h>
-
 RobotContainer::RobotContainer() {
-  ConfigureBindings();
-  // m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
+    ConfigureBindings();
   
   m_drivetrain.SetDefaultCommand(Drive( [=]
     { return m_joystickForward.GetY(); },

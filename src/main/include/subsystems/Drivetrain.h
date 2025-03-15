@@ -38,19 +38,20 @@ class Drivetrain : public frc2::SubsystemBase {
    */
   void SetVoltage(double voltageLeft, double voltageRight);
 
-    /**
-   * @brief Drives the robot autonomously by setting the speed and rotation of the motors.
-   *
-   * This function sets the speed and rotation for the back left and back right motors
-   * to drive the robot autonomously. The speed and rotation values are combined to 
-   * determine the final motor outputs.
-   *
-   * @param speed The forward/backward speed of the robot. Positive values move the robot forward, 
-   *              and negative values move it backward.
-   * @param rotation The rotational speed of the robot. Positive values rotate the robot clockwise, 
-   *                 and negative values rotate it counterclockwise.
-   */
-  void DriveAuto(double speed, double rotation);
+  //   /**
+  //  * @brief Drives the robot autonomously by setting the speed and rotation of the motors.
+  //  *
+  //  * This function sets the speed and rotation for the back left and back right motors
+  //  * to drive the robot autonomously. The speed and rotation values are combined to 
+  //  * determine the final motor outputs.
+  //  *
+  //  * @param speed The forward/backward speed of the robot. Positive values move the robot forward, 
+  //  *              and negative values move it backward.
+  //  * @param rotation The rotational speed of the robot. Positive values rotate the robot clockwise, 
+  //  *                 and negative values rotate it counterclockwise.
+  //  */
+  // void DriveAuto(double speed, double rotation);
+  double DriveAuto();
 
     /**
    * @brief Drives the robot using joystick inputs.
@@ -93,7 +94,7 @@ class Drivetrain : public frc2::SubsystemBase {
   void Periodic() override;
 
   bool slower = false;
-
+  bool isAuto = true;
  private:
   //Definition of the motors
   rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
