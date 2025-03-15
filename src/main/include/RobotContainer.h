@@ -16,7 +16,8 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <frc2/command/button/POVButton.h>
 #include <frc2/command/button/CommandGenericHID.h>
-
+#include "commands/Climb.h"
+#include "commands/DeClimb.h"
 #include "commands/Drive.h"
 #include "commands/MoveManipulator.h"
 #include "commands/DropCoral.h"
@@ -47,5 +48,7 @@ class RobotContainer {
 
   frc2::JoystickButton Drop{&m_xboxControllerCopilot, ControlPanelConstants::Button::DROP};
   frc2::JoystickButton Catch{&m_xboxControllerCopilot, ControlPanelConstants::Button::CATCH};
+  frc2::JoystickButton climbButton{&m_xboxControllerCopilot, ControlPanelConstants::Button::CLimb};
+  frc2::JoystickButton declimbButton{&m_xboxControllerCopilot, ControlPanelConstants::Button::DeClimb};
   void ConfigureBindings();
 };

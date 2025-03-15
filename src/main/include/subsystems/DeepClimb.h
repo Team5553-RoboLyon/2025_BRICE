@@ -26,4 +26,6 @@ class DeepClimb : public frc2::SubsystemBase {
 
   rev::spark::SparkBaseConfig m_climbFrontMotorConfig;
   rev::spark::SparkBaseConfig m_climbBackMotorConfig;
+
+  // frc::Encoder m_climbEncoder;
 };

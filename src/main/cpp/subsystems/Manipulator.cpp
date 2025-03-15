@@ -45,7 +45,7 @@ void Manipulator::Reset() {
 }
 void Manipulator::Move(double ElevatorSpeed, double PlanetarySpeed) {
   elevatorOutput = ElevatorSpeed / 1.0;
-  planetaryOutput = PlanetarySpeed / 5.0;
+  planetaryOutput = PlanetarySpeed / 4.5;
 }
 
 void Manipulator::Periodic() {

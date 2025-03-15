@@ -224,13 +224,10 @@ namespace DeepClimbConstants {
         constexpr int UP = 0;
         constexpr int DOWN = 1;
     }
-    namespace PID {
-        constexpr double SETPOINT = 0.0;
-        constexpr double KP = 0.1;
-        constexpr double KI = 0.0;
-        constexpr double KD = 0.0;
-        constexpr double TOLERANCE = 0.1;
-
+    namespace SPEED {
+        constexpr double REST = 0.0;
+        constexpr double CLIMB = (-1.0);
+        constexpr double DECLIMB = -(CLIMB);
     }
 }
 
@@ -248,6 +245,8 @@ namespace ControlPanelConstants {
         // XBOX_CONTROLLER 
         constexpr int DROP = 2;
         constexpr int CATCH = 1;
+        constexpr int CLimb = 7;
+        constexpr int DeClimb = 5;
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;

@@ -26,6 +26,9 @@ void RobotContainer::ConfigureBindings() {
 
   Drop.WhileTrue(DropCoral(&m_Gripper).ToPtr());
   Catch.WhileTrue(TakeCoral(&m_Gripper).ToPtr());
+
+  declimbButton.WhileTrue(DeClimb(&m_climb).ToPtr());
+  climbButton.WhileTrue(Climb(&m_climb).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
