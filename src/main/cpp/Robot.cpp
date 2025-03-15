@@ -7,15 +7,20 @@
 #include <frc2/command/CommandScheduler.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
-Robot::Robot() {}
+Robot::Robot() {
+  frc::CameraServer::StartAutomaticCapture();
+}
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
 }
 
-void Robot::DisabledInit() {}
+void Robot::DisabledInit() {
+}
 
-void Robot::DisabledPeriodic() {}
+void Robot::DisabledPeriodic() {
+  m_container.m_manipulator.isInitialized = false;
+}
 
 void Robot::DisabledExit() {}
 
@@ -27,9 +32,19 @@ void Robot::AutonomousInit() {
   }
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  // if(count< 1000) {
+  //   m_container.m_drivetrain.DriveAuto(0.25, 0.0);
+  //   count++;
+  // }
+  // else {
+  //     m_container.m_drivetrain.DriveAuto(0.0, 0.0);
+  // }
+  // m_container.m_drivetrain.DriveAuto(0.1,0.0);
+}
 
-void Robot::AutonomousExit() {}
+void Robot::AutonomousExit() {
+}
 
 void Robot::TeleopInit() {
   if (m_autonomousCommand) {

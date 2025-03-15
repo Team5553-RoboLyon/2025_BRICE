@@ -21,6 +21,13 @@
 #include <frc2/command/button/CommandGenericHID.h>
 
 #include "subsystems/DeepClimb.h"
+#include "commands/Drive.h"
+#include "commands/MoveManipulator.h"
+#include "commands/DropCoral.h"
+#include "commands/TakeCoral.h"
+#include "subsystems/Drivetrain.h"
+#include "subsystems/Manipulator.h"
+#include "subsystems/Gripper.h"
 
 class RobotContainer {
  public:
@@ -28,10 +35,20 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
+    Drivetrain m_drivetrain;
+    Manipulator m_manipulator;
+    Gripper m_Gripper;
+    DeepClimb m_climb;
+
+ private:
+  frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
+  frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
+  frc::XboxController m_xboxControllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
+  frc2::JoystickButton m_SlowDriveButton{&m_joystickForward, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
+  frc2::JoystickButton m_ReversedDriveButton{&m_joystickRotation, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
+
+  frc2::JoystickButton Drop{&m_xboxControllerCopilot, ControlPanelConstants::Button::DROP};
+  frc2::JoystickButton Catch{&m_xboxControllerCopilot, ControlPanelConstants::Button::CATCH};
   void ConfigureBindings();
-
-  frc::Joystick m_joystick{0};
-
-  DeepClimb m_climb;
  private:
 };

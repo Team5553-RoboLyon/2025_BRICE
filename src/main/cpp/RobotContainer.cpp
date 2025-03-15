@@ -10,9 +10,22 @@
 RobotContainer::RobotContainer() {
   ConfigureBindings();
   m_climb.SetDefaultCommand(frc2::InstantCommand([this] { m_climb.SetClimbSpeed((m_joystick.GetY() / 5.0)); }, {&m_climb}));
+  
+  m_drivetrain.SetDefaultCommand(Drive( [=]
+    { return m_joystickForward.GetY(); },
+                                      [=]
+    { return m_joystickRotation.GetZ(); },
+    &m_drivetrain));
+  m_manipulator.SetDefaultCommand(MoveManipulator(&m_manipulator, [=]{ return m_xboxControllerCopilot.GetLeftY(); }, [=]{ return m_xboxControllerCopilot.GetRightX(); }));
 }
 
 void RobotContainer::ConfigureBindings() {
+  m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
+  m_SlowDriveButton.WhileTrue(frc2::InstantCommand([this] {m_drivetrain.slower = true;}).ToPtr());
+  m_SlowDriveButton.WhileFalse(frc2::InstantCommand([this] {m_drivetrain.slower = false;}).ToPtr());
+
+  Drop.WhileTrue(DropCoral(&m_Gripper).ToPtr());
+  Catch.WhileTrue(TakeCoral(&m_Gripper).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
