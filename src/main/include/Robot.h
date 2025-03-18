@@ -29,6 +29,7 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
   void TestExit() override;
+  void DropAutoCoral();
 
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
