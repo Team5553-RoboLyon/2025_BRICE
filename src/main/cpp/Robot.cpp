@@ -40,7 +40,6 @@ void Robot::AutonomousPeriodic() {
   if((m_container.m_drivetrain.DriveAuto() - initialPosition) > target)
   {
     m_container.m_drivetrain.SetPower(0.0);
-    DropAutoCoral();
   }
   else {
       m_container.m_drivetrain.SetPower(0.5);
@@ -70,10 +69,6 @@ void Robot::TestInit() {
 void Robot::TestPeriodic() {}
 
 void Robot::TestExit() {}
-
-void Robot::DropAutoCoral() {
-  
-}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
