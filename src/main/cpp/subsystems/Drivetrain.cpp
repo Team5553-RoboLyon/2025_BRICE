@@ -41,6 +41,7 @@ Drivetrain::Drivetrain() {
 void Drivetrain::SetPower(double v_motor) {
     m_MotorBackLeft.Set(v_motor);
     m_MotorBackRight.Set(v_motor);
+    frc::SmartDashboard::PutNumber("auto", v_motor);
 }
 
 void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
@@ -49,12 +50,16 @@ void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
 }
 
 
-void Drivetrain::DriveAuto(double speed, double rotation)
+// void Drivetrain::DriveAuto(double speed, double rotation)
+// {
+//     // // m_MotorBackLeft.Set(speed);
+//     // // m_MotorBackRight.Set(speed);
+//     // m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::LeftGearbox::WHEEL_SIDE));
+//     // m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::RightGearbox::WHEEL_SIDE));
+// }
+double Drivetrain::DriveAuto()
 {
-    // m_MotorBackLeft.Set(speed);
-    // m_MotorBackRight.Set(speed);
-    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::LeftGearbox::WHEEL_SIDE));
-    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(speed, rotation, DriveConstants::RightGearbox::WHEEL_SIDE));
+    return m_EncoderLeft.GetDistance();
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {

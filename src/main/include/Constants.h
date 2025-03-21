@@ -114,34 +114,6 @@ namespace ManipulatorConstants
             constexpr u_int8_t WAITING = 3;
         }
     }
-    namespace Gripper {
-        constexpr int TIMEOUT = 2000/20;
-        namespace Motors {
-            constexpr int ID_TOP = 10;
-            constexpr int ID_BOTTOM = 11;
-            constexpr double VOLTAGE_COMPENSATION = 12.0;   
-            constexpr double CURRENT_LIMIT = 20.0;
-            constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = true;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-        namespace Sensor {
-            constexpr int IR_BREAKER_ID = 10;
-            constexpr bool IS_TRIGGERED = false;
-        }
-        namespace Speed {
-            constexpr double CATCH = -1.0;
-            constexpr double DROP = 1.0;
-            constexpr double REST = 0.0;
-            // constexpr double MOVE_TO_BACK = -0.5;
-            // constexpr double MOVE_TO_MIDDLE = 0.5;
-        }
-        namespace State {
-            constexpr u_int8_t REST = 0;
-            constexpr u_int8_t CATCHING = 1;
-            constexpr u_int8_t DROPPING = 2;
-        }
-    }
     namespace mask {
         constexpr uint16_t maskElevatorPosition = 0xF;             // 0000 0000 0000 1111
         constexpr uint16_t maskElevatorMovingType = 0x30;          // 0000 0000 0011 0000
@@ -161,6 +133,29 @@ namespace ManipulatorConstants
     };
 }
 
+namespace GrippperConstants {
+    namespace Motors {
+        constexpr int ID_TOP = 10;
+        constexpr int ID_BOTTOM = 11;
+        constexpr double VOLTAGE_COMPENSATION = 12.0;   
+        constexpr double CURRENT_LIMIT = 20.0;
+        constexpr double RAMP_RATE = 0.1;
+        constexpr bool INVERTED = true;
+        constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+    }
+    namespace Sensor {
+        constexpr int IR_BREAKER_ID = 10;
+        constexpr bool IS_TRIGGERED = false;
+    }
+    namespace Speed {
+        constexpr double CATCH = -1.0;
+        constexpr double DROP = 1.0;
+        constexpr double REST = 0.0;
+        // constexpr double MOVE_TO_BACK = -0.5;
+        // constexpr double MOVE_TO_MIDDLE = 0.5;
+    }
+}
+
 namespace DriveConstants {
 
     namespace LeftGearbox{
@@ -178,7 +173,8 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 0;
             constexpr int ID_ENCODER_B = 1;
             constexpr bool REVERSE_ENCODER = true; 
-            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION;
+            constexpr double RADIUS = 0.0254 *2;
+            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
         }
         constexpr bool WHEEL_SIDE = true;
     }
@@ -198,9 +194,42 @@ namespace DriveConstants {
             constexpr int ID_ENCODER_A = 2;
             constexpr int ID_ENCODER_B = 3;
             constexpr bool REVERSE_ENCODER = false;
-            constexpr double DISTANCE_PER_PULSE = 1.0/ENCODER_TICKS_PER_REVOLUTION; // TODO : set appropriate distance
+            constexpr double RADIUS = 0.0254 *2;
+            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
         }
         constexpr bool WHEEL_SIDE = false;
+    }
+}
+
+namespace DeepClimbConstants {
+
+    constexpr double REDUCTION = 10.0/3.0;
+
+    namespace Motors {
+            constexpr int ID_FRONT = 6;
+            constexpr int ID_BACK = 7;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+            constexpr bool INVERTED = false;
+            constexpr int CURRENT_LIMIT = 40;
+            constexpr double RAMP = 0.5;
+            constexpr double VOLTAGE_COMPENSATION = 10.0; //12
+    }
+    namespace Encoder {
+        constexpr int ENCODER_A_ID = 2;
+        constexpr int ENCODER_B_ID = 3;
+        namespace Settings {
+            constexpr bool REVERSED = false;
+            constexpr double DISTANCE_PER_PULSE = ( 360.0 / REDUCTION ) / 2048; //2048 is the resolution of the encoder
+        }
+    }
+    namespace HallEffectSensor {
+        constexpr int UP = 0;
+        constexpr int DOWN = 1;
+    }
+    namespace SPEED {
+        constexpr double REST = 0.0;
+        constexpr double CLIMB = (-1.0);
+        constexpr double DECLIMB = -(CLIMB);
     }
 }
 
@@ -216,12 +245,10 @@ namespace ControlPanelConstants {
         // ROTATION Joystick
         constexpr int SLOW_DRIVE_BUTTON = 1;
         // XBOX_CONTROLLER 
-        constexpr int L2 = 1; // DO NOT USE !
-        constexpr int L3 = 2;
-        constexpr int L4 = 4;
-        constexpr int CORALSTATION = 3;
-        constexpr int GRIPPER = 5;
-        constexpr int ALGAE = 6;
+        constexpr int DROP = 2;
+        constexpr int CATCH = 1;
+        constexpr int CLimb = 7;
+        constexpr int DeClimb = 5;
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;

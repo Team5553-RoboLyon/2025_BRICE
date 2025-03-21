@@ -10,6 +10,7 @@
 #include <frc2/command/CommandPtr.h>
 #include <cameraserver/CameraServer.h>
 
+
 #include "RobotContainer.h"
 
 class Robot : public frc::TimedRobot {
@@ -24,7 +25,7 @@ class Robot : public frc::TimedRobot {
   void AutonomousExit() override;
   void TeleopInit() override;
   void TeleopPeriodic() override;
-  void TeleopExit() override;
+  void TeleopExit() override;  
   void TestInit() override;
   void TestPeriodic() override;
   void TestExit() override;
@@ -33,4 +34,6 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   // int count = 0;
   RobotContainer m_container;
+  double initialPosition;
+  double target = 3.0; // in meters
 };
