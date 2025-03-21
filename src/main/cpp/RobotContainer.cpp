@@ -3,16 +3,18 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "RobotContainer.h"
+#include "frc/shuffleboard/Shuffleboard.h"
 
 #include <frc2/command/Commands.h>
-
 RobotContainer::RobotContainer() {
-  ConfigureBindings();
-m_drivetrain.SetDefaultCommand(Drive( [=]
+    ConfigureBindings();
+  
+  m_drivetrain.SetDefaultCommand(Drive( [=]
     { return m_joystickForward.GetY(); },
                                       [=]
     { return m_joystickRotation.GetZ(); },
     &m_drivetrain));
+  m_manipulator.SetDefaultCommand(MoveManipulator(&m_manipulator, [=]{ return m_xboxControllerCopilot.GetY(); }, [=]{ return m_xboxControllerCopilot.GetZ(); }));
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -20,10 +22,11 @@ void RobotContainer::ConfigureBindings() {
   m_SlowDriveButton.WhileTrue(frc2::InstantCommand([this] {m_drivetrain.slower = true;}).ToPtr());
   m_SlowDriveButton.WhileFalse(frc2::InstantCommand([this] {m_drivetrain.slower = false;}).ToPtr());
 
-  // m_L2.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L2,   [=]{ return m_Gripper.Get();}).ToPtr()); DO NOT USE THIS
-  m_L3.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L3,   [=]{ return m_Gripper.Get();}).ToPtr());
-  m_L4.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::L4,   [=]{ return m_Gripper.Get();}).ToPtr());
-  m_CoralStation.WhileTrue(MoveManipulator(&m_manipulator, ManipulatorConstants::State::CoralStation, [=]{ return m_Gripper.Get();}).ToPtr());
+  Drop.WhileTrue(DropCoral(&m_Gripper).ToPtr());
+  Catch.WhileTrue(TakeCoral(&m_Gripper).ToPtr());
+
+  declimbButton.WhileTrue(DeClimb(&m_climb).ToPtr());
+  climbButton.WhileTrue(Climb(&m_climb).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
