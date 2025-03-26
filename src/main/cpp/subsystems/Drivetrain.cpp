@@ -63,12 +63,16 @@ double Drivetrain::DriveAuto()
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
+    //Reversed drive mode
     if(m_reversedDrive)
         FwdJoystick = -FwdJoystick;
+
+    //Slower mode
     if(slower) {
         FwdJoystick = FwdJoystick / ControlPanelConstants::Settings::SLOW_RATE;
         RotateJoystick = RotateJoystick / ControlPanelConstants::Settings::SLOW_RATE;
     }
+    //Limit the rate of change of the joystick
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
