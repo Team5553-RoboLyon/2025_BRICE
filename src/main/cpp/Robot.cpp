@@ -9,7 +9,6 @@
 #include <iostream>
 
 Robot::Robot() {
-  frc::CameraServer::StartAutomaticCapture();
 }
 
 void Robot::RobotPeriodic() {
@@ -20,7 +19,6 @@ void Robot::DisabledInit() {
 }
 
 void Robot::DisabledPeriodic() {
-  m_container.m_manipulator.isInitialized = false;
 }
 
 void Robot::DisabledExit() {}

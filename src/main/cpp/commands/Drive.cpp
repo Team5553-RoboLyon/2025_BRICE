@@ -18,9 +18,7 @@ void Drive::Initialize() {}
 void Drive::Execute() {
   if(!m_pDrivetrain->isAuto) {
     double forward = -m_Forward();
-    frc::SmartDashboard::PutNumber("forward", forward);
     double turn = m_Turn();
-    frc::SmartDashboard::PutNumber("turn", turn);
     m_pDrivetrain->Drive(forward, turn);
   }
 }

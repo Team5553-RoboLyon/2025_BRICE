@@ -63,6 +63,14 @@ double Drivetrain::DriveAuto()
 }
 
 void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
+    if(NABS(FwdJoystick)<ControlPanelConstants::Settings::DEADBAND)
+    {
+        FwdJoystick = 0.0;
+    }
+    if(NABS(RotateJoystick)<ControlPanelConstants::Settings::DEADBAND)
+    {
+        RotateJoystick = 0.0;
+    }
     //Reversed drive mode
     if(m_reversedDrive)
         FwdJoystick = -FwdJoystick;
@@ -76,16 +84,8 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
-    m_sigma = NLERP(0.5, 0.5, NABS(FwdJoystick)); // Constant : 0.5
+    m_sigma = NLERP(0.1, 0.4, NABS(RotateJoystick));
 
-    if (utils::epsilonEquals(FwdJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
-    {
-        FwdJoystick = 0.0;
-    }
-    if (utils::epsilonEquals(RotateJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
-    {
-        RotateJoystick = 0.0;
-    }
     m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::LeftGearbox::WHEEL_SIDE));
     m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::RightGearbox::WHEEL_SIDE));
     frc::SmartDashboard::PutNumber("Back left", m_MotorBackLeft.Get());
@@ -99,6 +99,8 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
     frc::SmartDashboard::PutBoolean("reversed drive", m_reversedDrive);
     frc::SmartDashboard::PutBoolean("slower", slower);
     frc::SmartDashboard::PutNumber("sigma", m_sigma);
+    frc::SmartDashboard::PutNumber("FWD Joystick", FwdJoystick);
+    frc::SmartDashboard::PutNumber("Rotate Joystick", RotateJoystick);
 }
 
 

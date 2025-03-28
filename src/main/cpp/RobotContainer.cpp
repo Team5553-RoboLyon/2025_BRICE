@@ -18,8 +18,7 @@ RobotContainer::RobotContainer() {
 
 void RobotContainer::ConfigureBindings() {
   m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
-  m_SlowDriveButton.WhileTrue(frc2::InstantCommand([this] {m_drivetrain.slower = true;}).ToPtr());
-  m_SlowDriveButton.WhileFalse(frc2::InstantCommand([this] {m_drivetrain.slower = false;}).ToPtr());
+  m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
