@@ -100,7 +100,7 @@ namespace ControlPanelConstants {
     namespace Joystick{
         constexpr int FORWARD_ID = 0;
         constexpr int ROTATION_ID = 1;
-        constexpr int XBOX_CONTROLLER_ID = 2;
+        constexpr int COPILOT_CONTROLLER_ID = 2;
     }
     namespace Button {
         // FORWARD Joystick

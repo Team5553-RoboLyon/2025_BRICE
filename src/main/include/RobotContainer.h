@@ -32,7 +32,7 @@ class RobotContainer {
  private:
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
-  frc::PS5Controller m_controllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
+  frc::PS5Controller m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
 
   frc2::JoystickButton m_CoralStationButton{&m_controllerCopilot, ControlPanelConstants::Button::CORAL_STATION};
   frc2::JoystickButton m_L1Button{&m_controllerCopilot, ControlPanelConstants::Button::L1};
