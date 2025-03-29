@@ -32,7 +32,4 @@ class Robot : public frc::TimedRobot {
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   RobotContainer m_container;
-
-  double initialPosition;
-  double target = 3.0;
 };

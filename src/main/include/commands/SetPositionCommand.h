@@ -6,7 +6,9 @@
 
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
-#include "subsystems/DriveTrain.h"
+
+#include "subsystems/Elevator.h"
+#include "Constants.h"
 
 /**
  * An example command.
@@ -15,10 +17,10 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class Drive
-    : public frc2::CommandHelper<frc2::Command, Drive> {
+class SetPositionCommand
+    : public frc2::CommandHelper<frc2::Command, SetPositionCommand> {
  public:
-  Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain);
+  SetPositionCommand(Elevator *elevator, Stage stage);
 
   void Initialize() override;
 
@@ -28,8 +30,7 @@ class Drive
 
   bool IsFinished() override;
 
-  private:
-  std::function<double()> m_Forward;
-  std::function<double()> m_Turn;
-  Drivetrain *m_pDrivetrain;
+  private :
+  Elevator* p_elevator;
+  Stage m_stage;
 };
