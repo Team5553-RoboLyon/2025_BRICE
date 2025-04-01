@@ -6,7 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc/Joystick.h>
-#include <frc/XboxController.h>
+#include <frc/PS5Controller.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/InstantCommand.h>
@@ -16,22 +16,32 @@
 #include <frc2/command/button/CommandXboxController.h>
 #include <frc2/command/button/POVButton.h>
 #include <frc2/command/button/CommandGenericHID.h>
-#include "commands/Drive.h"
-#include "subsystems/Drivetrain.h"
+
+#include "subsystems/Outtake.h"
 #include "Constants.h"
+#include "commands/CatchCoralCommand.h"
+#include "commands/DropCoralCommand.h"
 
 class RobotContainer {
  public:
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
-
-    Drivetrain m_drivetrain;
- private:
+  
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
-  frc::Joystick m_xboxControllerCopilot{ControlPanelConstants::Joystick::XBOX_CONTROLLER_ID};
-  frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
-  frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
+  frc::PS5Controller m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
+
+  Outtake m_outtake;
+ private:
+
+  frc2::JoystickButton m_CoralStationButton{&m_controllerCopilot, ControlPanelConstants::Button::CORAL_STATION};
+  frc2::JoystickButton m_L1Button{&m_controllerCopilot, ControlPanelConstants::Button::L1};
+  frc2::JoystickButton m_L2Button{&m_controllerCopilot, ControlPanelConstants::Button::L2};
+  frc2::JoystickButton m_L3Button{&m_controllerCopilot, ControlPanelConstants::Button::L3};
+  frc2::JoystickButton m_L4Button{&m_controllerCopilot, ControlPanelConstants::Button::L4};
+  frc2::JoystickButton m_TakeButton{&m_controllerCopilot, ControlPanelConstants::Button::TAKE};
+  frc2::JoystickButton m_OuttakeButton{&m_controllerCopilot, ControlPanelConstants::Button::OUTTAKE};
+  frc2::JoystickButton m_OpenLoopButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP};
   void ConfigureBindings();
 };

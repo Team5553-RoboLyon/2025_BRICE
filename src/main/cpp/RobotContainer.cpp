@@ -8,17 +8,12 @@
 #include <frc2/command/Commands.h>
 RobotContainer::RobotContainer() {
     ConfigureBindings();
-  
-  m_drivetrain.SetDefaultCommand(Drive( [=]
-    { return m_joystickForward.GetY(); },
-                                      [=]
-    { return m_joystickRotation.GetZ(); },
-    &m_drivetrain));
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
-  m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
+    m_TakeButton.WhileTrue(CatchCoralCommand(&m_outtake, outtakeConstants::Speed::CATCHING).ToPtr()); // TODO : add interrupt
+    m_TakeButton.WhileTrue(CatchCoralCommand(&m_outtake, outtakeConstants::Speed::UP).ToPtr());
+    m_OpenLoopButton.ToggleOnTrue(frc2::InstantCommand([this] { m_outtake.SetControlMode(ControlMode::OPEN_LOOP); }).ToPtr()); //TODO : recheck triggers
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
