@@ -15,29 +15,34 @@ class Outtake : public frc2::SubsystemBase {
 
   void SetSpeed(double speed);
   void SetControlMode(ControlMode mode);
+
+  void AskToCatch();
+  void AskToDrop();
+  void StopAsking();
+  bool IsCaught();
+  bool IsDropped();
+  
   ControlMode GetControlMode();
-  /**
-   * Will be called periodically whenever the CommandScheduler runs.
-   */
   void Periodic() override;
 
   bool isRumbled = false;
-  bool canCatch = false;
-  bool canDrop = false;
+  double rumbleTime = 0.0;
  private:
   enum class State {
     REST,
     STARTING,
     CATCHING,
     CAUGHT,
-    DROPPING,
-    DROPPED,
+    DROPPING
   };
   State m_state = State::REST;
+  bool m_canCatch = false;
+  bool m_canDrop = false;
   rev::spark::SparkMax m_motor{outtakeConstants::Motor::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_motorConfig;
   frc::DigitalInput m_IRBreakerDown{outtakeConstants::Sensor::IRbreaker::DOWN_ID};
   frc::DigitalInput m_IRBreakerUp{outtakeConstants::Sensor::IRbreaker::UP_ID};
+  frc::DigitalInput m_IRBreakerUp2{outtakeConstants::Sensor::IRbreaker::UP2_ID};
 
   bool m_isIRBreakerDownTriggered;
   bool m_isIRBreakerUpTriggered;

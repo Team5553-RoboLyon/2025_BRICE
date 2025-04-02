@@ -17,26 +17,55 @@ Outtake::Outtake()
                     rev::spark::SparkBase::ResetMode::kResetSafeParameters,
                     rev::spark::SparkBase::PersistMode::kPersistParameters);
 }
-  
+
+void Outtake::SetSpeed(double speed) 
+{
+    m_output = speed;
+}
 void Outtake::SetControlMode(ControlMode mode) 
 {
     m_controlMode = mode;
 }
+void Outtake::AskToCatch() 
+{
+    if(m_state == State::REST)
+    {
+        m_canCatch = true;
+    }
+}
+void Outtake::AskToDrop() 
+{
+    if(m_state == State::CAUGHT)
+    {
+        m_canDrop = true;
+    }
+}
+void Outtake::StopAsking() 
+{
+    m_canCatch = false;
+    m_canDrop = false;
+}
+bool Outtake::IsCaught() 
+{
+    return m_state == State::CAUGHT;
+}
+bool Outtake::IsDropped() 
+{
+    return m_state == State::REST;
+}
+
 ControlMode Outtake::GetControlMode()
 {
     return m_controlMode;
 }
 
 
-void Outtake::SetSpeed(double speed) 
-{
-    m_output = speed;
-}
 // This method will be called once per scheduler run
 void Outtake::Periodic() 
 {
     m_isIRBreakerDownTriggered = m_IRBreakerDown.Get() == outtakeConstants::Sensor::IRbreaker::IS_TRIGGERED;
-    m_isIRBreakerUpTriggered = m_IRBreakerUp.Get() == outtakeConstants::Sensor::IRbreaker::IS_TRIGGERED;
+    m_isIRBreakerUpTriggered = m_IRBreakerUp.Get() == outtakeConstants::Sensor::IRbreaker::IS_TRIGGERED 
+                            || m_IRBreakerUp2.Get() == outtakeConstants::Sensor::IRbreaker::IS_TRIGGERED;
 
     switch (m_controlMode)
     {
@@ -56,12 +85,18 @@ void Outtake::closedLoop()
     switch (m_state)
     {
     case State::REST:
-        if(m_isIRBreakerDownTriggered) // is loaded
+        if(m_isIRBreakerDownTriggered && !m_isIRBreakerUpTriggered) // is loaded
         {
-            m_state = State::CAUGHT;
-            canCatch = false;
+            m_state = State::STARTING;
+            m_motor.Set(outtakeConstants::Speed::UP);
+            m_canCatch = true;
         }
-        else if(canCatch)
+        else if(m_isIRBreakerDownTriggered) {
+            m_state = State::STARTING;
+            m_motor.Set(outtakeConstants::Speed::STARTING);
+            m_canCatch = true;
+        }
+        else if(m_canCatch)
         {
             m_state = State::STARTING;
             m_motor.Set(outtakeConstants::Speed::STARTING);
@@ -74,7 +109,7 @@ void Outtake::closedLoop()
             m_state = State::CATCHING;
             m_motor.Set(outtakeConstants::Speed::CATCHING);
         }
-        else if(!canCatch) // stop catching
+        else if(!m_canCatch) // stop catching
         {
             m_state = State::REST;
             m_motor.Set(outtakeConstants::Speed::REST);
@@ -82,16 +117,18 @@ void Outtake::closedLoop()
         break; // end of State::STARTING
     
     case State::CATCHING:
-        if(m_isIRBreakerDownTriggered) // is caught
+        if(m_isIRBreakerDownTriggered && !m_isIRBreakerUpTriggered) // is caught
         {
             m_state = State::CAUGHT;
             m_motor.Set(outtakeConstants::Speed::REST);
-            canCatch = false;
+            m_canCatch = false;
+            isRumbled = true;
+            rumbleTime = outtakeConstants::TIME_RUMBLE_CAUGHT;
         }
         break; // end of State::CATCHING
 
     case State::CAUGHT:
-        if(canDrop)
+        if(m_canDrop)
         {
             m_state = State::DROPPING;
             m_motor.Set(outtakeConstants::Speed::DROPPING);
@@ -104,9 +141,10 @@ void Outtake::closedLoop()
         {
             if(m_counter > outtakeConstants::TIME_FOR_DROP)
             {
-                m_state = State::DROPPED;
+                m_state = State::REST;
                 m_motor.Set(outtakeConstants::Speed::REST);
                 isRumbled = true;
+                rumbleTime = outtakeConstants::TIME_RUMBLE_DROPPED;
                 m_counter = 0.0;
             }
             else
@@ -114,37 +152,24 @@ void Outtake::closedLoop()
                 m_counter++;
             }
         }
-        else if(!canDrop)
+        else if(!m_canDrop)
         {
             if(!m_isIRBreakerDownTriggered) 
             {
-                m_state = State::DROPPED;
+                m_state = State::REST;
                 m_motor.Set(outtakeConstants::Speed::REST);
                 isRumbled = true;
+                rumbleTime = outtakeConstants::TIME_RUMBLE_DROPPED;
                 m_counter = 0.0;
             }
             else
             {
                 m_state = State::STARTING;
                 m_motor.Set(outtakeConstants::Speed::UP);
-                canCatch = true;
+                m_canCatch = true;
             }
         }
         break; // end of State::DROPPING
-    
-    case State::DROPPED: // TODO : add this logic in Robot.cpp
-        if(m_counter > outtakeConstants::TIME_FOR_RUMBLE)
-        {
-            m_state = State::REST;
-            m_motor.Set(outtakeConstants::Speed::REST);
-            m_counter = 0.0;
-            isRumbled = false;
-        }
-        else
-        {
-            m_counter++;
-        }
-        break; // end of State::DROPPED
 
     default:
         break;

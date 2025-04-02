@@ -44,7 +44,17 @@ void Robot::TeleopInit() {
 
   if(m_container.m_outtake.isRumbled) 
   {
-    m_container.m_controllerCopilot.SetRumble(frc::GenericHID::kBothRumble, 0.5);
+    if(m_rumbleCounter < m_container.m_outtake.rumbleTime)
+    {
+      m_container.m_controllerCopilot.SetRumble(frc::GenericHID::kBothRumble, 0.5);
+      m_rumbleCounter++;
+    }
+    else 
+    {
+      m_container.m_controllerCopilot.SetRumble(frc::GenericHID::kBothRumble, 0.0);
+      m_container.m_outtake.isRumbled = false;
+      m_rumbleCounter = 0;
+    }
   }
 }
 

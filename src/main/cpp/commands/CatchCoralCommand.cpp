@@ -13,7 +13,7 @@ void CatchCoralCommand::Initialize() {
   switch (m_outtake->GetControlMode())
   {
     case ControlMode::CLOSED_LOOP:
-      m_outtake->canCatch = true;
+      m_outtake->AskToCatch();
       break; // end of ControlMode::CLOSED_LOOP
     
     case ControlMode::OPEN_LOOP:
@@ -30,7 +30,7 @@ void CatchCoralCommand::End(bool interrupted) {
   switch (m_outtake->GetControlMode())
   {
     case ControlMode::CLOSED_LOOP:
-      m_outtake->canCatch = false;  
+      m_outtake->AskToCatch();
       break; // end of ControlMode::CLOSED_LOOP
     
     case ControlMode::OPEN_LOOP:
@@ -41,5 +41,5 @@ void CatchCoralCommand::End(bool interrupted) {
 
 // Returns true when the command should end.
 bool CatchCoralCommand::IsFinished() {
-  return m_outtake->canCatch;
+  return m_outtake->IsCaught();
 }

@@ -23,7 +23,8 @@ namespace outtakeConstants
 {   
     constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
     constexpr double TIME_FOR_DROP = 0.2 / TIME_PER_CYCLE;
-    constexpr double TIME_FOR_RUMBLE = 0.4 / TIME_PER_CYCLE;
+    constexpr double TIME_RUMBLE_CAUGHT = 0.36 / TIME_PER_CYCLE;
+    constexpr double TIME_RUMBLE_DROPPED = 0.16 / TIME_PER_CYCLE;
     namespace Motor
     {
         constexpr int ID = 9;
@@ -37,8 +38,9 @@ namespace outtakeConstants
     {
         namespace IRbreaker
         {
-            constexpr int DOWN_ID = 6;
-            constexpr int UP_ID = 7;
+            constexpr int DOWN_ID = 13;
+            constexpr int UP_ID = 14;
+            constexpr int UP2_ID = 15;
             constexpr bool IS_TRIGGERED = true;
         }
     }

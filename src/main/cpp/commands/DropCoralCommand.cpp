@@ -13,7 +13,7 @@ void DropCoralCommand::Initialize() {
   switch (m_outtake->GetControlMode())
   {
     case ControlMode::CLOSED_LOOP:
-      m_outtake->canDrop = true;
+      m_outtake->AskToDrop();
       break; // end of ControlMode::CLOSED_LOOP
     
     case ControlMode::OPEN_LOOP:
@@ -30,7 +30,7 @@ void DropCoralCommand::End(bool interrupted) {
   switch (m_outtake->GetControlMode())
   {
     case ControlMode::CLOSED_LOOP:
-      m_outtake->canDrop = false;  
+      m_outtake->StopAsking();
       break; // end of ControlMode::CLOSED_LOOP
     
     case ControlMode::OPEN_LOOP:
@@ -41,5 +41,5 @@ void DropCoralCommand::End(bool interrupted) {
 
 // Returns true when the command should end.
 bool DropCoralCommand::IsFinished() {
-  return m_outtake->canDrop;
+  return m_outtake->IsDropped();
 }
