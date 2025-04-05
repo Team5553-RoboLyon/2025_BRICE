@@ -8,17 +8,10 @@
 #include <frc2/command/Commands.h>
 RobotContainer::RobotContainer() {
     ConfigureBindings();
-  
-  m_drivetrain.SetDefaultCommand(Drive( [=]
-    { return m_joystickForward.GetY(); },
-                                      [=]
-    { return m_joystickRotation.GetZ(); },
-    &m_drivetrain));
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
-  m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
+  // je m'en occupe tkt
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

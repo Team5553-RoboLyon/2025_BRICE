@@ -12,69 +12,85 @@
 #define M_PI 3.14159265358979323846
 #endif
 constexpr double ENCODER_TICKS_PER_REVOLUTION = 2048.0;
+constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
-namespace DriveConstants {
+enum class ControlMode {
+    CLOSED_LOOP,
+    OPEN_LOOP
+};
 
-    namespace LeftGearbox{
-        namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 2;
-            constexpr int BACK_MOTOR_ID = 3;
-            constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = false;
-            constexpr int MOTOR_CURRENT_LIMIT = 40;
-            constexpr double MOTOR_RAMP = 0.1;
-            constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
-        }
-
-        namespace Encoder{
-            constexpr int ID_ENCODER_A = 0;
-            constexpr int ID_ENCODER_B = 1;
-            constexpr bool REVERSE_ENCODER = true; 
-            constexpr double RADIUS = 0.0254 *2;
-            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
-        }
-        constexpr bool WHEEL_SIDE = true;
+namespace strafferConstants
+{   
+    constexpr ControlMode defaultMode = ControlMode::OPEN_LOOP;
+    namespace Motor
+    {
+        constexpr int ID = 8;
+        constexpr double VOLTAGE_COMPENSATION = 10.0;
+        constexpr double CURRENT_LIMIT = 20.0;
+        constexpr double RAMP_RATE = 0.2;
+        constexpr bool INVERTED = true;         //TODO : test rotation
+        constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
     }
-
-    namespace RightGearbox{
-        namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 4;
-            constexpr int BACK_MOTOR_ID = 5;
-            constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = true;
-            constexpr int MOTOR_CURRENT_LIMIT = 40;
-            constexpr double MOTOR_RAMP = 0.1;
-            constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
+    namespace Sensor 
+    {
+        namespace LimitSwitch
+        {
+            constexpr int LEFT_ID = 12;
+            constexpr int RIGHT_ID = 11;
+            constexpr bool IS_TRIGGERED = true; // TODO : verif
         }
-
-        namespace Encoder{
-            constexpr int ID_ENCODER_A = 2;
-            constexpr int ID_ENCODER_B = 3;
-            constexpr bool REVERSE_ENCODER = false;
-            constexpr double RADIUS = 0.0254 *2;
-            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION;
+        namespace Encoder 
+        {
+            constexpr int A_ID = 9;
+            constexpr int B_ID = 10;
+            constexpr bool REVERSED = false;     //TODO : test rotation
+            constexpr double REDUCTION = 1.0; //TODO : test reduc
+            constexpr double RADIUS = (0.005*18/M_PI)/2.0;
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
         }
-        constexpr bool WHEEL_SIDE = false;
     }
+    
+    namespace Speed 
+    {
+        //speed for open loop
+        constexpr double MIN = -1.0;
+        constexpr double MAX = 1.0;
+    }
+    namespace PID // TODO : set good Ks
+    {
+        constexpr double KP = 1.0;
+        constexpr double KI = 0.0;
+        constexpr double KD = 0.00;
+        constexpr double TOLERANCE = 0.001;
+    }
+    namespace Setpoint
+    {
+        constexpr double LEFT_SIDE = 0.0;
+        constexpr double RIGHT_SIDE = 0.0;
+        constexpr double CENTER = 0.25;
+    } 
 }
+
 
 namespace ControlPanelConstants {
     namespace Joystick{
         constexpr int FORWARD_ID = 0;
         constexpr int ROTATION_ID = 1;
-        constexpr int XBOX_CONTROLLER_ID = 2;
+        constexpr int COPILOT_CONTROLLER_ID = 2;
     }
-    namespace Button {
+    namespace Button { // TODO : recheck triggers
         // FORWARD Joystick
         constexpr int REVERSED_DRIVE_BUTTON = 1;
         // ROTATION Joystick
-        constexpr int SLOW_DRIVE_BUTTON = 1;
+        constexpr int SLOW_DRIVE_BUTTON = 1; 
         // XBOX_CONTROLLER
-    }
-    namespace Settings{
-        constexpr double SLOW_RATE = 2.0;
-        constexpr double DEADBAND = 0.05;
-        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(0.45);
-        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(0.5);
+        constexpr int CORAL_STATION = 1;
+        constexpr int L1 = 8;
+        constexpr int L2 = 3;
+        constexpr int L3 = 2;
+        constexpr int L4 = 4;
+        constexpr int TAKE = 5;
+        constexpr int OUTTAKE = 6;
+        constexpr int OPEN_LOOP = 7;
     }
 }
