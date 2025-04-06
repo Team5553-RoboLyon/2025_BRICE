@@ -25,6 +25,16 @@ public:
   double GetOutput();
   void SetSetpoint(double setpoint);
   double GetYaw(int Id);
+  /**
+   * @brief Retrieves the horizontal distance measured by the camera.
+   *
+   * This function calculates the horizontal distance between the camera
+   * and the target area or object in view. It can be used to determine
+   * how far the target is from the camera's horizontal position.
+   *
+   * @return A double representing the horizontal distance in meters.
+   */
+  double GetHorizontalDistance();
   void Periodic() override;
 
   double Air;

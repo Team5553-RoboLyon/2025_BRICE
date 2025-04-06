@@ -13,7 +13,7 @@ int Camera::getAprilId()
     photon::PhotonPipelineResult result = m_camera.GetLatestResult();
     if (result.HasTargets())
     {
-        return m_camera.GetLatestResult().GetBestTarget().GetFiducialId();
+        return result.GetBestTarget().GetFiducialId();
     }
     else
     {
@@ -87,6 +87,19 @@ double Camera::GetYaw(int Id)
         m_horizontalRollingAverage.add(m_horizontalRollingAverage.get());
     }
     return m_horizontalRollingAverage.get();
+}
+
+double Camera::GetHorizontalDistance()
+{
+    photon::PhotonPipelineResult result = m_camera.GetLatestResult();
+    if (result.HasTargets())
+    {
+        return result.GetBestTarget().GetBestCameraToTarget().Y().value();
+    }
+    else
+    {
+        return 0.0;
+    }
 }
 
 void Camera::Periodic()
