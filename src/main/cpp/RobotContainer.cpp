@@ -8,6 +8,8 @@
 #include <frc2/command/Commands.h>
 RobotContainer::RobotContainer() {
     ConfigureBindings();
+    m_straffer.SetDefaultCommand(Command(&m_straffer, [this] { return m_controllerCopilot.GetLeftX(); }).ToPtr());
+
 }
 
 void RobotContainer::ConfigureBindings() {

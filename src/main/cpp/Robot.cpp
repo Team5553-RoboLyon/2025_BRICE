@@ -18,6 +18,7 @@ void Robot::DisabledInit() {
 }
 
 void Robot::DisabledPeriodic() {
+  m_container.m_straffer.isInitialized = false;
 }
 
 void Robot::DisabledExit() {}

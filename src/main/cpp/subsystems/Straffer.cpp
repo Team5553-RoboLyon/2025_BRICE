@@ -23,10 +23,13 @@ Straffer::Straffer()
 
     m_strafferPIDController.SetTolerance(strafferConstants::PID::TOLERANCE);
     m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
+
+    m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
+
 }
 void Straffer::SetJoystickInput(double input) 
 {
-    m_joystickInput = input;
+    m_joystickInput = m_rateLimiter.Update(input);
 }
 void Straffer::SetControlMode(ControlMode mode) 
 {
@@ -44,15 +47,34 @@ bool Straffer::IsAtDesiredPosition()
 {
     return m_strafferPIDController.AtSetpoint();
 }
+
+void Straffer::Reset() 
+{
+    if(m_isLeftLimitSwitchTriggered)
+    {
+        m_motor.Set(0.0);
+        m_output = 0.0;
+        m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
+        isInitialized = true;
+        m_encoder.Reset();
+    }
+    else
+    {
+        m_motor.Set(strafferConstants::Speed::INIT);
+    }
+}
 // This method will be called once per scheduler run
 void Straffer::Periodic() {
-    //TODO add reset beginning
-
-    // ----------------- Save sensors value -----------------
+    // ---------------- Save sensors value -----------------
     m_isLeftLimitSwitchTriggered = m_leftLimitSwitch.Get() == strafferConstants::Sensor::LimitSwitch::IS_TRIGGERED;
-    m_isRightLimitSwitchTriggered = m_rightLimitSwitch.Get() == strafferConstants::Sensor::LimitSwitch::IS_TRIGGERED;
+    m_isRightLimitSwitchTriggered = m_rightLimitSwitch.Get() == strafferConstants::Sensor::LimitSwitch::IS_RIGHT_TRIGGERED;
     m_width = m_encoder.GetDistance();
 
+    if(!isInitialized)
+    {
+        Reset();
+        return;
+    }
     switch (m_controlMode)
     {
     case ControlMode::CLOSED_LOOP:
@@ -64,6 +86,11 @@ void Straffer::Periodic() {
     default:
         break;
     }
+    frc::SmartDashboard::PutNumber("m output", m_output);
+    frc::SmartDashboard::PutBoolean("left limit", m_isLeftLimitSwitchTriggered);
+    frc::SmartDashboard::PutBoolean("right limit", m_isRightLimitSwitchTriggered);
+    frc::SmartDashboard::PutNumber("encoder", m_encoder.GetDistance());
+
     m_motor.Set(m_output);
 }
 
@@ -90,6 +117,14 @@ void Straffer::ClosedLoopControl()
 void Straffer::OpenLoopControl()
 {   
     m_output = m_joystickInput;
+    if(m_width < 0.05 && m_output < 0.0)
+    {
+        m_output = 0.0;
+    }
+    else if(m_width > 0.32 && m_output > 0.0)
+    {
+        m_output = 0.0;
+    }
     if(m_isLeftLimitSwitchTriggered && m_output < 0.0) 
     {
         m_output = 0.0;

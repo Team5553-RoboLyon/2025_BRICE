@@ -11,7 +11,8 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-constexpr double ENCODER_TICKS_PER_REVOLUTION = 2048.0;
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K4X  = 8192.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
 enum class ControlMode {
@@ -27,8 +28,8 @@ namespace strafferConstants
         constexpr int ID = 8;
         constexpr double VOLTAGE_COMPENSATION = 10.0;
         constexpr double CURRENT_LIMIT = 20.0;
-        constexpr double RAMP_RATE = 0.2;
-        constexpr bool INVERTED = true;         //TODO : test rotation
+        constexpr double RAMP_RATE = 0.0;
+        constexpr bool INVERTED = true; 
         constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
     }
     namespace Sensor 
@@ -37,16 +38,17 @@ namespace strafferConstants
         {
             constexpr int LEFT_ID = 12;
             constexpr int RIGHT_ID = 11;
-            constexpr bool IS_TRIGGERED = true; // TODO : verif
+            constexpr bool IS_TRIGGERED = true;
+            constexpr bool IS_RIGHT_TRIGGERED = false;
         }
         namespace Encoder 
         {
-            constexpr int A_ID = 9;
-            constexpr int B_ID = 10;
-            constexpr bool REVERSED = false;     //TODO : test rotation
-            constexpr double REDUCTION = 1.0; //TODO : test reduc
+            constexpr int A_ID = 8; // TODO : change LDCHT
+            constexpr int B_ID = 9;
+            constexpr bool REVERSED = false;
+            constexpr double REDUCTION = 1.0;
             constexpr double RADIUS = (0.005*18/M_PI)/2.0;
-            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K2X;
         }
     }
     
@@ -55,6 +57,7 @@ namespace strafferConstants
         //speed for open loop
         constexpr double MIN = -1.0;
         constexpr double MAX = 1.0;
+        constexpr double INIT = - 0.15;
     }
     namespace PID // TODO : set good Ks
     {
@@ -69,6 +72,10 @@ namespace strafferConstants
         constexpr double RIGHT_SIDE = 0.0;
         constexpr double CENTER = 0.25;
     } 
+    namespace Settings
+    {
+        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2);
+    }
 }
 
 

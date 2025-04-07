@@ -18,6 +18,7 @@
 #include <frc2/command/button/CommandGenericHID.h>
 
 #include "subsystems/Straffer.h"
+#include "commands/Command.h"
 #include "Constants.h"
 
 class RobotContainer {
