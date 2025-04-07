@@ -117,11 +117,11 @@ void Straffer::ClosedLoopControl()
 void Straffer::OpenLoopControl()
 {   
     m_output = m_joystickInput;
-    if(m_width < 0.05 && m_output < 0.0)
+    if(m_width < strafferConstants::Settings::LEFT_LIMIT && m_output < 0.0)
     {
         m_output = 0.0;
     }
-    else if(m_width > 0.32 && m_output > 0.0)
+    else if(m_width > strafferConstants::Settings::RIGHT_LIMIT && m_output > 0.0)
     {
         m_output = 0.0;
     }

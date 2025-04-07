@@ -75,6 +75,8 @@ namespace strafferConstants
     namespace Settings
     {
         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2);
+        constexpr double LEFT_LIMIT = 0.05;
+        constexpr double RIGHT_LIMIT = 0.32;
     }
 }
 

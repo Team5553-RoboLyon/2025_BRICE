@@ -51,6 +51,4 @@ class Straffer : public frc2::SubsystemBase {
   void OpenLoopControl();
   void ClosedLoopControl();
   void Reset();
-
-  // between 0 and 0.384
 };
