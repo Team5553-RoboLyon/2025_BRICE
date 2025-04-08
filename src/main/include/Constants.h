@@ -11,7 +11,8 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-constexpr double ENCODER_TICKS_PER_REVOLUTION = 2048.0;
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K4X = 8192.0;
 
 enum class DriveMode {
     CLOSED_LOOP,
@@ -59,7 +60,7 @@ namespace elevatorConstants
             constexpr bool REVERSED = false;     //TODO : test rotation
             constexpr double REDUCTION = 1.0; //TODO : test reduc
             constexpr double RADIUS = (0.005*36.0/M_PI)/2.0; //TODO : test radius
-            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION;
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K4X;
         }
         namespace LimitSwitch 
         {

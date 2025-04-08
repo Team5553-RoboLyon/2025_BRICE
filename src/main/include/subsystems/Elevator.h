@@ -39,7 +39,7 @@ class Elevator : public frc2::SubsystemBase {
   rev::spark::SparkMax m_rightMotor{elevatorConstants::Motors::Right::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_rightMotorConfig;
 
-  frc::Encoder m_encoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID};
+  frc::Encoder m_encoder{elevatorConstants::Sensor::Encoder::A_ID, elevatorConstants::Sensor::Encoder::B_ID, elevatorConstants::Sensor::Encoder::REVERSED, frc::Encoder::EncodingType::k4X};
   frc::DigitalInput m_topLimitSwitch{elevatorConstants::Sensor::LimitSwitch::TOP_ID};
   frc::DigitalInput m_topLimitSwitch2{elevatorConstants::Sensor::LimitSwitch::TOP_2_ID};
   frc::DigitalInput m_bottomLimitSwitch{elevatorConstants::Sensor::LimitSwitch::BOTTOM_ID};

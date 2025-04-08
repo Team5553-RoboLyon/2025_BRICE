@@ -28,7 +28,7 @@ NdoubleRollingAverage::~NdoubleRollingAverage()
 	free(m_pdouble);			// lib�re la m�moire
 }
 
-const double NdoubleRollingAverage::add(const double value)
+double NdoubleRollingAverage::add(const double value)
 {
 	m_sum += (value - *m_pdouble);
 	m_average = m_sum/(m_last+1);
@@ -82,7 +82,7 @@ NfloatRollingAverage::~NfloatRollingAverage()
 	free(m_pfloat);			// lib�re la m�moire
 }
 
-const float NfloatRollingAverage::add(const float value)
+float NfloatRollingAverage::add(const float value)
 {
 	m_sum += (value - *m_pfloat);
 	m_average = m_sum/(m_last+1);
@@ -133,7 +133,7 @@ NlongRollingAverage::~NlongRollingAverage()
 	free(m_plong);			// lib�re la m�moire
 }
 
-const long NlongRollingAverage::add(const long value)
+long NlongRollingAverage::add(const long value)
 {
 	m_sum += (value - *m_plong);
 	m_average = m_sum/(m_last+1);
