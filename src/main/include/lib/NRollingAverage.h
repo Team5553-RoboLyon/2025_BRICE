@@ -18,8 +18,8 @@ public:
 	~NdoubleRollingAverage();
 
 	void reset(const double initial_average = 0.0);
-	const double add(const double value);
-	inline const double get(){return m_average;}
+	double add(const double value);
+	inline double get(){return m_average;}
 	
 	int	m_last;
 	int	m_index;
@@ -35,8 +35,8 @@ public:
 	~NfloatRollingAverage();
 
 	void reset(const float initial_average = 0.0f);
-	const float add(const float value);
-	inline const float get(){return m_average;}
+	float add(const float value);
+	inline float get(){return m_average;}
 	
 	unsigned short	m_last;
 	unsigned short	m_index;
@@ -52,8 +52,8 @@ public:
 	~NlongRollingAverage();
 
 	void reset(const long initial_average = 0.0f);
-	const long add(const long value);
-	inline const long get(){return m_average;}
+	long add(const long value);
+	inline long get(){return m_average;}
 	
 	unsigned short	m_last;
 	unsigned short	m_index;

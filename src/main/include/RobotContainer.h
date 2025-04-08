@@ -19,7 +19,11 @@
 
 #include "subsystems/Straffer.h"
 #include "commands/Command.h"
+
 #include "Constants.h"
+#include "commands/RunElevator.h"
+#include "commands/SetPositionCommand.h"
+#include "subsystems/Elevator.h"
 
 class RobotContainer {
  public:
@@ -27,11 +31,13 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
   
+
+  Elevator m_elevator;
+  Straffer m_straffer;
+
   frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
   frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
   frc::PS5Controller m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
-
-  Straffer m_straffer;
  private:
 
   frc2::JoystickButton m_CoralStationButton{&m_controllerCopilot, ControlPanelConstants::Button::CORAL_STATION};

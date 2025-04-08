@@ -9,11 +9,16 @@
 RobotContainer::RobotContainer() {
     ConfigureBindings();
     m_straffer.SetDefaultCommand(Command(&m_straffer, [this] { return m_controllerCopilot.GetLeftX(); }).ToPtr());
-
+    m_elevator.SetDefaultCommand(RunElevator(&m_elevator, [this] { return m_controllerCopilot.GetLeftY(); }).ToPtr());
 }
 
 void RobotContainer::ConfigureBindings() {
-  // je m'en occupe tkt
+    m_CoralStationButton.WhileTrue(SetPositionCommand(&m_elevator, Stage::CORAL_STATION).ToPtr());
+    m_L1Button.WhileTrue(SetPositionCommand(&m_elevator, Stage::L1).ToPtr());
+    m_L2Button.WhileTrue(SetPositionCommand(&m_elevator, Stage::L2).ToPtr());
+    m_L3Button.WhileTrue(SetPositionCommand(&m_elevator, Stage::L3).ToPtr());
+    m_L4Button.WhileTrue(SetPositionCommand(&m_elevator, Stage::L4).ToPtr());
+    m_OpenLoopButton.ToggleOnTrue(frc2::InstantCommand([this] { m_elevator.SetControlMode(DriveMode::OPEN_LOOP); }).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
