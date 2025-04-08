@@ -8,6 +8,7 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc/GenericHID.h>
 
 
 #include "RobotContainer.h"

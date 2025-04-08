@@ -5,7 +5,6 @@
 #include "Robot.h"
 
 #include <frc2/command/CommandScheduler.h>
-#include <frc/smartdashboard/SmartDashboard.h> 
 #include <iostream>
 
 Robot::Robot() {
@@ -19,6 +18,7 @@ void Robot::DisabledInit() {
 }
 
 void Robot::DisabledPeriodic() {
+  m_container.m_straffer.isInitialized = false;
 }
 
 void Robot::DisabledExit() {}
@@ -38,6 +38,9 @@ void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
+  if (m_autonomousCommand) {
+    m_autonomousCommand->Cancel();
+  }
 }
 
 void Robot::TeleopPeriodic() {
