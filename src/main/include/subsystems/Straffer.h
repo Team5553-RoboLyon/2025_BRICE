@@ -9,10 +9,11 @@
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc/Encoder.h>
 #include "rev/SparkMax.h"
-#include "lib/pid_rbl.h"
+
 #include "Constants.h"
 #include "lib/UtilsRBL.h"
 #include "lib/rate_limiter.h"
+#include "lib/pid_rbl.h"
 
 class Straffer : public frc2::SubsystemBase {
  public:
@@ -20,16 +21,21 @@ class Straffer : public frc2::SubsystemBase {
   void SetControlMode(ControlMode mode);
   ControlMode GetControlMode();
 
-  void SetJoystickInput(double input);
-
+  void SetDesiredPosition(double Position);
   double GetPosition();
   bool IsAtDesiredPosition();
+  void SetDesiredSide(Side side);
 
+  void SetJoystickInput(double input);
 
   void Periodic() override;
 
   bool isInitialized = false;
  private:
+  void OpenLoopControl();
+  void ClosedLoopControl();
+  void Reset();
+
   rev::spark::SparkMax m_motor{strafferConstants::Motor::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_motorConfig;
   frc::DigitalInput m_leftLimitSwitch{strafferConstants::Sensor::LimitSwitch::LEFT_ID};
@@ -46,9 +52,4 @@ class Straffer : public frc2::SubsystemBase {
 
   RateLimiter m_rateLimiter;
   PidRBL m_strafferPIDController{strafferConstants::PID::KP, strafferConstants::PID::KI, strafferConstants::PID::KD};
-
-
-  void OpenLoopControl();
-  void ClosedLoopControl();
-  void Reset();
 };

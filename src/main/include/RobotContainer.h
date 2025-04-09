@@ -18,12 +18,12 @@
 #include <frc2/command/button/CommandGenericHID.h>
 
 #include "subsystems/Straffer.h"
-#include "commands/Command.h"
-
-#include "Constants.h"
-#include "commands/RunElevator.h"
-#include "commands/SetPositionCommand.h"
 #include "subsystems/Elevator.h"
+#include "Constants.h"
+
+#include "commands/AlignStrafferCommand.h"
+#include "commands/MainCommand.h"
+#include "commands/SetStageCommand.h"
 
 class RobotContainer {
  public:
@@ -45,8 +45,10 @@ class RobotContainer {
   frc2::JoystickButton m_L2Button{&m_controllerCopilot, ControlPanelConstants::Button::L2};
   frc2::JoystickButton m_L3Button{&m_controllerCopilot, ControlPanelConstants::Button::L3};
   frc2::JoystickButton m_L4Button{&m_controllerCopilot, ControlPanelConstants::Button::L4};
-  frc2::JoystickButton m_TakeButton{&m_controllerCopilot, ControlPanelConstants::Button::TAKE};
-  frc2::JoystickButton m_OuttakeButton{&m_controllerCopilot, ControlPanelConstants::Button::OUTTAKE};
-  frc2::JoystickButton m_OpenLoopButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP};
+  frc2::JoystickButton m_leftSideButton{&m_controllerCopilot, ControlPanelConstants::Button::LEFT_SIDE};
+  frc2::JoystickButton m_rightSideButton{&m_controllerCopilot, ControlPanelConstants::Button::RIGHT_SIDE};
+  frc2::JoystickButton m_OpenLoopOuttakeButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_OUTTAKE};
+  frc2::JoystickButton m_OpenLoopElevatorButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_ELEVATOR};
+  frc2::JoystickButton m_OpenLoopStrafferButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_STRAFFER};
   void ConfigureBindings();
 };

@@ -7,9 +7,8 @@
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/Straffer.h"
 #include "Constants.h"
-
+#include "subsystems/Straffer.h"
 /**
  * An example command.
  *
@@ -17,13 +16,13 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class Command
-    : public frc2::CommandHelper<frc2::Command, Command> {
+class AlignStrafferCommand
+    : public frc2::CommandHelper<frc2::Command, AlignStrafferCommand> {
  public:
   /* You should consider using the more terse Command factories API instead
    * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands
    */
-  Command(Straffer  *straffer, std::function<double()> joystick);
+  AlignStrafferCommand(Straffer *straffer, Side side);
 
   void Initialize() override;
 
@@ -33,8 +32,8 @@ class Command
 
   bool IsFinished() override;
 
-  private :
-  Straffer *m_pStraffer;
-  std::function<double()> joystickInput;
-  double value;
+  private:
+  //TODO : add protection with gripper
+  Straffer* m_pStraffer;
+  Side m_side;
 };

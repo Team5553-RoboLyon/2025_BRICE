@@ -16,10 +16,10 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class RunElevator
-    : public frc2::CommandHelper<frc2::Command, RunElevator> {
+class SetStageCommand
+    : public frc2::CommandHelper<frc2::Command, SetStageCommand> {
  public:
-  RunElevator(Elevator* elevator, std::function<double()> joystickInput);
+  SetStageCommand(Elevator* elevator, Stage stage);
 
   void Initialize() override;
 
@@ -30,6 +30,6 @@ class RunElevator
   bool IsFinished() override;
 
   private :
-  Elevator* p_elevator;
-  std::function<double()> m_joystickInput;
+  Elevator* m_pElevator;
+  Stage m_stage;
 };

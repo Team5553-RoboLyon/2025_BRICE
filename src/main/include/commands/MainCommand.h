@@ -6,8 +6,10 @@
 
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
+#include <frc/PS5Controller.h>
 
 #include "subsystems/Elevator.h"
+#include "subsystems/Straffer.h"
 #include "Constants.h"
 
 /**
@@ -17,10 +19,10 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class SetPositionCommand
-    : public frc2::CommandHelper<frc2::Command, SetPositionCommand> {
+class MainCommand
+    : public frc2::CommandHelper<frc2::Command, MainCommand> {
  public:
-  SetPositionCommand(Elevator *elevator, Stage stage);
+  MainCommand(Elevator *elevator, Straffer *straffer, frc::PS5Controller *gamepad);
 
   void Initialize() override;
 
@@ -30,7 +32,12 @@ class SetPositionCommand
 
   bool IsFinished() override;
 
+  enum class State 
+  {
+  };
   private :
-  Elevator* p_elevator;
-  Stage m_stage;
+  Elevator* m_pElevator;
+  Straffer* m_pStraffer;
+  frc::PS5Controller* m_pGamepad;
+  State m_state;
 };

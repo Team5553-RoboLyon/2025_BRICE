@@ -17,7 +17,8 @@ constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
 enum class ControlMode {
     CLOSED_LOOP,
-    OPEN_LOOP
+    OPEN_LOOP,
+    AUTO_LOOP
 };
 enum class Stage {
     HOME,
@@ -26,6 +27,11 @@ enum class Stage {
     L2,
     L3,
     L4
+};
+enum class Side {
+    LEFT,
+    CENTER,
+    RIGHT
 };
 
 namespace strafferConstants
@@ -64,7 +70,7 @@ namespace strafferConstants
         //speed for open loop
         constexpr double MIN = -1.0;
         constexpr double MAX = 1.0;
-        constexpr double INIT = - 0.15;
+        constexpr double CALIBRATION = - 0.15;
     }
     namespace PID // TODO : set good Ks
     {
@@ -107,7 +113,7 @@ namespace elevatorConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = true;         //TODO : test rotation
+            constexpr bool INVERTED = false;         //TODO : test rotation
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
     }
@@ -124,9 +130,8 @@ namespace elevatorConstants
         }
         namespace LimitSwitch 
         {
-            constexpr int TOP_ID = 6;
-            constexpr int TOP_2_ID = 7;
-            constexpr int BOTTOM_ID = 8;
+            constexpr int BOTTOM_2_ID = 6;
+            constexpr int BOTTOM_ID = 7;
             constexpr bool IS_TRIGGERED = true;
         }
     }
@@ -139,14 +144,13 @@ namespace elevatorConstants
     }
     namespace Setpoint
     {
-        constexpr double HOME = 0.0;
-        constexpr double L1 = 0.0;
-        constexpr double CORAL_STATION = 0.25;
-        constexpr double L2 = 0.5;
+        constexpr double HOME = 0.01;
+        constexpr double CORAL_STATION = 0.01;
+        constexpr double L1 = 0.2;
+        constexpr double L2 = 0.25;
         constexpr double L3 = 0.75;
         constexpr double L4 = 1.0;
     } 
-    
     namespace Speed 
     {
         constexpr double MAX = 1.0;
@@ -154,21 +158,13 @@ namespace elevatorConstants
         constexpr double CALIBRATION = -0.3;
         constexpr double REST = 0.0;
     }
+    namespace Settings
+    {
+        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25);
+        constexpr double BOTTOM_LIMIT = elevatorConstants::Setpoint::HOME;
+        constexpr double TOP_LIMIT = 1.05;
+    }
 }
-//     namespace Settings   NOT REALLY SURE
-//     {
-//         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2);
-//         constexpr double LEFT_LIMIT = 0.05;
-//         constexpr double RIGHT_LIMIT = 0.32;
-// =======
-//         constexpr double HOME = 0.0;
-//         constexpr double L1 = 0.0;
-//         constexpr double CORAL_STATION = 0.25;
-//         constexpr double L2 = 0.5;
-//         constexpr double L3 = 0.75;
-//         constexpr double L4 = 1.0;
-//     } 
-
 
 namespace ControlPanelConstants {
     namespace Joystick{
@@ -187,8 +183,10 @@ namespace ControlPanelConstants {
         constexpr int L2 = 3;
         constexpr int L3 = 2;
         constexpr int L4 = 4;
-        constexpr int TAKE = 5;
-        constexpr int OUTTAKE = 6;
-        constexpr int OPEN_LOOP = 7;
+        constexpr int LEFT_SIDE = 5;
+        constexpr int RIGHT_SIDE = 6;
+        constexpr int OPEN_LOOP_OUTTAKE = 7;
+        constexpr int OPEN_LOOP_ELEVATOR = 9;
+        constexpr int OPEN_LOOP_STRAFFER = 10;
     }
 }

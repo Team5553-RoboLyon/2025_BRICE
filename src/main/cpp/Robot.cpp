@@ -26,6 +26,8 @@ void Robot::DisabledExit() {}
 void Robot::AutonomousInit() {
   m_autonomousCommand = m_container.GetAutonomousCommand();
 
+  m_container.m_straffer.SetControlMode(ControlMode::AUTO_LOOP);
+  m_container.m_elevator.SetControlMode(ControlMode::AUTO_LOOP);
   if (m_autonomousCommand) {
     m_autonomousCommand->Schedule();
   }
@@ -38,6 +40,9 @@ void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
+  m_container.m_straffer.SetControlMode(strafferConstants::defaultMode);
+  m_container.m_elevator.SetControlMode(elevatorConstants::defaultMode);
+
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
