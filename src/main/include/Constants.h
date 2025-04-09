@@ -11,12 +11,28 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-constexpr double ENCODER_TICKS_PER_REVOLUTION = 2048.0;
+
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
+constexpr double ENCODER_TICKS_PER_REVOLUTION_K4X  = 8192.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
 enum class ControlMode {
     CLOSED_LOOP,
-    OPEN_LOOP
+    OPEN_LOOP,
+    AUTO_LOOP
+};
+enum class Stage {
+    HOME,
+    L1,
+    CORAL_STATION,
+    L2,
+    L3,
+    L4
+};
+enum class Side {
+    LEFT,
+    CENTER,
+    RIGHT
 };
 
 namespace outtakeConstants
@@ -52,6 +68,137 @@ namespace outtakeConstants
         constexpr double CATCHING = 0.5;
         constexpr double DROPPING = STARTING;
         constexpr double UP = -0.5;
+
+
+namespace strafferConstants
+{   
+    constexpr ControlMode defaultMode = ControlMode::OPEN_LOOP;
+    namespace Motor
+    {
+        constexpr int ID = 8;
+        constexpr double VOLTAGE_COMPENSATION = 10.0;
+        constexpr double CURRENT_LIMIT = 20.0;
+        constexpr double RAMP_RATE = 0.0;
+        constexpr bool INVERTED = true; 
+        constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+    }
+    namespace Sensor 
+    {
+        namespace LimitSwitch
+        {
+            constexpr int LEFT_ID = 12;
+            constexpr int RIGHT_ID = 11;
+            constexpr bool IS_TRIGGERED = true;
+            constexpr bool IS_RIGHT_TRIGGERED = false;
+        }
+        namespace Encoder 
+        {
+            constexpr int A_ID = 8; // TODO : change LDCHT
+            constexpr int B_ID = 9;
+            constexpr bool REVERSED = false;
+            constexpr double REDUCTION = 1.0;
+            constexpr double RADIUS = (0.005*18/M_PI)/2.0;
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K2X;
+        }
+    }
+    namespace Speed 
+    {
+        //speed for open loop
+        constexpr double MIN = -1.0;
+        constexpr double MAX = 1.0;
+        constexpr double CALIBRATION = - 0.15;
+    }
+    namespace PID // TODO : set good Ks
+    {
+        constexpr double KP = 1.0;
+        constexpr double KI = 0.0;
+        constexpr double KD = 0.00;
+        constexpr double TOLERANCE = 0.001;
+    }
+    namespace Setpoint
+    {
+        constexpr double LEFT_SIDE = 0.0;
+        constexpr double RIGHT_SIDE = 0.0;
+        constexpr double CENTER = 0.25;
+    } 
+    namespace Settings
+    {
+        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2);
+        constexpr double LEFT_LIMIT = 0.05;
+        constexpr double RIGHT_LIMIT = 0.32;
+    }
+}
+
+namespace elevatorConstants
+{   
+    constexpr ControlMode defaultMode = ControlMode::OPEN_LOOP;
+    namespace Motors
+    {
+        namespace Left
+        {
+            constexpr int ID = 6;
+            constexpr double VOLTAGE_COMPENSATION = 10.0;
+            constexpr double CURRENT_LIMIT = 40.0;
+            constexpr double RAMP_RATE = 0.0;
+            constexpr bool INVERTED = false;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+        }
+        namespace Right
+        {
+            constexpr int ID = 7;
+            constexpr double VOLTAGE_COMPENSATION = 10.0;
+            constexpr double CURRENT_LIMIT = 40.0;
+            constexpr double RAMP_RATE = 0.0;
+            constexpr bool INVERTED = true;
+            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
+        }
+    }
+    namespace Sensor 
+    {
+        namespace Encoder 
+        {
+            constexpr int A_ID = 4;
+            constexpr int B_ID = 5;
+            constexpr bool REVERSED = false;     //TODO : test rotation
+            constexpr double REDUCTION = 1.0; //TODO : test reduc
+            constexpr double RADIUS = (0.005*36.0/M_PI)/2.0; //TODO : test radius
+            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS) / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K4X;
+        }
+        namespace LimitSwitch 
+        {
+            constexpr int BOTTOM_2_ID = 6;
+            constexpr int BOTTOM_ID = 7;
+            constexpr bool IS_TRIGGERED = true;
+        }
+    }
+    namespace PID 
+    {
+        constexpr double KP = 8.0;
+        constexpr double KI = 0.0;
+        constexpr double KD = 0.00;
+        constexpr double TOLERANCE = 0.001;
+    }
+    namespace Setpoint
+    {
+        constexpr double HOME = 0.01;
+        constexpr double CORAL_STATION = 0.01;
+        constexpr double L1 = 0.2;
+        constexpr double L2 = 0.25;
+        constexpr double L3 = 0.75;
+        constexpr double L4 = 1.0;
+    } 
+    namespace Speed 
+    {
+        constexpr double MAX = 1.0;
+        constexpr double MIN = -1.0;
+        constexpr double CALIBRATION = -0.3;
+        constexpr double REST = 0.0;
+    }
+    namespace Settings
+    {
+        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25);
+        constexpr double BOTTOM_LIMIT = elevatorConstants::Setpoint::HOME;
+        constexpr double TOP_LIMIT = 1.05;
     }
 }
 
@@ -62,7 +209,7 @@ namespace ControlPanelConstants {
         constexpr int ROTATION_ID = 1;
         constexpr int COPILOT_CONTROLLER_ID = 2;
     }
-    namespace Button { // TODO : recheck triggers
+    namespace Button {
         // FORWARD Joystick
         constexpr int REVERSED_DRIVE_BUTTON = 1;
         // ROTATION Joystick
@@ -73,8 +220,10 @@ namespace ControlPanelConstants {
         constexpr int L2 = 3;
         constexpr int L3 = 2;
         constexpr int L4 = 4;
-        constexpr int TAKE = 5;
-        constexpr int OUTTAKE = 6;
-        constexpr int OPEN_LOOP = 7;
+        constexpr int LEFT_SIDE = 5;
+        constexpr int RIGHT_SIDE = 6;
+        constexpr int OPEN_LOOP_OUTTAKE = 7;
+        constexpr int OPEN_LOOP_ELEVATOR = 9;
+        constexpr int OPEN_LOOP_STRAFFER = 10;
     }
 }

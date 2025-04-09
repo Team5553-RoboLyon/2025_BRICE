@@ -1,6 +1,8 @@
+#pragma once
 #include "lib/UtilsRBL.h"
 
-class PidRBL {
+class PidRBL 
+{
     public :
   /**
    * @brief Constructs a PID controller with a specified setpoint and gains.

@@ -1,0 +1,198 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+#include "subsystems/Elevator.h"
+
+//TODO : add SmartDashboard
+
+Elevator::Elevator() 
+{
+    // Set the left motor configs
+    m_leftMotorConfig.SetIdleMode(elevatorConstants::Motors::Left::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::Left::INVERTED)
+        .SmartCurrentLimit(elevatorConstants::Motors::Left::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::Left::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION);
+
+    // Set the right motor configs
+    m_rightMotorConfig.SetIdleMode(elevatorConstants::Motors::Right::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::Right::INVERTED)
+        .SmartCurrentLimit(elevatorConstants::Motors::Right::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::Right::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::Right::VOLTAGE_COMPENSATION);
+
+    // Apply the configs to the motors
+    m_leftMotor.Configure(  m_leftMotorConfig, 
+                            rev::spark::SparkBase::ResetMode::kResetSafeParameters,
+                            rev::spark::SparkBase::PersistMode::kPersistParameters);
+
+    m_rightMotor.Configure( m_rightMotorConfig, 
+                            rev::spark::SparkBase::ResetMode::kResetSafeParameters,
+                            rev::spark::SparkBase::PersistMode::kPersistParameters);
+
+    m_encoder.Reset();
+    m_encoder.SetDistancePerPulse(elevatorConstants::Sensor::Encoder::DISTANCE_PER_PULSE);
+
+    m_elevatorPIDController.SetTolerance(elevatorConstants::PID::TOLERANCE);
+    m_elevatorPIDController.Reset(elevatorConstants::Setpoint::HOME);
+    m_elevatorPIDController.SetOutputLimits(elevatorConstants::Speed::MIN, elevatorConstants::Speed::MAX);
+
+    m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
+}
+void Elevator::SetDesiredHeight(double height) 
+{
+    assert(((height >= elevatorConstants::Settings::BOTTOM_LIMIT) && (height <= elevatorConstants::Settings::TOP_LIMIT)) && "Elevator Desired height out of range.");
+    // if(height < elevatorConstants::Setpoint::HOME) PROTECTION FOR MATCHES ONLY
+    // {
+    //     height = elevatorConstants::Setpoint::HOME;
+    // } 
+    // else if(height > elevatorConstants::Setpoint::L4)
+    // {
+    //     height = elevatorConstants::Setpoint::L4;
+    // } 
+    m_elevatorPIDController.SetSetpoint(height);
+}
+void Elevator::SetDesiredStage(Stage stage) 
+{
+    switch (stage)
+    {
+    case Stage::HOME:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::HOME);
+        break;
+    case Stage::L1:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L1);
+        break;
+    case Stage::CORAL_STATION:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::CORAL_STATION);
+        break;
+    case Stage::L2:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L2);
+        break;
+    case Stage::L3:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L3);
+        break;
+    case Stage::L4:
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L4);
+        break;
+    default:
+        assert(false && "Stage unkown");
+        break;
+    }
+}
+double Elevator::GetHeight() 
+{
+    return m_height;
+}
+void Elevator::SetJoystickInput(double input) 
+{
+    assert(((input <= 1) && (input >=-1)) && "Input Joustick Elevator out of range [-1;1].");
+    m_joystickInput = m_rateLimiter.Update(input);
+}
+void Elevator::SetControlMode(ControlMode mode) 
+{
+    m_controlMode = mode;
+    m_rateLimiter.m_current = 0.0;
+}
+ControlMode Elevator::GetControlMode() 
+{
+    return m_controlMode;
+}
+bool Elevator::IsAtDesiredStage() 
+{
+    return m_elevatorPIDController.AtSetpoint();
+}
+
+void Elevator::Reset() 
+{
+    if(m_isBottomLimitSwitchTriggered)
+    {
+        m_leftMotor.Set(elevatorConstants::Speed::REST);
+        m_rightMotor.Set(elevatorConstants::Speed::REST);
+        m_output = elevatorConstants::Speed::REST;
+        m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
+        isInitialized = true;
+        m_encoder.Reset();
+    }
+    else
+    {
+        m_leftMotor.Set(elevatorConstants::Speed::CALIBRATION);
+        m_rightMotor.Set(elevatorConstants::Speed::CALIBRATION);
+    }
+}
+void Elevator::Periodic() {
+
+    // ----------------- Save sensors value -----------------
+    m_isBottomLimitSwitchTriggered = m_bottomLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED 
+                                    || m_bottomLimitSwitch2.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED;
+    m_height = m_encoder.GetDistance();
+    frc::SmartDashboard::PutBoolean("BottomSide triggered", m_isBottomLimitSwitchTriggered);
+    frc::SmartDashboard::PutNumber("Height", m_height);
+
+    if(!isInitialized)
+    {
+        Reset();
+        return;
+    }
+
+    switch (m_controlMode)
+    {
+    case ControlMode::CLOSED_LOOP:
+        ClosedLoopControl();
+        frc::SmartDashboard::PutString("EControlMode", "ClosedLoop");
+        m_leftMotor.Set(m_output);
+        break;
+    case ControlMode::OPEN_LOOP:
+        OpenLoopControl();
+        frc::SmartDashboard::PutString("EControlMode", "OpenLoop");
+        m_leftMotor.Set(m_output);
+        break;
+    case ControlMode::AUTO_LOOP:
+        //TODO
+        break;
+    default:
+        break;
+    }
+
+    frc::SmartDashboard::PutBoolean("Is At Setpoint", m_elevatorPIDController.AtSetpoint());
+}
+
+void Elevator::ClosedLoopControl()
+{
+    m_output = m_elevatorPIDController.Calculate(m_height);
+    m_output = m_rateLimiter.Update(m_output);
+    if(m_height > elevatorConstants::Settings::TOP_LIMIT && m_output > 0.0) 
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+    else if(m_height < elevatorConstants::Settings::BOTTOM_LIMIT && m_output < 0.0)
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+    else if(m_isBottomLimitSwitchTriggered && m_output < 0.0) 
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+}
+void Elevator::OpenLoopControl()
+{   
+    m_output = m_joystickInput;
+    if(m_height > elevatorConstants::Settings::TOP_LIMIT && m_output > 0.0) 
+    {
+    m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+    else if(m_height < elevatorConstants::Settings::BOTTOM_LIMIT && m_output < 0.0)
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+    else if(m_isBottomLimitSwitchTriggered && m_output < 0.0) 
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = 0.0;
+    }
+}
