@@ -13,11 +13,13 @@
 // #include "lib/NRollingAverage.h"
 // #include "lib/Dynamic.h"
 #include "lib/utils.h"
+#include <iostream>
+
+//  TODO TEST : verif sens
 
 class Drivetrain : public frc2::SubsystemBase {
  public:
   Drivetrain();
-
     /**
    * @brief Sets the power for the drivetrain motors.
    * 
@@ -62,7 +64,7 @@ class Drivetrain : public frc2::SubsystemBase {
    * @param FwdJoystick The forward input value from the joystick, typically ranging from -1.0 to 1.0.
    * @param RotateJoystick The rotation input value from the joystick, typically ranging from -1.0 to 1.0.
    */
-  void Drive(double FwdJoystick, double RotateJoystick);
+  void Drive(double FwdJoystick, double RotateJoystick, double heightFactor);
 
   /**
  * @brief Stops the drivetrain by setting the motor speeds to zero.
@@ -97,10 +99,10 @@ class Drivetrain : public frc2::SubsystemBase {
   bool isAuto = true;
  private:
   //Definition of the motors
-  rev::spark::SparkFlex m_MotorFrontLeft{DriveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorBackLeft{DriveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorFrontRight{DriveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
-  rev::spark::SparkFlex m_MotorBackRight{DriveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontLeft{driveConstants::LeftGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackLeft{driveConstants::LeftGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorFrontRight{driveConstants::RightGearbox::Motor::FRONT_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
+  rev::spark::SparkFlex m_MotorBackRight{driveConstants::RightGearbox::Motor::BACK_MOTOR_ID, rev::spark::SparkFlex::MotorType::kBrushless};
 
   //Definition of the motors' configurations
   rev::spark::SparkBaseConfig m_MotorFrontLeftConfig{};
@@ -109,8 +111,8 @@ class Drivetrain : public frc2::SubsystemBase {
   rev::spark::SparkBaseConfig m_MotorBackRightConfig{};
 
   //Definition of the encoders
-  frc::Encoder m_EncoderLeft{DriveConstants::LeftGearbox::Encoder::ID_ENCODER_A, DriveConstants::LeftGearbox::Encoder::ID_ENCODER_B, DriveConstants::LeftGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
-  frc::Encoder m_EncoderRight{DriveConstants::RightGearbox::Encoder::ID_ENCODER_A, DriveConstants::RightGearbox::Encoder::ID_ENCODER_B, DriveConstants::RightGearbox::Encoder::REVERSE_ENCODER, frc::Encoder::k4X};
+  frc::Encoder m_EncoderLeft{driveConstants::LeftGearbox::Encoder::ID_ENCODER_A, driveConstants::LeftGearbox::Encoder::ID_ENCODER_B, driveConstants::LeftGearbox::Encoder::REVERSE_ENCODER};
+  frc::Encoder m_EncoderRight{driveConstants::RightGearbox::Encoder::ID_ENCODER_A, driveConstants::RightGearbox::Encoder::ID_ENCODER_B, driveConstants::RightGearbox::Encoder::REVERSE_ENCODER};
 
   double m_sigma = 0.0; //rotation weighting factor
   bool m_reversedDrive = false; //flag to indicate if the drive direction is reversed

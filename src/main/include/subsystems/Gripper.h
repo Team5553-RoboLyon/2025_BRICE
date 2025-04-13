@@ -5,41 +5,62 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
-// #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-// #include <networktables/NetworkTableEntry.h>
-#include <frc/AnalogInput.h>
-#include <frc/Encoder.h>
-#include "rev/SparkMax.h"
 #include <frc/DigitalInput.h>
-
+#include "rev/SparkMax.h"
 #include "Constants.h"
-#include "lib/UtilsRBL.h"
-// #include "lib/NRollingAverage.h"
+#include <iostream>
 
 class Gripper : public frc2::SubsystemBase {
  public:
-  bool gripperActivated = false;
-
-  rev::spark::SparkMax m_gripperMotorTop{GrippperConstants::Motors::ID_TOP, rev::spark::SparkMax::MotorType::kBrushless};
-  rev::spark::SparkBaseConfig m_gripperMotorTopConfig;
-  rev::spark::SparkMax m_gripperMotorBottom{GrippperConstants::Motors::ID_BOTTOM, rev::spark::SparkMax::MotorType::kBrushless};
-  rev::spark::SparkBaseConfig m_gripperMotorBottomConfig;
   Gripper();
 
-  /**
-   * Will be called periodically whenever the CommandScheduler runs.
-   */
+  void SetSpeedOuttake(double outtakeSpeed);
+  void SetSpeedIntake(double intakeSpeed);
+  void SetControlMode(ControlMode mode);
+  void ToggleControlMode();
+  ControlMode GetControlMode();
+
+  void AskToCatch();
+  void AskToDrop();
+  void StopAsking();
+  bool IsCaught();
+  bool IsDropped();
+  bool IsMoving();
+
   void Periodic() override;
-  void SetIntakeSpeed(double speed);
-  void SetDropSpeed(double speed);
 
+  bool isRumbled = false;
+  double rumbleTime = 0.0;
+    enum class State {
+    IDLE,
+    REST_EMPTY,
+    REST_LOADED,
+    INTAKE_EMPTY,
+    INTAKE_FEEDING_FORWARD,
+    INTAKE_FEEDING_BACKWARD,
+    INTAKE_FEEDING_FORWARD_SHY,
+    PRESHOOT,
+    SHOOT
+  };
+  int m_counter{0};
+
+  State m_state = State::IDLE; // etat je ne sais pas ou je suis (initial)
+  
  private:
+   void OpenLoopControl();
+  void ClosedLoopControl();
 
-   frc::DigitalInput m_irBreaker{GrippperConstants::Sensor::IR_BREAKER_ID};
-  bool m_isIRBreakerTriggered;
-    double gripperOutput = 0.0;
-  u_int32_t m_gripperCounter;
-  // Components (e.g. motor controllers and sensors) should generally be
-  // declared private and exposed only through public methods.
+  rev::spark::SparkMax m_outtakeMotor{gripperConstants::Motors::Outtake::ID, rev::spark::SparkMax::MotorType::kBrushless};
+  rev::spark::SparkBaseConfig m_outtakeMotorConfig;
+  rev::spark::SparkMax m_intakeMotor{gripperConstants::Motors::Intake::ID, rev::spark::SparkMax::MotorType::kBrushless};
+  rev::spark::SparkBaseConfig m_intakeMotorConfig;
+  frc::DigitalInput m_IRBreakerDown{gripperConstants::Sensor::IRbreaker::DOWN_ID};
+  frc::DigitalInput m_IRBreakerUp{gripperConstants::Sensor::IRbreaker::UP_ID};
+  frc::DigitalInput m_IRBreakerUp2{gripperConstants::Sensor::IRbreaker::UP2_ID};
+
+  bool m_isIRBreakerDownTriggered;
+  bool m_isIRBreakerUpTriggered;
+  double m_output;
+  ControlMode m_controlMode = gripperConstants::defaultMode;
 };

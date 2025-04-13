@@ -64,8 +64,3 @@ void RateLimiter::Reset(double target, double current, double speedUp, double sp
      m_speedDown = speedDown;
      m_speedUp = speedUp;
 }
-
-// void RateLimiter::SetRecul(double current, double speed_1, double speed_2) { // on set le recul
-//   m_current = current;
-//   m_recul = ((m_current - m_speedSwitch)/speed_2 )*speed_1; // on calcule le current du recul qui sera soustrait à une switch définie ?
-// }

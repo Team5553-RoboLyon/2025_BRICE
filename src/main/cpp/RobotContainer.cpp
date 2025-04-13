@@ -8,25 +8,36 @@
 #include <frc2/command/Commands.h>
 RobotContainer::RobotContainer() {
     ConfigureBindings();
-  
-  m_drivetrain.SetDefaultCommand(Drive( [=]
+    // m_gripper.SetDefaultCommand(RunDefaultGripper(&m_gripper, &m_controllerCopilot));
+    m_straffer.SetDefaultCommand(RunDefaultStraffer(&m_straffer, &m_controllerCopilot));
+    m_elevator.SetDefaultCommand(RunDefaultElevator(&m_elevator, &m_controllerCopilot));
+     m_drivetrain.SetDefaultCommand(Drive( [this]
     { return m_joystickForward.GetY(); },
-                                      [=]
+                                      [this]
     { return m_joystickRotation.GetZ(); },
-    &m_drivetrain));
-  m_manipulator.SetDefaultCommand(MoveManipulator(&m_manipulator, [=]{ return m_xboxControllerCopilot.GetY(); }, [=]{ return m_xboxControllerCopilot.GetZ(); }));
+    &m_drivetrain, &m_elevator));
 }
 
 void RobotContainer::ConfigureBindings() {
+  m_CoralStationButton.ToggleOnTrue(SetStageCmd(&m_elevator, &m_gripper, Stage::CORAL_STATION).ToPtr());
+  m_L1Button.ToggleOnTrue(SetStageCmd(&m_elevator, &m_gripper,Stage::L1).ToPtr());
+  m_L2Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L2).ToPtr());
+  m_L3Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L3).ToPtr());
+  m_L4Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L4).ToPtr());
+
+  m_leftSideButton.WhileTrue(IntakeCoralCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
+  m_rightSideButton.WhileTrue(PreshootCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
+
+  //m_rightSideButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::RIGHT).ToPtr());
+  //m_leftSideButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::LEFT).ToPtr());
+  m_CoralStationButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+
   m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
-  m_SlowDriveButton.WhileTrue(frc2::InstantCommand([this] {m_drivetrain.slower = true;}).ToPtr());
-  m_SlowDriveButton.WhileFalse(frc2::InstantCommand([this] {m_drivetrain.slower = false;}).ToPtr());
+  m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
 
-  Drop.WhileTrue(DropCoral(&m_Gripper).ToPtr());
-  Catch.WhileTrue(TakeCoral(&m_Gripper).ToPtr());
-
-  declimbButton.WhileTrue(DeClimb(&m_climb).ToPtr());
-  climbButton.WhileTrue(Climb(&m_climb).ToPtr());
+  m_OpenLoopOuttakeButton.ToggleOnTrue(frc2::InstantCommand([this] {m_gripper.ToggleControlMode();}).ToPtr());
+  m_OpenLoopStrafferButton.ToggleOnTrue(frc2::InstantCommand([this] { m_straffer.SetControlMode(ControlMode::OPEN_LOOP); }).ToPtr());
+  m_OpenLoopElevatorButton.ToggleOnTrue(frc2::InstantCommand([this] { m_elevator.SetControlMode(ControlMode::OPEN_LOOP); }).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

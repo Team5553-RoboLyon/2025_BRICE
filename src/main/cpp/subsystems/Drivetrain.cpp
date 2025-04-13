@@ -7,18 +7,18 @@
 
 Drivetrain::Drivetrain() {
     // Set the back left motor configs
-    m_MotorBackLeftConfig.SetIdleMode(DriveConstants::LeftGearbox::Motor::MOTOR_IDLE_MODE)
-        .Inverted(DriveConstants::LeftGearbox::Motor::MOTOR_INVERTED)
-        .SmartCurrentLimit(DriveConstants::LeftGearbox::Motor::MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(DriveConstants::LeftGearbox::Motor::MOTOR_RAMP)
-        .VoltageCompensation(DriveConstants::LeftGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
+    m_MotorBackLeftConfig.SetIdleMode(driveConstants::LeftGearbox::Motor::MOTOR_IDLE_MODE)
+        .Inverted(driveConstants::LeftGearbox::Motor::MOTOR_INVERTED)
+        .SmartCurrentLimit(driveConstants::LeftGearbox::Motor::MOTOR_CURRENT_LIMIT)
+        .ClosedLoopRampRate(driveConstants::LeftGearbox::Motor::MOTOR_RAMP)
+        .VoltageCompensation(driveConstants::LeftGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
 
     // Set the back right motor configs
-    m_MotorBackRightConfig.SetIdleMode(DriveConstants::RightGearbox::Motor::MOTOR_IDLE_MODE)
-        .Inverted(DriveConstants::RightGearbox::Motor::MOTOR_INVERTED)
-        .SmartCurrentLimit(DriveConstants::RightGearbox::Motor::MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(DriveConstants::RightGearbox::Motor::MOTOR_RAMP)
-        .VoltageCompensation(DriveConstants::RightGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
+    m_MotorBackRightConfig.SetIdleMode(driveConstants::RightGearbox::Motor::MOTOR_IDLE_MODE)
+        .Inverted(driveConstants::RightGearbox::Motor::MOTOR_INVERTED)
+        .SmartCurrentLimit(driveConstants::RightGearbox::Motor::MOTOR_CURRENT_LIMIT)
+        .ClosedLoopRampRate(driveConstants::RightGearbox::Motor::MOTOR_RAMP)
+        .VoltageCompensation(driveConstants::RightGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
 
     // Copy the back motor configs to the front motors and follow the back motors
     m_MotorFrontLeftConfig.Apply(m_MotorBackLeftConfig).Follow(m_MotorBackLeft);
@@ -31,8 +31,8 @@ Drivetrain::Drivetrain() {
     m_MotorFrontRight.Configure(m_MotorFrontRightConfig, rev::spark::SparkBase::ResetMode::kResetSafeParameters, rev::spark::SparkBase::PersistMode::kNoPersistParameters);
 
     // Set distance per pulse
-    m_EncoderLeft.SetDistancePerPulse(DriveConstants::LeftGearbox::Encoder::DISTANCE_PER_PULSE);
-    m_EncoderRight.SetDistancePerPulse(DriveConstants::RightGearbox::Encoder::DISTANCE_PER_PULSE);
+    m_EncoderLeft.SetDistancePerPulse(driveConstants::LeftGearbox::Encoder::DISTANCE_PER_PULSE);
+    m_EncoderRight.SetDistancePerPulse(driveConstants::RightGearbox::Encoder::DISTANCE_PER_PULSE);
 
     m_JoystickLimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_FOWARD);
     m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
@@ -45,8 +45,8 @@ void Drivetrain::SetPower(double v_motor) {
 }
 
 void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
-    m_MotorBackLeft.Set(voltageLeft / DriveConstants::LeftGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
-    m_MotorBackRight.Set(voltageRight / DriveConstants::RightGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
+    m_MotorBackLeft.Set(voltageLeft / driveConstants::LeftGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
+    m_MotorBackRight.Set(voltageRight / driveConstants::RightGearbox::Motor::MOTOR_VOLTAGE_COMPENSATION);
 }
 
 
@@ -62,39 +62,70 @@ double Drivetrain::DriveAuto()
     return m_EncoderLeft.GetDistance();
 }
 
-void Drivetrain::Drive(double FwdJoystick, double RotateJoystick) {
+void Drivetrain::Drive(double FwdJoystick, double RotateJoystick, double heightFactor) {
+    if(NABS(FwdJoystick)<ControlPanelConstants::Settings::DEADBAND)
+    {
+        FwdJoystick = 0.0;
+    }
+    if(NABS(RotateJoystick)<ControlPanelConstants::Settings::DEADBAND)
+    {
+        RotateJoystick = 0.0;
+    }
+    //Reversed drive mode
     if(m_reversedDrive)
         FwdJoystick = -FwdJoystick;
+
+    //Slower mode
     if(slower) {
         FwdJoystick = FwdJoystick / ControlPanelConstants::Settings::SLOW_RATE;
         RotateJoystick = RotateJoystick / ControlPanelConstants::Settings::SLOW_RATE;
     }
+
+    // Protect from falling
+    double h = (1.0-heightFactor);
+    double minMovingV = FwdJoystick * ControlPanelConstants::Settings::MIN_MOVING_V;
+    double minMovingW = RotateJoystick * ControlPanelConstants::Settings::MIN_MOVING_W;
+    if(FwdJoystick < 0.0)
+    {
+        FwdJoystick = NMAX(FwdJoystick, -h*h);
+    }
+    else 
+    {
+        FwdJoystick = NMIN(FwdJoystick, h*h);
+    }
+
+    if(RotateJoystick < 0.0)
+    {
+        RotateJoystick = NMAX(RotateJoystick, -h);
+    }
+    else 
+    {
+        RotateJoystick = NMIN(RotateJoystick, h);
+    }
+    FwdJoystick += minMovingV;
+    RotateJoystick += minMovingW;
+    
+
+    //Limit the rate of change of the joystick
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
-    m_sigma = NLERP(0.5, 0.5, NABS(FwdJoystick)); // Constant : 0.5
+    m_sigma = NLERP(0.1, 0.4, NABS(RotateJoystick));
 
-    if (utils::epsilonEquals(FwdJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
-    {
-        FwdJoystick = 0.0;
-    }
-    if (utils::epsilonEquals(RotateJoystick, 0.0, ControlPanelConstants::Settings::DEADBAND))
-    {
-        RotateJoystick = 0.0;
-    }
-    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::LeftGearbox::WHEEL_SIDE));
-    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), DriveConstants::RightGearbox::WHEEL_SIDE));
+    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::LeftGearbox::WHEEL_SIDE));
+    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::RightGearbox::WHEEL_SIDE));
     frc::SmartDashboard::PutNumber("Back left", m_MotorBackLeft.Get());
     frc::SmartDashboard::PutNumber("back right", m_MotorBackRight.Get());
-    frc::SmartDashboard::PutNumber("front left", m_MotorFrontLeft.Get());
-    frc::SmartDashboard::PutNumber("front right", m_MotorFrontRight.Get());
 
     frc::SmartDashboard::PutNumber("encoder left", m_EncoderLeft.GetDistance());
     frc::SmartDashboard::PutNumber("encoder right", m_EncoderRight.GetDistance());
 
+
     frc::SmartDashboard::PutBoolean("reversed drive", m_reversedDrive);
     frc::SmartDashboard::PutBoolean("slower", slower);
     frc::SmartDashboard::PutNumber("sigma", m_sigma);
+    frc::SmartDashboard::PutNumber("FWD Joystick", FwdJoystick);
+    frc::SmartDashboard::PutNumber("Rotate Joystick", RotateJoystick);
 }
 
 
@@ -114,6 +145,7 @@ double Drivetrain::Calcul_Of_Our_Cher_JM(double forward, double turn, bool wheel
     k = 1.0 / (NMAX(1, NMAX(NABS(left_wheel), NABS(right_wheel))));
     left_wheel *= k;
     right_wheel *= k;
+
 
     if (wheelSide == false)
         return right_wheel;

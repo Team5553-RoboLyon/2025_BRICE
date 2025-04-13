@@ -6,13 +6,16 @@
 
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
-#include "subsystems/DriveTrain.h"
-#include "subsystems/Elevator.h"
+#include <iostream>
 
-class Drive
-    : public frc2::CommandHelper<frc2::Command, Drive> {
+#include "Constants.h"
+#include "subsystems/Straffer.h"
+#include "subsystems/Gripper.h"
+
+class AlignStrafferCmd
+    : public frc2::CommandHelper<frc2::Command, AlignStrafferCmd> {
  public:
-  Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, Elevator *pElevator);
+  AlignStrafferCmd(Straffer *pStraffer, Gripper *pGripper, Side side);
 
   void Initialize() override;
 
@@ -23,8 +26,7 @@ class Drive
   bool IsFinished() override;
 
   private:
-  std::function<double()> m_Forward;
-  std::function<double()> m_Turn;
-  Drivetrain *m_pDrivetrain;
-  Elevator *m_pElevator;
+  Straffer* m_pStraffer;
+  Gripper* m_pGripper;
+  Side m_side;
 };

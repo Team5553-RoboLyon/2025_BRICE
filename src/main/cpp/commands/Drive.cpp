@@ -5,8 +5,8 @@
 #include "commands/Drive.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
-Drive::Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain)
-    : m_Forward(forward), m_Turn(turn), m_pDrivetrain(pDrivetrain)
+Drive::Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, Elevator *pElevator)
+    : m_Forward(forward), m_Turn(turn), m_pDrivetrain(pDrivetrain), m_pElevator(pElevator)
 {
   AddRequirements({pDrivetrain});
 }
@@ -18,10 +18,9 @@ void Drive::Initialize() {}
 void Drive::Execute() {
   if(!m_pDrivetrain->isAuto) {
     double forward = -m_Forward();
-    frc::SmartDashboard::PutNumber("forward", forward);
     double turn = m_Turn();
-    frc::SmartDashboard::PutNumber("turn", turn);
-    m_pDrivetrain->Drive(forward, turn);
+    double heightFactor = NORMALIZE_HEIGHT(m_pElevator->GetHeight());
+    m_pDrivetrain->Drive(forward, turn, heightFactor);
   }
 }
 

@@ -1,6 +1,8 @@
 //from T-nor
 #pragma once
 
+#define TIME_TO_REACH_MAX(t) (0.02 / (t)) // from time to reach max to rate limiter
+
 class RateLimiter
 {
 
@@ -23,6 +25,4 @@ public:
   double m_speedDown;
 
 private:
-  //   double m_speedSwitch;
-  //   double m_recul;
 };

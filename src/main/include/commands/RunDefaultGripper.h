@@ -6,13 +6,15 @@
 
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
-#include "subsystems/DriveTrain.h"
-#include "subsystems/Elevator.h"
 
-class Drive
-    : public frc2::CommandHelper<frc2::Command, Drive> {
+#include <frc/PS4Controller.h>
+#include "Constants.h"
+#include "subsystems/Gripper.h"
+
+class RunDefaultGripper
+    : public frc2::CommandHelper<frc2::Command, RunDefaultGripper> {
  public:
-  Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, Elevator *pElevator);
+  RunDefaultGripper(Gripper *pGripper, frc::PS4Controller *pGamepad);
 
   void Initialize() override;
 
@@ -23,8 +25,6 @@ class Drive
   bool IsFinished() override;
 
   private:
-  std::function<double()> m_Forward;
-  std::function<double()> m_Turn;
-  Drivetrain *m_pDrivetrain;
-  Elevator *m_pElevator;
+  Gripper *m_pGripper;
+  frc::PS4Controller *m_pGamepad;
 };

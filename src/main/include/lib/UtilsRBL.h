@@ -38,8 +38,6 @@
 #define WRAP_ANGLE_0_TO_2PI(angle_rad) (((std::fmod((angle_rad), NF64_2PI)) < 0) ? \
                                             (std::fmod((angle_rad), NF64_2PI) + NF64_2PI) : \
                                             (std::fmod((angle_rad), NF64_2PI)))
-
-#define TIME_TO_REACH_MAX(time) (0.02 / (time)) // from time to reach max to rate limiter
 #define WRAP_ANGLE_0_TO_360(angle_deg) (((std::fmod((angle_deg), 360.0)) < 0) ? (std::fmod((angle_deg), 360.0) + 360.0) : (std::fmod((angle_deg), 360.0)))
 // ########################## table de  bites ##########################
 #define BITSET(val, bit_id) ((val) |= (1 << (bit_id)))
