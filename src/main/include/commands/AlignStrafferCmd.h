@@ -7,6 +7,7 @@
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
 #include <iostream>
+#include <array>
 
 #include "Constants.h"
 #include "subsystems/Straffer.h"
@@ -29,4 +30,6 @@ class AlignStrafferCmd
   Straffer* m_pStraffer;
   Gripper* m_pGripper;
   Side m_side;
+  
+  double m_offset;
 };

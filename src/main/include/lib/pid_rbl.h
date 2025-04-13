@@ -3,6 +3,7 @@
 
 class PidRBL {
     public :
+    // TODO : mettre tolerance sur la derivée
   /**
    * @brief Constructs a PID controller with a specified setpoint and gains.
    * @param setpoint The desired setpoint.

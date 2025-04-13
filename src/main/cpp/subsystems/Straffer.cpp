@@ -29,19 +29,14 @@ Straffer::Straffer()
 }
 void Straffer::SetJoystickInput(double input) 
 {
-    assert(((input <= 1) && (input >=-1)) && "Input Joustick Straffer out of range [-1;1].");
+    // assert(((input <= 1) && (input >=-1)) && "Input Joustick Straffer out of range [-1;1].");
     m_joystickInput = m_rateLimiter.Update(input);
 }
 void Straffer::SetControlMode(ControlMode mode) 
 {
+    m_state = State ::IDLE;
     m_controlMode = mode;
     m_rateLimiter.m_current = 0.0;
-}
-void Straffer::SetDesiredPosition(double Position) 
-{
-    assert(((Position >= strafferConstants::Settings::LEFT_LIMIT) && (Position <= strafferConstants::Settings::RIGHT_LIMIT)) 
-            && "Straffer Desired position out of range.");
-    m_strafferPIDController.SetSetpoint(Position);
 }
 ControlMode Straffer::GetControlMode() 
 {
@@ -50,41 +45,6 @@ ControlMode Straffer::GetControlMode()
 double Straffer::GetPosition()
 {
     return m_width;
-}
-bool Straffer::IsAtDesiredPosition() 
-{
-    switch (m_controlMode)
-    {
-    case ControlMode::OPEN_LOOP:
-        return true;
-        break;
-    case ControlMode::CLOSED_LOOP:
-        return m_strafferPIDController.AtSetpoint();    
-        break;
-    case ControlMode::AUTO_LOOP:
-        return false;
-        break;
-    default:
-        break;
-    }
-}
-void Straffer::SetDesiredSide(Side side)
-{
-    switch (side)
-    {
-    case Side::CENTER:
-        m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::CENTER);
-        break;
-    case Side::RIGHT:
-        //TODO : add error compute with Camera
-        m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::RIGHT_SIDE);
-        break;
-    case Side::LEFT:
-        //TODO : add error compute with Camera  
-        m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::LEFT_SIDE);
-    default:
-        break;
-    }
 }
 
 void Straffer::Reset() 
@@ -96,6 +56,8 @@ void Straffer::Reset()
         m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
         isInitialized = true;
         m_encoder.Reset();
+        m_state = State::STRAFF_TO_STATION;
+        m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::CENTER);
     }
     else
     {
@@ -112,6 +74,7 @@ void Straffer::Periodic() {
     frc::SmartDashboard::PutBoolean("sLeftLimit", m_isLeftLimitSwitchTriggered);
     frc::SmartDashboard::PutBoolean("sRightLimit", m_isRightLimitSwitchTriggered);
     frc::SmartDashboard::PutNumber("sWidth", m_width);
+    frc::SmartDashboard::PutNumber("sState", (int)m_state);
 
     if(!isInitialized)
     {
@@ -135,12 +98,68 @@ void Straffer::Periodic() {
     default:
         break;
     }
+    
 
     frc::SmartDashboard::PutNumber("sMotor",m_motor.GetAppliedOutput());
 }
 
 void Straffer::ClosedLoopControl()
-{
+{   
+    switch (m_state)
+    {
+    case State::IDLE :
+        // Assert
+        break;
+    case State::SEEK_APRIL_TAG :
+        if(m_counter == 0)
+        {
+            if(m_lowestAmbiguity > 0.2)
+            {
+                m_bestAprilTagOffset = 0.0; // default value 
+            }
+            m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::ORIGIN - m_bestAprilTagOffset + m_targetOffset);
+            m_state = State::STRAFF_TO_REEF;
+            m_counter = 50;
+        }
+        else 
+        {
+            m_counter--;
+            m_camera.Update();
+            if(m_camera.HasTargets())
+            {  
+                double currentAmbiguity =  m_camera.GetAmbiguity(m_camera.GetBestTarget());
+                if (currentAmbiguity <= m_lowestAmbiguity)
+                {
+                    m_lowestAmbiguity = currentAmbiguity;
+                    m_bestAprilTagOffset = m_camera.GetHorizontalDistance(m_camera.GetBestTarget());
+                    frc::SmartDashboard::PutNumber("best", m_bestAprilTagOffset);
+                }
+            }
+        }
+        break;
+    case State::STRAFF_TO_REEF: 
+        if(m_strafferPIDController.AtSetpoint() || (m_counter == 0))
+        {
+            m_state = State::AT_REEF;
+        }
+        else 
+        {
+            m_counter--;
+        }
+        break;
+    case State::STRAFF_TO_STATION :
+        if(m_strafferPIDController.AtSetpoint())
+        {
+            m_state = State::AT_STATION;
+        }
+        break;
+    case State::AT_REEF :
+        break;
+    case State::AT_STATION : 
+        break;
+    default:
+        break;
+    }
     m_output = m_strafferPIDController.Calculate(m_width);
     if(m_isLeftLimitSwitchTriggered && m_output < 0.0) 
     {

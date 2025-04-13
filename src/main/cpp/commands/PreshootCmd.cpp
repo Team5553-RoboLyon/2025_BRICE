@@ -4,6 +4,11 @@
 
 #include "commands/PreshootCmd.h"
 
+static double SpeedPerStageLUT[5] = { gripperConstants::Speed::SHOOTTTT,
+                                       0.2, //L1
+                                        0.6,//L2
+                                         0.8,//L3
+                                          0.4}; //L4
 PreshootCmd::PreshootCmd(Gripper *pGripper, Straffer *pStraffer, Elevator *pElevator) 
                                                                                             : m_pGripper(pGripper), 
                                                                                             m_pStraffer(pStraffer), 
@@ -12,13 +17,22 @@ PreshootCmd::PreshootCmd(Gripper *pGripper, Straffer *pStraffer, Elevator *pElev
 } //TODO : add expl
 // Called when the command is initially scheduled.
 void PreshootCmd::Initialize() {
-    // std::cout << "cc" << std::endl;
+  isFinished = false;
+}
+
+// Called repeatedly when this Command is scheduled to run
+void PreshootCmd::Execute() {
   switch (m_pGripper->m_state)
   {
   case Gripper::State::REST_LOADED :
-    m_pGripper->m_state = Gripper::State::PRESHOOT;
-    m_pGripper->SetSpeedOuttake(gripperConstants::Speed::PRESHOOT);
-    m_pGripper->m_counter = 6; //  counter preshoot
+    if(m_pStraffer->m_state == Straffer::State::AT_REEF)
+    {
+      m_pGripper->m_state = Gripper::State::PRESHOOT;
+      m_pGripper->SetSpeedOuttake(gripperConstants::Speed::PRESHOOT);
+      m_pGripper->m_ShoooootttttSpeed = SpeedPerStageLUT[(int)m_pElevator->GetStage()];
+      m_pGripper->m_counter = 7; //  counter preshoot
+      isFinished = true;
+    }
     break;
   
   default:
@@ -26,15 +40,13 @@ void PreshootCmd::Initialize() {
   }
 }
 
-// Called repeatedly when this Command is scheduled to run
-void PreshootCmd::Execute() {}
-
 // Called once the command ends or is interrupted.
 void PreshootCmd::End(bool interrupted) {
+  // m_pStraffer->m_state = Straffer::State::IDLE;
 }
 
 // Returns true when the command should end.
 bool PreshootCmd::IsFinished() 
 {
-    return false;
+    return isFinished;
 }

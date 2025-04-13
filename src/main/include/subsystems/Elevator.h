@@ -27,8 +27,10 @@ class Elevator : public frc2::SubsystemBase {
 
   void SetDesiredHeight(double height);
   void SetDesiredStage(Stage stage);
+
   double GetHeight();
   bool IsAtDesiredStage();
+  Stage GetStage() { return m_stage; };
 
   void SetJoystickInput(double input);
 
@@ -54,6 +56,7 @@ class Elevator : public frc2::SubsystemBase {
 
   bool m_isBottomLimitSwitchTriggered;
   double m_height;
+  Stage m_stage = Stage::WHERE_AM_I;
 
   double m_output;
   double m_joystickInput;

@@ -13,6 +13,12 @@ Robot::Robot() {
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
+  // m_camera.Update();
+  // frc::SmartDashboard::PutNumber("id", m_camera.GetAprilTagID(m_camera.GetBestTarget()));
+  // frc::SmartDashboard::PutNumber("amb", m_camera.GetAmbiguity(m_camera.GetBestTarget()));
+  // frc::SmartDashboard::PutNumber("y", m_camera.GetHorizontalDistance(m_camera.GetBestTarget()));
+
+  // std::cout << m_container.m_controllerCopilot.GetRawAxis(2) << m_container.m_controllerCopilot.GetRawAxis(3) << std::endl;
 }
 
 void Robot::DisabledInit() {

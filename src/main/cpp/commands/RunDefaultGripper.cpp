@@ -18,22 +18,28 @@ void RunDefaultGripper::Execute() {
   {
     if(m_pGamepad->GetRawAxis(2) > 0.1)
     {
-      // m_pGripper->SetSpeedBoth(m_pGamepad->GetRawAxis(2)/2.0);
+      m_pGripper->SetSpeedIntake(m_pGamepad->GetRawAxis(2)/2.0);
+      m_pGripper->SetSpeedOuttake(m_pGamepad->GetRawAxis(2)/2.0);
     }
     else if(m_pGamepad->GetRawAxis(3) >0.5)
     {
-      // m_pGripper->SetSpeedBoth(gripperConstants::Speed::UP);
+      m_pGripper->SetSpeedIntake(m_pGamepad->GetRawAxis(3)/2.0);
+      m_pGripper->SetSpeedOuttake(m_pGamepad->GetRawAxis(3)/2.0);
     }
     else 
     {
       // m_pGripper->SetSpeedBoth(gripperConstants::Speed::REST);
+      m_pGripper->SetSpeedIntake(gripperConstants::Speed::REST);
+      m_pGripper->SetSpeedOuttake(gripperConstants::Speed::REST);
     }
   }
 }
+// TODO : add deadzone improve
 
 // Called once the command ends or is interrupted.
 void RunDefaultGripper::End(bool interrupted) {
-  // m_pGripper->SetSpeedBoth(gripperConstants::Speed::REST);
+ m_pGripper->SetSpeedIntake(gripperConstants::Speed::REST);
+ m_pGripper->SetSpeedOuttake(gripperConstants::Speed::REST);
 }
 
 // Returns true when the command should end.

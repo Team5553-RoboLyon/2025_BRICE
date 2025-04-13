@@ -23,12 +23,13 @@ enum class ControlMode {
     AUTO_LOOP
 };
 enum class Stage {
-    HOME,
+    WHERE_AM_I,
     L1,
-    CORAL_STATION,
     L2,
     L3,
-    L4
+    L4,
+    HOME,
+    CORAL_STATION
 };
 enum class Side {
     LEFT,
@@ -81,7 +82,7 @@ namespace elevatorConstants
     }
     namespace PID // TODO : set good Ks
     {
-        constexpr double KP = 8.0;
+        constexpr double KP = 10.0;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
         constexpr double TOLERANCE = 0.001;
@@ -91,8 +92,8 @@ namespace elevatorConstants
         constexpr double HOME = 0.00;
         constexpr double CORAL_STATION = 0.00;
         constexpr double L1 = 0.3;
-        constexpr double L2 = 0.55;
-        constexpr double L3 = 0.95;
+        constexpr double L2 = 0.45;
+        constexpr double L3 = 0.86;
         constexpr double L4 = 1.45;
     } 
     namespace Speed 
@@ -113,7 +114,7 @@ namespace elevatorConstants
 
 namespace strafferConstants
 {   
-    constexpr ControlMode defaultMode = ControlMode::OPEN_LOOP; // Might be Closed Loop
+    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP; // Might be Closed Loop
     namespace Motor
     {
         constexpr int ID = 8;
@@ -150,16 +151,17 @@ namespace strafferConstants
     }
     namespace PID // TODO : set good Ks
     {
-        constexpr double KP = 5.0;
+        constexpr double KP = 5.5;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
-        constexpr double TOLERANCE = 0.000;
+        constexpr double TOLERANCE = 0.01;
     }
     namespace Setpoint // TODO : calibrate these values
     {
         constexpr double LEFT_SIDE = 0.05;
         constexpr double RIGHT_SIDE = 0.31;
         constexpr double CENTER = 0.1945;
+        constexpr double ORIGIN = CENTER;
     } 
     namespace Settings
     {
@@ -259,9 +261,9 @@ namespace gripperConstants
         constexpr double INTAKE_EMPTY = 0.5553;
         constexpr double OUTTAKE_EMPTY = 0.4;
         constexpr double FEEDING_FORWARD = 0.3;
-        constexpr double FEEDING_BACKWARD = -0.15;
+        constexpr double FEEDING_BACKWARD = -0.2;
         constexpr double PRESHOOT = -0.2;
-        constexpr double SHOOTTTT = 1;
+        constexpr double SHOOTTTT = 0.4;
 
     }
 }

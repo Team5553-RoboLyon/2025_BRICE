@@ -30,4 +30,5 @@ class PreshootCmd
   Gripper *m_pGripper;
   Straffer *m_pStraffer;
   Elevator *m_pElevator;
+  bool isFinished = false;
 };

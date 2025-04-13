@@ -167,8 +167,8 @@ void Gripper::ClosedLoopControl()
         else 
         {
             m_state = State::SHOOT;
-            m_outtakeMotor.Set(gripperConstants::Speed::SHOOTTTT);
-            m_counter = 75; // durée shoot
+            m_outtakeMotor.Set(m_ShoooootttttSpeed);
+            m_counter = 25; // durée shoot
         }
         break; //end of State::PRESHOOT
 

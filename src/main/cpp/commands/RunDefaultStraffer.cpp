@@ -16,7 +16,7 @@ void RunDefaultStraffer::Initialize() {}
 void RunDefaultStraffer::Execute() {
   if(m_pStraffer->GetControlMode() == ControlMode::OPEN_LOOP) 
   {
-    m_pStraffer->SetJoystickInput(m_pGamepad->GetRawAxis(4)/1.5); // TODO : add settings
+    m_pStraffer->SetJoystickInput(m_pGamepad->GetRawAxis(4)/2.0); // TODO : add settings
   }
 }
 

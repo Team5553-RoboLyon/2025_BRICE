@@ -44,6 +44,7 @@ class Gripper : public frc2::SubsystemBase {
     SHOOT
   };
   int m_counter{0};
+  double m_ShoooootttttSpeed;
 
   State m_state = State::IDLE; // etat je ne sais pas ou je suis (initial)
   

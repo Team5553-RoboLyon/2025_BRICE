@@ -12,22 +12,27 @@ IntakeCoralCmd::IntakeCoralCmd(Gripper *pGripper, Straffer *pStraffer, Elevator 
 } 
 // Called when the command is initially scheduled.
 void IntakeCoralCmd::Initialize() {
-  switch (m_pGripper->m_state)
+  if(m_pGripper->GetControlMode() == ControlMode::CLOSED_LOOP) 
   {
-  case Gripper::State::REST_EMPTY :
-    // verif si at CS et elevateur bien
-    m_pGripper->m_state = Gripper::State::INTAKE_EMPTY;
-    m_pGripper->SetSpeedOuttake(gripperConstants::Speed::OUTTAKE_EMPTY);
-    m_pGripper->SetSpeedIntake(gripperConstants::Speed::INTAKE_EMPTY);
-    break;
-  
-  case Gripper::State::REST_LOADED :
-    m_pGripper->m_state = Gripper::State::INTAKE_FEEDING_BACKWARD;
-    m_pGripper->SetSpeedOuttake(gripperConstants::Speed::FEEDING_BACKWARD);
-    break;
-  
-  default:
-    break;
+    switch (m_pGripper->m_state)
+    {
+    case Gripper::State::REST_EMPTY :
+      if(m_pStraffer->m_state == Straffer::State::AT_STATION)
+      {
+        m_pGripper->m_state = Gripper::State::INTAKE_EMPTY;
+        m_pGripper->SetSpeedOuttake(gripperConstants::Speed::OUTTAKE_EMPTY);
+        m_pGripper->SetSpeedIntake(gripperConstants::Speed::INTAKE_EMPTY);
+      }
+      break;
+    
+    case Gripper::State::REST_LOADED :
+      m_pGripper->m_state = Gripper::State::INTAKE_FEEDING_BACKWARD;
+      m_pGripper->SetSpeedOuttake(gripperConstants::Speed::FEEDING_BACKWARD);
+      break;
+    
+    default:
+      break;
+    }
   }
 }
 
@@ -46,8 +51,11 @@ void IntakeCoralCmd::End(bool interrupted) {
 
 // Returns true when the command should end.
 bool IntakeCoralCmd::IsFinished() 
-{
-  if(m_pGripper->m_state == Gripper::State::REST_LOADED)
+{ if(m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
+  {
+  return true;
+  }
+  else if(m_pGripper->m_state == Gripper::State::REST_LOADED)
   {
     return true;
   }

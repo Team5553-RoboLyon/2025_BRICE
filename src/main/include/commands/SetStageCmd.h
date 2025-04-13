@@ -29,4 +29,5 @@ class SetStageCmd
   Elevator* m_pElevator;
   Gripper* m_pGripper;
   Stage m_stage;
+  bool isFinished;
 };

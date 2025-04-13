@@ -15,6 +15,7 @@
 #include "lib/UtilsRBL.h"
 #include "lib/rate_limiter.h"
 #include "lib/pid_rbl.h"
+#include "subsystems/Camera.h"
 
 class Straffer : public frc2::SubsystemBase {
  public:
@@ -24,14 +25,29 @@ class Straffer : public frc2::SubsystemBase {
 
   void SetDesiredPosition(double Position);
   double GetPosition();
-  bool IsAtDesiredPosition();
-  void SetDesiredSide(Side side);
 
   void SetJoystickInput(double input);
 
   void Periodic() override;
 
   bool isInitialized = false;
+
+  enum class State {
+    IDLE, 
+    SEEK_APRIL_TAG,
+    STRAFF_TO_REEF,
+    STRAFF_TO_STATION,
+    AT_REEF,
+    AT_STATION
+  };
+
+  double m_targetOffset;
+  int m_counter;
+  State m_state = State::IDLE;
+  PidRBL m_strafferPIDController{strafferConstants::PID::KP, strafferConstants::PID::KI, strafferConstants::PID::KD};
+
+  double m_lowestAmbiguity; // valeur d'ambiguité la plus basse détectée dans State::SEEk
+  double m_bestAprilTagOffset; // valeur Y la moins ambigue détectée dans State::SEEK_APRIL_TAG
  private:
   void OpenLoopControl();
   void ClosedLoopControl();
@@ -43,6 +59,8 @@ class Straffer : public frc2::SubsystemBase {
   frc::DigitalInput m_rightLimitSwitch{strafferConstants::Sensor::LimitSwitch::RIGHT_ID};
   frc::Encoder m_encoder{strafferConstants::Sensor::Encoder::A_ID, strafferConstants::Sensor::Encoder::B_ID, strafferConstants::Sensor::Encoder::REVERSED};
 
+  Camera m_camera;
+
   bool m_isLeftLimitSwitchTriggered;
   bool m_isRightLimitSwitchTriggered;
   double m_width;
@@ -52,5 +70,4 @@ class Straffer : public frc2::SubsystemBase {
   ControlMode m_controlMode = strafferConstants::defaultMode;
 
   RateLimiter m_rateLimiter;
-  PidRBL m_strafferPIDController{strafferConstants::PID::KP, strafferConstants::PID::KI, strafferConstants::PID::KD};
 };

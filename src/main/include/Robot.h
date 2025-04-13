@@ -8,7 +8,8 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
-#include <cameraserver/CameraServer.h>
+// #include "subsystems/Camera.h"
+// #include <frc/smartdashboard/SmartDashboard.h>
 
 
 #include "RobotContainer.h"
@@ -31,6 +32,7 @@ class Robot : public frc::TimedRobot {
   void TestExit() override;
 
  private:
+//  Camera m_camera;
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   // int count = 0;
   RobotContainer m_container;

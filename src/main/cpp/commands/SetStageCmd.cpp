@@ -10,16 +10,18 @@ SetStageCmd::SetStageCmd(Elevator *pElevator, Gripper *pGripper, Stage stage) : 
 
 // Called when the command is initially scheduled.
 void SetStageCmd::Initialize() {
-  if(!m_pGripper->IsMoving())
-  {
-    m_pElevator->SetControlMode(ControlMode::CLOSED_LOOP);
-    m_pElevator->SetDesiredStage(m_stage);
-  }
+  m_pElevator->SetControlMode(ControlMode::CLOSED_LOOP);
+  isFinished = false;
 }
 
 // Called repeatedly when this Command is scheduled to run
 void SetStageCmd::Execute() {
-}
+  if(m_pGripper->m_state == Gripper::State::REST_EMPTY || m_pGripper->m_state == Gripper::State::REST_LOADED)
+  {
+    m_pElevator->SetDesiredStage(m_stage);
+    isFinished = true;
+  }
+}//TODOaddinvertedbase
 
 // Called once the command ends or is interrupted.
 void SetStageCmd::End(bool interrupted) {
@@ -29,6 +31,7 @@ void SetStageCmd::End(bool interrupted) {
 bool SetStageCmd::IsFinished() {
   if(m_pElevator->GetControlMode() == ControlMode::OPEN_LOOP)
     return true;
-  else
-    return false;
+  else {
+    return isFinished;
+  }
 }

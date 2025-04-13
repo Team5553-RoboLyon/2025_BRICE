@@ -19,18 +19,18 @@ RobotContainer::RobotContainer() {
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_CoralStationButton.ToggleOnTrue(SetStageCmd(&m_elevator, &m_gripper, Stage::CORAL_STATION).ToPtr());
-  m_L1Button.ToggleOnTrue(SetStageCmd(&m_elevator, &m_gripper,Stage::L1).ToPtr());
-  m_L2Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L2).ToPtr());
-  m_L3Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L3).ToPtr());
-  m_L4Button.ToggleOnTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L4).ToPtr());
+  m_CoralStationButton.WhileTrue(SetStageCmd(&m_elevator, &m_gripper, Stage::CORAL_STATION).ToPtr());
+  m_L1Button.WhileTrue(SetStageCmd(&m_elevator, &m_gripper,Stage::L1).ToPtr());
+  m_L2Button.WhileTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L2).ToPtr());
+  m_L3Button.WhileTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L3).ToPtr());
+  m_L4Button.WhileTrue(SetStageCmd(&m_elevator,&m_gripper,Stage::L4).ToPtr());
 
-  m_leftSideButton.WhileTrue(IntakeCoralCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
-  m_rightSideButton.WhileTrue(PreshootCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
+  m_IntakeButton.WhileTrue(IntakeCoralCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
+  m_ShootButton.WhileTrue(PreshootCmd(&m_gripper, &m_straffer, &m_elevator).ToPtr());
 
-  //m_rightSideButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::RIGHT).ToPtr());
-  //m_leftSideButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::LEFT).ToPtr());
-  m_CoralStationButton.ToggleOnTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+  m_rightSideButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::RIGHT).ToPtr());
+  m_leftSideButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::LEFT).ToPtr());
+  m_CoralStationButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
 
   m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
   m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());

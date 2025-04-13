@@ -54,6 +54,7 @@ void Elevator::SetDesiredHeight(double height)
 }
 void Elevator::SetDesiredStage(Stage stage) 
 {
+    m_stage = stage;
     switch (stage)
     {
     case Stage::HOME:
@@ -124,6 +125,7 @@ void Elevator::Reset()
         m_output = elevatorConstants::Speed::REST;
         m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
         isInitialized = true;
+        m_stage = Stage::HOME;
         m_encoder.Reset();
     }
     else

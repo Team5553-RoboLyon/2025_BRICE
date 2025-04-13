@@ -64,18 +64,12 @@ class RobotContainer {
     frc2::JoystickButton m_OpenLoopElevatorButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_ELEVATOR};
     frc2::JoystickButton m_OpenLoopStrafferButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_STRAFFER};
 
-      frc2::Trigger m_L2Trigger{[this] {
-        if(m_gripper.GetControlMode() == ControlMode::CLOSED_LOOP)
+      frc2::Trigger m_IntakeButton{[this] { //L2 trigger
           return m_controllerCopilot.GetRawAxis(2) > 0.5; // TODO : settings
-        else 
-          return false;
     }};
 
-    frc2::Trigger m_R2Trigger{[this] {
-      if(m_gripper.GetControlMode() == ControlMode::CLOSED_LOOP)
-        return m_controllerCopilot.GetRawAxis(2) > 0.5; //TODO : settings
-      else 
-        return false;
+    frc2::Trigger m_ShootButton{[this] { //R2 trigger
+        return m_controllerCopilot.GetRawAxis(3) > 0.5; //TODO : settings
     }};
   void ConfigureBindings();
 };
