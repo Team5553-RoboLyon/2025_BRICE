@@ -27,7 +27,7 @@ void AlignStrafferCmd::Initialize() {
       m_pStraffer->m_state = Straffer::State::SEEK_APRIL_TAG;
       m_pStraffer->m_counter = 10; // counter for State::SEEK_APRIL_TAG 
       m_pStraffer->m_targetOffset = m_offset;
-      m_pStraffer->m_lowestAmbiguity = 1.0;
+      m_pStraffer->m_lowestAmbiguity = 1.0; // Set the initial ambiguity at the highest possible (between 0.0 and 1.0)
     }
   }
 }

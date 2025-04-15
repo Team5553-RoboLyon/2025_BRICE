@@ -1,0 +1,80 @@
+OTHER :
+LED en StateMachine
+Verifier que GetDistance Elevateur == good
+Verifier que GetDistance Straffer == good
+Ajouter Rumble en State Machine
+Dashboard
+(Casser Brice)
+How to find good values PID
+
+STRAFFER : 
+- Add deadzone Closed Loop Straffer
+- Add securities Straffer out of range -> center
+- Recheck Reset Straffer
+- add counter on straff to station
+- check modif while changing control mode
+- check to slow straff to reef before dropping
+- Reset Bambulab avec Chooser
+- Add auto straffer
+
+DRIVETRAIN : 
+- Check unwanted reversed
+
+ELEVATOR : 
+- Add center per stage 
+- Add protection left/right
+- Review Stage
+- Recheck Reset Elevator
+- Add auto elevator
+- check modif while changing control mode
+- check dependancy with straffer/gripper
+- Reset bambulab avec Chooser
+
+OUTTAKE :
+Add protection
+Open loop
+
+
+! s'assurer des sensors (eg, getDistance).
+Calibrage :
+  Straffer :
+    // Closed Loop
+    - DeadZone
+    - CS position
+    - kP, kD, kI, tolerance
+    - Offset Left/right
+    - Counter
+    - Cam Ambiguity
+    // Open Loop
+    - Joystick reduction
+    - RateLimiter
+    // other
+    - calibration speed
+  Elevator :
+    // Closed Loop
+    - DeadZone
+    - Position per stage
+    - kP, kD, kI, tolerance
+    // Open Loop
+    - Joystick reduction
+    - RateLimiter
+    // other
+    - calibration speed
+  Outtake :
+    // Closed Loop
+    - Speed
+    - Counter
+    // Open Loop
+    - Joystick reduction
+    - RateLimiter
+  Intake :
+  Drivetrain :
+
+
+AT Houston : 
+- Mesurer avec precision les Aprils Tag
+- Mesurer avec precision les Reef
+- Ajuster offset Straffer
+- Ajuster position Elevateur
+- Recalibrer Camera
+- Ajuster Offset 

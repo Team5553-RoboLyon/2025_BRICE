@@ -11,12 +11,11 @@ RunDefaultStraffer::RunDefaultStraffer(Straffer *pStraffer, frc::PS4Controller *
 // Called when the command is initially scheduled.
 void RunDefaultStraffer::Initialize() {}
 
-// TODO : verif si protection needed avec Gripper
 // Called repeatedly when this Command is scheduled to run
 void RunDefaultStraffer::Execute() {
   if(m_pStraffer->GetControlMode() == ControlMode::OPEN_LOOP) 
   {
-    m_pStraffer->SetJoystickInput(m_pGamepad->GetRawAxis(4)/2.0); // TODO : add settings
+    m_pStraffer->SetJoystickInput(m_pGamepad->GetRawAxis(4)/2.0);
   }
 }
 

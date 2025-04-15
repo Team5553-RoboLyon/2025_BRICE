@@ -34,7 +34,6 @@ void RunDefaultGripper::Execute() {
     }
   }
 }
-// TODO : add deadzone improve
 
 // Called once the command ends or is interrupted.
 void RunDefaultGripper::End(bool interrupted) {

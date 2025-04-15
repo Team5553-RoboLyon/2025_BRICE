@@ -87,7 +87,6 @@ void Gripper::Periodic()
         break;
     case ControlMode::AUTO_LOOP:
         frc::SmartDashboard::PutString("oControlMode", "AutoLoop");
-        //TODO : auto
         break;
     default:
         break;

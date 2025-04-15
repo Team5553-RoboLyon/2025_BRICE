@@ -59,18 +59,3 @@ double Camera::GetAmbiguity(photon::PhotonTrackedTarget target)
     return target.GetPoseAmbiguity();
 }
 
-std::array<double, 2> Camera::GetErrorWithReefscapeBranch() 
-{
-    std::array<double, 2> output = {0.0, 0.0};
-    if (m_lastResult.HasTargets()) {
-        photon::PhotonTrackedTarget target = m_lastResult.GetBestTarget();
-        if(target.GetFiducialId() == 1 /*TODO : list all ID en f(x) du coté*/)
-        {
-            output[0] = target.GetBestCameraToTarget().Y().value() - 1; // TODO : measure distance between APRIL TAG and the left reefscape branch
-            output[1] = target.GetBestCameraToTarget().Y().value() +1; // TODO : measure distance between APRIL TAG and the left reefscape branch
-            return output;
-        }
-    }
-    return {0.0, 0.0};
-}
-

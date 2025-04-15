@@ -93,7 +93,6 @@ void Straffer::Periodic() {
         break;
     case ControlMode::AUTO_LOOP:
         frc::SmartDashboard::PutString("sControlMode", "AutoLoop");
-        //TODO
         break;
     default:
         break;
@@ -108,7 +107,6 @@ void Straffer::ClosedLoopControl()
     switch (m_state)
     {
     case State::IDLE :
-        // Assert
         break;
     case State::SEEK_APRIL_TAG :
         if(m_counter == 0)
@@ -138,7 +136,7 @@ void Straffer::ClosedLoopControl()
         }
         break;
     case State::STRAFF_TO_REEF: 
-        if(m_strafferPIDController.AtSetpoint() || (m_counter == 0))
+        if(m_strafferPIDController.AtSetpoint() || (m_counter == 0)) // too slow drop
         {
             m_state = State::AT_REEF;
         }
@@ -163,13 +161,13 @@ void Straffer::ClosedLoopControl()
     m_output = m_strafferPIDController.Calculate(m_width);
     if(m_isLeftLimitSwitchTriggered && m_output < 0.0) 
     {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_rateLimiter.m_current = 0.0; // useless
+        m_output = strafferConstants::Speed::REST;
     }
     else if(m_isRightLimitSwitchTriggered && m_output > 0.0) 
     {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_rateLimiter.m_current = 0.0; // useless
+        m_output = strafferConstants::Speed::REST;
     }
     m_motor.Set(m_output);
 }
@@ -179,22 +177,22 @@ void Straffer::OpenLoopControl()
     if(m_width < strafferConstants::Settings::LEFT_LIMIT && m_output < 0.0)
     {
         m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_output = strafferConstants::Speed::REST;
     }
     else if(m_width > strafferConstants::Settings::RIGHT_LIMIT && m_output > 0.0)
     {
         m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_output = strafferConstants::Speed::REST;
     }
     if(m_isLeftLimitSwitchTriggered && m_output < 0.0) 
     {
         m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_output = strafferConstants::Speed::REST;
     }
     else if(m_isRightLimitSwitchTriggered && m_output > 0.0) 
     {
         m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        m_output = strafferConstants::Speed::REST;
     }
     m_motor.Set(m_output);
 }

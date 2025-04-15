@@ -42,7 +42,6 @@ class RobotContainer {
     Elevator m_elevator;
     Gripper m_gripper;
     Straffer m_straffer;
-    //TODO : add camera
 
     frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
     frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
@@ -65,11 +64,11 @@ class RobotContainer {
     frc2::JoystickButton m_OpenLoopStrafferButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_STRAFFER};
 
       frc2::Trigger m_IntakeButton{[this] { //L2 trigger
-          return m_controllerCopilot.GetRawAxis(2) > 0.5; // TODO : settings
+          return m_controllerCopilot.GetRawAxis(2) > 0.5;
     }};
 
     frc2::Trigger m_ShootButton{[this] { //R2 trigger
-        return m_controllerCopilot.GetRawAxis(3) > 0.5; //TODO : settings
+        return m_controllerCopilot.GetRawAxis(3) > 0.5;
     }};
   void ConfigureBindings();
 };

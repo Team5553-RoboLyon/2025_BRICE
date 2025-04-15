@@ -21,7 +21,7 @@ void SetStageCmd::Execute() {
     m_pElevator->SetDesiredStage(m_stage);
     isFinished = true;
   }
-}//TODOaddinvertedbase
+}
 
 // Called once the command ends or is interrupted.
 void SetStageCmd::End(bool interrupted) {

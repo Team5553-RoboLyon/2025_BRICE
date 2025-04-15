@@ -28,5 +28,3 @@ class RunDefaultElevator
   Elevator *m_pElevator;
   frc::PS4Controller *m_pGamepad;
 };
-
-//TODO MORE : add sinus

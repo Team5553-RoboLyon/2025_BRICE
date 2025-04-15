@@ -15,8 +15,6 @@
 #include "lib/utils.h"
 #include <iostream>
 
-//  TODO TEST : verif sens
-
 class Drivetrain : public frc2::SubsystemBase {
  public:
   Drivetrain();

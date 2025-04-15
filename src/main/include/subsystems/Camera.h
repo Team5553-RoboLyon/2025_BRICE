@@ -48,10 +48,6 @@ public:
   double GetAmbiguity(photon::PhotonTrackedTarget target);
 
 
-
-  std::array<double, 2> GetErrorWithReefscapeBranch();
-
-
   photon::PhotonCamera m_camera{"RBLcam"};
   photon::PhotonPipelineResult m_lastResult;
 

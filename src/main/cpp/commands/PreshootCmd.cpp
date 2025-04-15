@@ -14,7 +14,7 @@ PreshootCmd::PreshootCmd(Gripper *pGripper, Straffer *pStraffer, Elevator *pElev
                                                                                             m_pStraffer(pStraffer), 
                                                                                             m_pElevator(pElevator){
   AddRequirements(m_pGripper);
-} //TODO : add expl
+}
 // Called when the command is initially scheduled.
 void PreshootCmd::Initialize() {
   isFinished = false;

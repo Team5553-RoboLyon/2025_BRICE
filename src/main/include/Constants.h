@@ -40,7 +40,7 @@ enum class Side {
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 namespace elevatorConstants
 {   
-    constexpr ControlMode defaultMode = ControlMode::OPEN_LOOP; // Might be Closed Loop
+    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
     namespace Motors
     {
         namespace Left
@@ -80,14 +80,14 @@ namespace elevatorConstants
             constexpr bool IS_TRIGGERED = false;
         }
     }
-    namespace PID // TODO : set good Ks
+    namespace PID
     {
         constexpr double KP = 10.0;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
         constexpr double TOLERANCE = 0.001;
     }
-    namespace Setpoint // TODO : calibrate these values
+    namespace Setpoint
     {
         constexpr double HOME = 0.00;
         constexpr double CORAL_STATION = 0.00;
@@ -114,7 +114,7 @@ namespace elevatorConstants
 
 namespace strafferConstants
 {   
-    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP; // Might be Closed Loop
+    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
     namespace Motor
     {
         constexpr int ID = 8;
@@ -147,16 +147,16 @@ namespace strafferConstants
         constexpr double REST = 0.0;
         constexpr double MIN = -1.0;
         constexpr double MAX = 1.0;
-        constexpr double CALIBRATION = - 0.25; //TODO : calibrate this value
+        constexpr double CALIBRATION = - 0.25;
     }
-    namespace PID // TODO : set good Ks
+    namespace PID
     {
         constexpr double KP = 5.5;
         constexpr double KI = 0.0;
         constexpr double KD = 0.00;
         constexpr double TOLERANCE = 0.01;
     }
-    namespace Setpoint // TODO : calibrate these values
+    namespace Setpoint 
     {
         constexpr double LEFT_SIDE = 0.05;
         constexpr double RIGHT_SIDE = 0.31;
@@ -230,7 +230,7 @@ namespace gripperConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = false;         //TODO : test rotation
+            constexpr bool INVERTED = false;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
         namespace Intake 
@@ -239,7 +239,7 @@ namespace gripperConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = true;         //TODO : test rotation
+            constexpr bool INVERTED = true;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
     }
@@ -254,7 +254,7 @@ namespace gripperConstants
         }
     }
     
-    namespace Speed  // TODO : calibrate these values
+    namespace Speed
     {
         constexpr double REST = 0.0;
         constexpr double SHY = 0.05;

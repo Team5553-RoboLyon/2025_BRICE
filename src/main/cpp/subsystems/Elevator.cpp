@@ -41,15 +41,15 @@ Elevator::Elevator()
 }
 void Elevator::SetDesiredHeight(double height) 
 {
-    assert(((height >= elevatorConstants::Settings::BOTTOM_LIMIT) && (height <= elevatorConstants::Settings::TOP_LIMIT)) && "Elevator Desired height out of range.");
-    // if(height < elevatorConstants::Setpoint::HOME) PROTECTION FOR MATCHES ONLY
-    // {
-    //     height = elevatorConstants::Setpoint::HOME;
-    // } 
-    // else if(height > elevatorConstants::Setpoint::L4)
-    // {
-    //     height = elevatorConstants::Setpoint::L4;
-    // } 
+    // assert(((height >= elevatorConstants::Settings::BOTTOM_LIMIT) && (height <= elevatorConstants::Settings::TOP_LIMIT)) && "Elevator Desired height out of range.");
+    if(height < elevatorConstants::Setpoint::HOME) //PROTECTION FOR MATCHES ONLY
+    {
+        height = elevatorConstants::Setpoint::HOME;
+    } 
+    else if(height > elevatorConstants::Setpoint::L4)
+    {
+        height = elevatorConstants::Setpoint::L4;
+    } 
     m_elevatorPIDController.SetSetpoint(height);
 }
 void Elevator::SetDesiredStage(Stage stage) 
