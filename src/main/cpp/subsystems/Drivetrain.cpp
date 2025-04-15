@@ -41,7 +41,6 @@ Drivetrain::Drivetrain() {
 void Drivetrain::SetPower(double v_motor) {
     m_MotorBackLeft.Set(v_motor);
     m_MotorBackRight.Set(v_motor);
-    frc::SmartDashboard::PutNumber("auto", v_motor);
 }
 
 void Drivetrain::SetVoltage(double voltageLeft, double voltageRight) {
@@ -110,22 +109,22 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick, double heightF
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
-    m_sigma = NLERP(0.1, 0.4, NABS(RotateJoystick));
+    m_sigma = NLERP(0.25, 0.5, NABS(RotateJoystick));
 
     m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::LeftGearbox::WHEEL_SIDE));
     m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::RightGearbox::WHEEL_SIDE));
-    frc::SmartDashboard::PutNumber("Back left", m_MotorBackLeft.Get());
-    frc::SmartDashboard::PutNumber("back right", m_MotorBackRight.Get());
+    frc::SmartDashboard::PutNumber("dLeft Power", m_MotorBackLeft.Get());
+    frc::SmartDashboard::PutNumber("dRight Power", m_MotorBackRight.Get());
 
-    frc::SmartDashboard::PutNumber("encoder left", m_EncoderLeft.GetDistance());
-    frc::SmartDashboard::PutNumber("encoder right", m_EncoderRight.GetDistance());
+    frc::SmartDashboard::PutNumber("dLeft Encoder", m_EncoderLeft.GetDistance());
+    frc::SmartDashboard::PutNumber("dRight Encoder", m_EncoderRight.GetDistance());
 
 
-    frc::SmartDashboard::PutBoolean("reversed drive", m_reversedDrive);
-    frc::SmartDashboard::PutBoolean("slower", slower);
-    frc::SmartDashboard::PutNumber("sigma", m_sigma);
-    frc::SmartDashboard::PutNumber("FWD Joystick", FwdJoystick);
-    frc::SmartDashboard::PutNumber("Rotate Joystick", RotateJoystick);
+    frc::SmartDashboard::PutBoolean("dReversed drive", m_reversedDrive);
+    frc::SmartDashboard::PutBoolean("dSlower", slower);
+    frc::SmartDashboard::PutNumber("dSigma", m_sigma);
+    frc::SmartDashboard::PutNumber("dFWD Joystick", FwdJoystick);
+    frc::SmartDashboard::PutNumber("dRotate Joystick", RotateJoystick);
 }
 
 
