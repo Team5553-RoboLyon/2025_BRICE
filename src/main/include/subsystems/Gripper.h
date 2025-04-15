@@ -20,12 +20,7 @@ class Gripper : public frc2::SubsystemBase {
   void SetControlMode(ControlMode mode);
   void ToggleControlMode();
   ControlMode GetControlMode();
-
-  void AskToCatch();
-  void AskToDrop();
-  void StopAsking();
-  bool IsCaught();
-  bool IsDropped();
+  
   bool IsMoving();
 
   void Periodic() override;
@@ -46,7 +41,7 @@ class Gripper : public frc2::SubsystemBase {
   int m_counter{0};
   double m_ShoooootttttSpeed;
 
-  State m_state = State::IDLE; // etat je ne sais pas ou je suis (initial)
+  State m_state = State::IDLE;
   
  private:
    void OpenLoopControl();
@@ -62,6 +57,5 @@ class Gripper : public frc2::SubsystemBase {
 
   bool m_isIRBreakerDownTriggered;
   bool m_isIRBreakerUpTriggered;
-  double m_output;
   ControlMode m_controlMode = gripperConstants::defaultMode;
 };

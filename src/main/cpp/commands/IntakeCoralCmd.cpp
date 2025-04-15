@@ -51,7 +51,8 @@ void IntakeCoralCmd::End(bool interrupted) {
 
 // Returns true when the command should end.
 bool IntakeCoralCmd::IsFinished() 
-{ if(m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
+{ 
+  if(m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
   {
   return true;
   }
@@ -61,5 +62,4 @@ bool IntakeCoralCmd::IsFinished()
   }
   else 
     return false;
-
 }

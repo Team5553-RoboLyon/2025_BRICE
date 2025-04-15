@@ -27,9 +27,6 @@ ELEVATOR :
 [-] check dependancy with straffer/gripper
 - Reset bambulab avec Chooser
 
-OUTTAKE :
-Add protection
-Open loop
 
 
 ! s'assurer des sensors (eg, getDistance).

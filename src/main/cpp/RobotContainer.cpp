@@ -8,7 +8,7 @@
 #include <frc2/command/Commands.h>
 RobotContainer::RobotContainer() {
     ConfigureBindings();
-    // m_gripper.SetDefaultCommand(RunDefaultGripper(&m_gripper, &m_controllerCopilot));
+    m_gripper.SetDefaultCommand(RunDefaultGripper(&m_gripper, &m_controllerCopilot));
     m_straffer.SetDefaultCommand(RunDefaultStraffer(&m_straffer, &m_controllerCopilot));
     m_elevator.SetDefaultCommand(RunDefaultElevator(&m_elevator, &m_controllerCopilot));
      m_drivetrain.SetDefaultCommand(Drive( [this]
