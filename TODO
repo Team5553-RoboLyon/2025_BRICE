@@ -18,13 +18,13 @@ STRAFFER :
 - Add auto straffer
 
 ELEVATOR : 
-- Add center per stage 
-- Add protection left/right
-- Review Stage
-- Recheck Reset Elevator
+[-] Add center per stage 
+[-] Add protection left/right
+[-] Review Stage
+[-] Recheck Reset Elevator
 - Add auto elevator
-- check modif while changing control mode
-- check dependancy with straffer/gripper
+[-] check modif while changing control mode
+[-] check dependancy with straffer/gripper
 - Reset bambulab avec Chooser
 
 OUTTAKE :

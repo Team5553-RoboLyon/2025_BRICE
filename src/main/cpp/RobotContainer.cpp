@@ -31,6 +31,10 @@ void RobotContainer::ConfigureBindings() {
   m_rightSideButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::RIGHT).ToPtr());
   m_leftSideButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::LEFT).ToPtr());
   m_CoralStationButton.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+  m_L1Button.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+  m_L2Button.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+  m_L3Button.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
+  m_L4Button.WhileTrue(AlignStrafferCmd(&m_straffer, &m_gripper, Side::CENTER).ToPtr());
 
   m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
   m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
