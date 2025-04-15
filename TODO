@@ -8,12 +8,12 @@ Dashboard
 How to find good values PID
 
 STRAFFER : 
-- Add deadzone Closed Loop Straffer
-- Add securities Straffer out of range -> center
-- Recheck Reset Straffer
-- add counter on straff to station
-- check modif while changing control mode
-- check to slow straff to reef before dropping
+[-] Add deadzone Closed Loop Straffer
+[-] Add securities Straffer out of range -> center
+[-] Recheck Reset Straffer
+[-] add counter on straff to station
+[-] check modif while changing control mode
+[-] check to slow straff to reef before dropping
 - Reset Bambulab avec Chooser
 - Add auto straffer
 

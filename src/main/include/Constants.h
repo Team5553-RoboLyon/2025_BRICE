@@ -149,11 +149,11 @@ namespace strafferConstants
         constexpr double MAX = 1.0;
         constexpr double CALIBRATION = - 0.25;
     }
-    namespace PID
+    namespace PID // au pif
     {
-        constexpr double KP = 5.5;
-        constexpr double KI = 0.0;
-        constexpr double KD = 0.00;
+        constexpr double KP = 3.2;
+        constexpr double KI = 0.015;
+        constexpr double KD = 0.45;
         constexpr double TOLERANCE = 0.01;
     }
     namespace Setpoint 
@@ -168,6 +168,12 @@ namespace strafferConstants
         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2); // only for open-loop
         constexpr double LEFT_LIMIT = 0.05;
         constexpr double RIGHT_LIMIT = 0.32;
+    }
+    namespace Counter 
+    {
+        constexpr int SEEK_APRIL_TAG = 10;
+        constexpr int STRAFF_TO_REEF = 50; // too slow
+        constexpr int STRAFF_TO_STATION = 25;
     }
 }
 

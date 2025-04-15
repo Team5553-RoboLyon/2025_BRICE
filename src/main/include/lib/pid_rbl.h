@@ -80,6 +80,7 @@ class PidRBL {
    * @return True if the measurement is at the setpoint, false otherwise.
    */
   bool AtSetpoint();
+  double GetSetpoint() { return m_setpoint; };
 
 private:
 
