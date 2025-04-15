@@ -17,9 +17,6 @@ STRAFFER :
 - Reset Bambulab avec Chooser
 - Add auto straffer
 
-DRIVETRAIN : 
-- Check unwanted reversed
-
 ELEVATOR : 
 - Add center per stage 
 - Add protection left/right

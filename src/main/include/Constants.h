@@ -49,7 +49,7 @@ namespace elevatorConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = false;
+            constexpr bool INVERTED = true;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
         namespace Right
@@ -58,7 +58,7 @@ namespace elevatorConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = true;
+            constexpr bool INVERTED = false;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
     }
