@@ -93,6 +93,8 @@ void Elevator::SetControlMode(ControlMode mode)
 {
     m_controlMode = mode;
     m_rateLimiter.m_current = 0.0;
+    m_leftMotor.Set(elevatorConstants::Speed::REST);
+    m_rightMotor.Set(elevatorConstants::Speed::REST);
 }
 ControlMode Elevator::GetControlMode() 
 {
