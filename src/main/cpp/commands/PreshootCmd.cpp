@@ -18,6 +18,11 @@ PreshootCmd::PreshootCmd(Gripper *pGripper, Straffer *pStraffer, Elevator *pElev
 // Called when the command is initially scheduled.
 void PreshootCmd::Initialize() {
   isFinished = false;
+
+  if(m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
+  {
+    isFinished = true;
+  }
 }
 
 // Called repeatedly when this Command is scheduled to run
@@ -25,16 +30,15 @@ void PreshootCmd::Execute() {
   switch (m_pGripper->m_state)
   {
   case Gripper::State::REST_LOADED :
-    if(m_pStraffer->m_state == Straffer::State::AT_REEF)
+    if(m_pStraffer->m_state == Straffer::State::AT_REEF || m_pStraffer->m_state == Straffer::State::AT_STATION)
     {
       m_pGripper->m_state = Gripper::State::PRESHOOT;
       m_pGripper->SetSpeedOuttake(gripperConstants::Speed::PRESHOOT);
       m_pGripper->m_ShoooootttttSpeed = SpeedPerStageLUT[(int)m_pElevator->GetStage()];
-      m_pGripper->m_counter = 7; //  counter preshoot
+      m_pGripper->m_counter = gripperConstants::Counter::PRESHOOT;
       isFinished = true;
     }
     break;
-  
   default:
     break;
   }

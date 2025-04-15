@@ -264,7 +264,11 @@ namespace gripperConstants
         constexpr double FEEDING_BACKWARD = -0.2;
         constexpr double PRESHOOT = -0.2;
         constexpr double SHOOTTTT = 0.4;
-
+    }
+    namespace Counter 
+    {
+        constexpr int PRESHOOT = 7;
+        constexpr int SHOOT = 20;
     }
 }
 

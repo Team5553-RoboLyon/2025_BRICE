@@ -39,6 +39,9 @@ void Gripper::SetSpeedOuttake(double outtakeSpeed)
 void Gripper::SetControlMode(ControlMode mode) 
 {
     m_controlMode = mode;
+    m_state = State::IDLE; // reset state when changing control mode
+    m_outtakeMotor.Set(gripperConstants::Speed::REST);
+    m_intakeMotor.Set(gripperConstants::Speed::REST);
 }
 
 ControlMode Gripper::GetControlMode()
@@ -51,9 +54,15 @@ void Gripper::ToggleControlMode() // only between Open and Closed Loop
     {
     case ControlMode::OPEN_LOOP :
         m_controlMode = ControlMode::CLOSED_LOOP;
+        m_state = State::IDLE; // reset state when changing control mode
+        m_outtakeMotor.Set(gripperConstants::Speed::REST);
+        m_intakeMotor.Set(gripperConstants::Speed::REST);
         break;
     case ControlMode::CLOSED_LOOP :
         m_controlMode = ControlMode::OPEN_LOOP;
+        m_state = State::IDLE; // reset state when changing control mode
+        m_outtakeMotor.Set(gripperConstants::Speed::REST);
+        m_intakeMotor.Set(gripperConstants::Speed::REST);
         break;
     default:
         break;
@@ -79,14 +88,14 @@ void Gripper::Periodic()
     {
     case ControlMode::CLOSED_LOOP:
         ClosedLoopControl();
-        frc::SmartDashboard::PutString("oControlMode", "ClosedLoop");
+        frc::SmartDashboard::PutString("gControlMode", "ClosedLoop");
         break;
     case ControlMode::OPEN_LOOP:
         OpenLoopControl();
-        frc::SmartDashboard::PutString("oControlMode", "OpenLoop");
+        frc::SmartDashboard::PutString("gControlMode", "OpenLoop");
         break;
     case ControlMode::AUTO_LOOP:
-        frc::SmartDashboard::PutString("oControlMode", "AutoLoop");
+        frc::SmartDashboard::PutString("gControlMode", "AutoLoop");
         break;
     default:
         break;
@@ -167,7 +176,7 @@ void Gripper::ClosedLoopControl()
         {
             m_state = State::SHOOT;
             m_outtakeMotor.Set(m_ShoooootttttSpeed);
-            m_counter = 25; // durée shoot
+            m_counter = gripperConstants::Counter::SHOOT; // durée shoot
         }
         break; //end of State::PRESHOOT
 
@@ -197,6 +206,5 @@ void Gripper::ClosedLoopControl()
 }
 void Gripper::OpenLoopControl() 
 {
-    m_outtakeMotor.Set(m_output);
-    m_intakeMotor.Set(m_output);
+    // in setSpeed
 }
