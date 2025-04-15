@@ -37,6 +37,7 @@ void Straffer::SetControlMode(ControlMode mode)
     m_state = State ::IDLE;
     m_controlMode = mode;
     m_rateLimiter.m_current = 0.0;
+    m_motor.Set(strafferConstants::Speed::REST);
 }
 ControlMode Straffer::GetControlMode() 
 {
@@ -51,7 +52,7 @@ void Straffer::Reset()
 {
     if(m_isLeftLimitSwitchTriggered)
     {
-        m_motor.Set(0.0);
+        m_motor.Set(strafferConstants::Speed::REST); 
         m_output = 0.0;
         m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
         isInitialized = true;
@@ -100,6 +101,8 @@ void Straffer::Periodic() {
     
 
     frc::SmartDashboard::PutNumber("sMotor",m_motor.GetAppliedOutput());
+    frc::SmartDashboard::PutNumber("sJoystick", m_joystickInput);
+    frc::SmartDashboard::PutNumber("sSetpoint", m_strafferPIDController.GetSetpoint());
 }
 
 void Straffer::ClosedLoopControl()
@@ -115,9 +118,20 @@ void Straffer::ClosedLoopControl()
             {
                 m_bestAprilTagOffset = 0.0; // default value 
             }
-            m_strafferPIDController.SetSetpoint(strafferConstants::Setpoint::ORIGIN - m_bestAprilTagOffset + m_targetOffset);
-            m_state = State::STRAFF_TO_REEF;
-            m_counter = 50;
+            double target = strafferConstants::Setpoint::ORIGIN - m_bestAprilTagOffset + m_targetOffset;
+            if(target >= strafferConstants::Settings::LEFT_LIMIT && target <= strafferConstants::Settings::RIGHT_LIMIT)
+            {
+                m_state = State::STRAFF_TO_REEF;
+                m_counter = strafferConstants::Counter::STRAFF_TO_REEF;
+                m_strafferPIDController.SetSetpoint(target);
+            }
+            else
+            {
+                target = strafferConstants::Setpoint::CENTER;
+                m_state = State::STRAFF_TO_STATION;
+                m_counter = strafferConstants::Counter::STRAFF_TO_STATION;
+                m_strafferPIDController.SetSetpoint(target);
+            }
         }
         else 
         {
@@ -130,13 +144,13 @@ void Straffer::ClosedLoopControl()
                 {
                     m_lowestAmbiguity = currentAmbiguity;
                     m_bestAprilTagOffset = m_camera.GetHorizontalDistance(m_camera.GetBestTarget());
-                    frc::SmartDashboard::PutNumber("best", m_bestAprilTagOffset);
+                    frc::SmartDashboard::PutNumber("sBest AprilTag Offset", m_bestAprilTagOffset);
                 }
             }
         }
         break;
     case State::STRAFF_TO_REEF: 
-        if(m_strafferPIDController.AtSetpoint() || (m_counter == 0)) // too slow drop
+        if(m_strafferPIDController.AtSetpoint() || (m_counter == 0))
         {
             m_state = State::AT_REEF;
         }
@@ -146,9 +160,13 @@ void Straffer::ClosedLoopControl()
         }
         break;
     case State::STRAFF_TO_STATION :
-        if(m_strafferPIDController.AtSetpoint())
+        if(m_strafferPIDController.AtSetpoint()  || (m_counter == 0))
         {
             m_state = State::AT_STATION;
+        }
+        else 
+        {
+            m_counter--;
         }
         break;
     case State::AT_REEF :
@@ -159,6 +177,16 @@ void Straffer::ClosedLoopControl()
         break;
     }
     m_output = m_strafferPIDController.Calculate(m_width);
+    if(m_width < strafferConstants::Settings::LEFT_LIMIT && m_output < 0.0)
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = strafferConstants::Speed::REST;
+    }
+    else if(m_width > strafferConstants::Settings::RIGHT_LIMIT && m_output > 0.0)
+    {
+        m_rateLimiter.m_current = 0.0;
+        m_output = strafferConstants::Speed::REST;
+    }
     if(m_isLeftLimitSwitchTriggered && m_output < 0.0) 
     {
         m_rateLimiter.m_current = 0.0; // useless

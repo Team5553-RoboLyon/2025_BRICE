@@ -29,7 +29,8 @@ class AlignStrafferCmd
   private:
   Straffer* m_pStraffer;
   Gripper* m_pGripper;
-  Side m_side;
+  Side m_targetSide;
+  bool isFinished;
   
   double m_offset;
 };
