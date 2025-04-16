@@ -36,12 +36,13 @@ enum class Side {
     CENTER,
     RIGHT
 };
-enum class Rumble {
-    CAUGHT,
-    DROPPED,
-    LEFT_OUT_OF_RANGE,
-    RIGHT_OUT_OF_RANGE
-};
+// enum class Rumble {
+//     CAUGHT,
+//     DROPPED,
+//     LEFT_OUT_OF_RANGE,
+//     RIGHT_OUT_OF_RANGE,
+//     NOTHING
+// };
 
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 namespace elevatorConstants

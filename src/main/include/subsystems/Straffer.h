@@ -48,6 +48,9 @@ class Straffer : public frc2::SubsystemBase {
 
   double m_lowestAmbiguity; // valeur d'ambiguité la plus basse détectée dans State::SEEk
   double m_bestAprilTagOffset; // valeur Y la moins ambigue détectée dans State::SEEK_APRIL_TAG
+
+  // Rumble m_targetRumble = Rumble::NOTHING;
+  bool m_rumble = false;
  private:
   void OpenLoopControl();
   void ClosedLoopControl();

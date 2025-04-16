@@ -35,14 +35,18 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   // int count = 0;
   RobotContainer m_container;
+  // int *m_currentRumble[3];
   int m_rumbleCounter;
+  bool canRumble = true;
   // double initialPosition;
   // double target = 3.0; // in meters
 
-  int m_rumbleTable[3][5] //{intensity, side, number of cycles, time on, time off}}
-  {
-      {50, frc::PS4Controller::RumbleType::kBothRumble, 1, 1, 1 }, // Caught
-      {50, frc::PS4Controller::RumbleType::kBothRumble, 1, 1, 1 }, // Dropped
-     {50, frc::PS4Controller::RumbleType::kBothRumble, 1, 1, 1 }  // Out of range
-  };
+  // int m_rumbleTable[5][3] //{intensity, side, number of cycles, time on, time off}}
+  // {
+  //     {75, frc::PS4Controller::RumbleType::kBothRumble, 8}, // Caught
+  //     {75, frc::PS4Controller::RumbleType::kBothRumble, 16}, // Dropped
+  //     {50, frc::PS4Controller::RumbleType::kLeftRumble, 10}, // LEFT_OUT_OF_RANGE,
+  //     {50, frc::PS4Controller::RumbleType::kRightRumble, 10}, // RIGHT_OUT_OF_RANGE
+  //     {0, frc::PS4Controller::RumbleType::kBothRumble, 1} // Nothing
+  // };
 };

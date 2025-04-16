@@ -69,18 +69,27 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  if(m_container.m_gripper.isRumbled) 
+  if(canRumble)
   {
-    if(m_rumbleCounter < m_container.m_gripper.rumbleTime)
+    if(m_container.m_gripper.m_rumble || m_container.m_straffer.m_rumble)
     {
-      m_container.m_controllerCopilot.SetRumble(frc::GenericHID::kBothRumble, 0.5);
-      m_rumbleCounter++;
+      canRumble = false;
+      m_rumbleCounter = 11;
+    }
+  }
+  else
+  {
+    m_rumbleCounter--;
+    if(m_rumbleCounter == 0)
+    {
+      canRumble = true;
+      m_container.m_straffer.m_rumble = false;
+      m_container.m_gripper.m_rumble = false;
+      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.0);
     }
     else 
     {
-      m_container.m_controllerCopilot.SetRumble(frc::GenericHID::kBothRumble, 0.0);
-      m_container.m_gripper.isRumbled = false;
-      m_rumbleCounter = 0;
+      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.5553);
     }
   }
 }

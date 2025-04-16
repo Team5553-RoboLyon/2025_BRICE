@@ -126,8 +126,9 @@ void Straffer::ClosedLoopControl()
                 m_strafferPIDController.SetSetpoint(target);
             }
             else
-            {
+            { 
                 target = strafferConstants::Setpoint::CENTER;
+                m_rumble = true;
                 m_state = State::STRAFF_TO_STATION;
                 m_counter = strafferConstants::Counter::STRAFF_TO_STATION;
                 m_strafferPIDController.SetSetpoint(target);

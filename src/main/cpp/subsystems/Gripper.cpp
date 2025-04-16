@@ -106,8 +106,6 @@ void Gripper::Periodic()
     frc::SmartDashboard::PutNumber("gState", (int)m_state);
     frc::SmartDashboard::PutNumber("gOuttakeMotor", m_outtakeMotor.GetAppliedOutput());
     frc::SmartDashboard::PutNumber("gIntakeMotor", m_intakeMotor.GetAppliedOutput());
-    frc::SmartDashboard::PutBoolean("gIsRumble", isRumbled);
-    frc::SmartDashboard::PutNumber("gRumbleTime", rumbleTime);
 }
 
 void Gripper::ClosedLoopControl() 
@@ -165,6 +163,8 @@ void Gripper::ClosedLoopControl()
         if(!m_isIRBreakerUpTriggered)
         {
             m_state = State::REST_LOADED;
+            // m_targetRumble = Rumble::CAUGHT;
+            m_rumble = true;
             m_outtakeMotor.Set(gripperConstants::Speed::REST);
         }
         break; //end of State::INTAKE_FEEDING_FORWARD_SHY
@@ -187,6 +187,8 @@ void Gripper::ClosedLoopControl()
         {
             m_state = State::REST_EMPTY;
             m_outtakeMotor.Set(gripperConstants::Speed::REST);
+            // m_targetRumble = Rumble::DROPPED;
+            m_rumble = true;
         }
         break; //end of State::SHOOT
 

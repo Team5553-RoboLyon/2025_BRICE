@@ -25,8 +25,6 @@ class Gripper : public frc2::SubsystemBase {
 
   void Periodic() override;
 
-  bool isRumbled = false;
-  double rumbleTime = 0.0;
     enum class State {
     IDLE,
     REST_EMPTY,
@@ -42,7 +40,9 @@ class Gripper : public frc2::SubsystemBase {
   double m_ShoooootttttSpeed;
 
   State m_state = State::IDLE;
-  
+
+  // Rumble m_targetRumble = Rumble::NOTHING;
+  bool m_rumble = false;
  private:
    void OpenLoopControl();
   void ClosedLoopControl();
