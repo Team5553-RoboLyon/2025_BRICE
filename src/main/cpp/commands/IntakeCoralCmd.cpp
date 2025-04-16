@@ -23,6 +23,12 @@ void IntakeCoralCmd::Initialize() {
         m_pGripper->SetSpeedOuttake(gripperConstants::Speed::OUTTAKE_EMPTY);
         m_pGripper->SetSpeedIntake(gripperConstants::Speed::INTAKE_EMPTY);
       }
+      else if(m_pStraffer->GetControlMode() == ControlMode::OPEN_LOOP)
+      {
+                m_pGripper->m_state = Gripper::State::INTAKE_EMPTY;
+        m_pGripper->SetSpeedOuttake(gripperConstants::Speed::OUTTAKE_EMPTY);
+        m_pGripper->SetSpeedIntake(gripperConstants::Speed::INTAKE_EMPTY);
+      }
       break;
     
     case Gripper::State::REST_LOADED :

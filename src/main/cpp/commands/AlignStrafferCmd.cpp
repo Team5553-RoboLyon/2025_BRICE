@@ -20,7 +20,7 @@ void AlignStrafferCmd::Initialize() {
 
 // Called repeatedly when this Command is scheduled to run
 void AlignStrafferCmd::Execute() {
-  if((m_pGripper->m_state == Gripper::State::REST_LOADED) || (m_pGripper->m_state == Gripper::State::REST_EMPTY))
+  if((m_pGripper->m_state == Gripper::State::REST_LOADED) || (m_pGripper->m_state == Gripper::State::REST_EMPTY) || (m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP))
   {
     if(m_targetSide == Side::CENTER)
     {

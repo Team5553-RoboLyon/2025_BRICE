@@ -16,7 +16,7 @@ void SetStageCmd::Initialize() {
 
 // Called repeatedly when this Command is scheduled to run
 void SetStageCmd::Execute() {
-  if(m_pGripper->m_state == Gripper::State::REST_EMPTY || m_pGripper->m_state == Gripper::State::REST_LOADED)
+  if(m_pGripper->m_state == Gripper::State::REST_EMPTY || m_pGripper->m_state == Gripper::State::REST_LOADED || m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
   {
     m_pElevator->SetDesiredStage(m_stage);
     isFinished = true;

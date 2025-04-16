@@ -32,7 +32,7 @@ void PreshootCmd::Execute() {
   switch (m_pGripper->m_state)
   {
   case Gripper::State::REST_LOADED :
-    if(m_pStraffer->m_state == Straffer::State::AT_REEF || m_pStraffer->m_state == Straffer::State::AT_STATION)
+    if(m_pStraffer->m_state == Straffer::State::AT_REEF || m_pStraffer->m_state == Straffer::State::AT_STATION || m_pStraffer->GetControlMode()== ControlMode::OPEN_LOOP)
     {
       m_pGripper->m_state = Gripper::State::PRESHOOT;
       m_pGripper->SetSpeedOuttake(gripperConstants::Speed::PRESHOOT);
