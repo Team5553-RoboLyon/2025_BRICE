@@ -76,7 +76,7 @@ void Elevator::SetDesiredStage(Stage stage)
         m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L4);
         break;
     default:
-        assert(false && "Stage unkown");
+        // assert(false && "Stage unkown");
         break;
     }
 }
@@ -86,8 +86,8 @@ double Elevator::GetHeight()
 }
 void Elevator::SetJoystickInput(double input) 
 {
-    assert(((input <= 1) && (input >=-1)) && "Input Joustick Elevator out of range [-1;1].");
-    m_joystickInput = m_rateLimiter.Update(input);
+    // assert(((input <= 1) && (input >=-1)) && "Input Joustick Elevator out of range [-1;1].");
+    m_joystickInput = m_rateLimiter.Update(std::sin(input * (M_PI / 2.0)));
 }
 void Elevator::SetControlMode(ControlMode mode) 
 {
@@ -129,6 +129,7 @@ void Elevator::Reset()
         isInitialized = true;
         m_stage = Stage::HOME;
         m_encoder.Reset();
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::HOME);
     }
     else
     {

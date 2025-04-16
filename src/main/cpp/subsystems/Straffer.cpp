@@ -30,7 +30,7 @@ Straffer::Straffer()
 void Straffer::SetJoystickInput(double input) 
 {
     // assert(((input <= 1) && (input >=-1)) && "Input Joustick Straffer out of range [-1;1].");
-    m_joystickInput = m_rateLimiter.Update(input);
+    m_joystickInput = m_rateLimiter.Update(std::sin(input * (M_PI / 2.0)));
 }
 void Straffer::SetControlMode(ControlMode mode) 
 {

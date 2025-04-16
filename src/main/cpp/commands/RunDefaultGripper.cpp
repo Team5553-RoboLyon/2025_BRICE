@@ -23,8 +23,8 @@ void RunDefaultGripper::Execute() {
     }
     else if(m_pGamepad->GetRawAxis(3) >0.2)
     {
-      m_pGripper->SetSpeedIntake(m_pGamepad->GetRawAxis(3)/2.0);
-      m_pGripper->SetSpeedOuttake(m_pGamepad->GetRawAxis(3)/2.0);
+      m_pGripper->SetSpeedIntake(-m_pGamepad->GetRawAxis(3)/2.0);
+      m_pGripper->SetSpeedOuttake(-m_pGamepad->GetRawAxis(3)/2.0);
     }
     else 
     {

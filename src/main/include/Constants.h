@@ -36,10 +36,16 @@ enum class Side {
     CENTER,
     RIGHT
 };
+enum class Rumble {
+    CAUGHT,
+    DROPPED,
+    LEFT_OUT_OF_RANGE,
+    RIGHT_OUT_OF_RANGE
+};
 
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 namespace elevatorConstants
-{   
+{   //1.46
     constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
     namespace Motors
     {
@@ -49,7 +55,7 @@ namespace elevatorConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = true;
+            constexpr bool INVERTED = false;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
         namespace Right
@@ -58,7 +64,7 @@ namespace elevatorConstants
             constexpr double VOLTAGE_COMPENSATION = 10.0;
             constexpr double CURRENT_LIMIT = 40.0;
             constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = false;
+            constexpr bool INVERTED = true;
             constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
         }
     }
@@ -84,7 +90,7 @@ namespace elevatorConstants
     {
         constexpr double KP = 10.0;
         constexpr double KI = 0.0;
-        constexpr double KD = 0.00;
+        constexpr double KD = 0.2;
         constexpr double TOLERANCE = 0.001;
     }
     namespace Setpoint
@@ -106,14 +112,14 @@ namespace elevatorConstants
     namespace Settings
     {
         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25); // only for open-loop
-        constexpr double BOTTOM_LIMIT = 0.04;
+        constexpr double BOTTOM_LIMIT = 0.025;
         constexpr double TOP_LIMIT = 1.45;
         constexpr double JOYSTICK_REDUCTION = -2.0;
     }
 }
 
-namespace strafferConstants
-{   
+namespace strafferConstants 
+{   //39.5
     constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
     namespace Motor
     {
@@ -151,29 +157,29 @@ namespace strafferConstants
     }
     namespace PID // au pif
     {
-        constexpr double KP = 3.2;
-        constexpr double KI = 0.015;
-        constexpr double KD = 0.45;
-        constexpr double TOLERANCE = 0.01;
+        constexpr double KP = 6.5;
+        constexpr double KI = 0.000;
+        constexpr double KD = 0.4;
+        constexpr double TOLERANCE = 0.005;
     }
     namespace Setpoint 
     {
-        constexpr double LEFT_SIDE = 0.05;
-        constexpr double RIGHT_SIDE = 0.31;
-        constexpr double CENTER = 0.1945;
+        constexpr double LEFT_SIDE = 0.099;
+        constexpr double RIGHT_SIDE = 0.296;
+        constexpr double CENTER = 0.1975;
         constexpr double ORIGIN = CENTER;
     } 
     namespace Settings
     {
         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2); // only for open-loop
-        constexpr double LEFT_LIMIT = 0.05;
-        constexpr double RIGHT_LIMIT = 0.32;
+        constexpr double LEFT_LIMIT = 0.025;
+        constexpr double RIGHT_LIMIT = 0.37;
     }
     namespace Counter 
     {
-        constexpr int SEEK_APRIL_TAG = 10;
-        constexpr int STRAFF_TO_REEF = 50; // too slow
-        constexpr int STRAFF_TO_STATION = 25;
+        constexpr int SEEK_APRIL_TAG = 8;
+        constexpr int STRAFF_TO_REEF = 25; // too slow
+        constexpr int STRAFF_TO_STATION = 20;
     }
 }
 
@@ -225,9 +231,6 @@ namespace driveConstants {
 namespace gripperConstants
 {   
     constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
-    constexpr double TIME_FOR_DROP = 0.2 / TIME_PER_CYCLE;
-    constexpr double TIME_RUMBLE_CAUGHT = 0.36 / TIME_PER_CYCLE;
-    constexpr double TIME_RUMBLE_DROPPED = 0.16 / TIME_PER_CYCLE;
     namespace Motors
     {
         namespace Outtake 
