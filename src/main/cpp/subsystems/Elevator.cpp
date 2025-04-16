@@ -84,6 +84,13 @@ double Elevator::GetHeight()
 {
     return m_height;
 }
+bool Elevator::IsAtCoralStation()
+{
+    if(NABS(elevatorConstants::Setpoint::CORAL_STATION - m_height) <= 0.05)
+        return true;
+    else 
+        return false;
+} 
 void Elevator::SetJoystickInput(double input) 
 {
     // assert(((input <= 1) && (input >=-1)) && "Input Joustick Elevator out of range [-1;1].");

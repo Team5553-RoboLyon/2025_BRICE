@@ -5,10 +5,12 @@
 #include "commands/PreshootCmd.h"
 
 static double SpeedPerStageLUT[5] = { gripperConstants::Speed::SHOOTTTT,
-                                       0.2, //L1
-                                        0.6,//L2
-                                         0.8,//L3
+                                       0.3, //L1
+                                        0.45,//L2
+                                         0.5,//L3
                                           0.4}; //L4
+
+
 PreshootCmd::PreshootCmd(Gripper *pGripper, Straffer *pStraffer, Elevator *pElevator) 
                                                                                             : m_pGripper(pGripper), 
                                                                                             m_pStraffer(pStraffer), 

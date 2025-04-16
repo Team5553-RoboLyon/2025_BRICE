@@ -4,7 +4,7 @@
 
 #include "commands/AlignStrafferCmd.h"
 
-static double offsetStrafferLUT[3] = {-0.20, 0.0, 0.165}; // LEFT, CENTER, RIGHT
+static double offsetStrafferLUT[3] = {-0.17, 0.0, 0.17}; // LEFT, CENTER, RIGHT
 AlignStrafferCmd::AlignStrafferCmd(Straffer* pStraffer, Gripper* pGripper, Side side)  
                   : m_pStraffer(pStraffer), m_pGripper(pGripper), m_targetSide(side)
 {

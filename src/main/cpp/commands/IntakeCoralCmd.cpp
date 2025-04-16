@@ -17,7 +17,7 @@ void IntakeCoralCmd::Initialize() {
     switch (m_pGripper->m_state)
     {
     case Gripper::State::REST_EMPTY :
-      if(m_pStraffer->m_state == Straffer::State::AT_STATION)
+      if(m_pStraffer->m_state == Straffer::State::AT_STATION && m_pElevator->IsAtCoralStation())
       {
         m_pGripper->m_state = Gripper::State::INTAKE_EMPTY;
         m_pGripper->SetSpeedOuttake(gripperConstants::Speed::OUTTAKE_EMPTY);
@@ -35,6 +35,7 @@ void IntakeCoralCmd::Initialize() {
     }
   }
 }
+//TODO : elevateur at positon
 
 // Called repeatedly when this Command is scheduled to run
 void IntakeCoralCmd::Execute() {}

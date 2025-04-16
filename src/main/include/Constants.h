@@ -296,8 +296,8 @@ namespace ControlPanelConstants {
         // XBOX_CONTROLLER
         constexpr int CORAL_STATION = 1;
         constexpr int L1 = 8;
-        constexpr int L2 = 3;
-        constexpr int L3 = 2;
+        constexpr int L2 = 2;
+        constexpr int L3 = 3;
         constexpr int L4 = 4;
         constexpr int LEFT_SIDE = 5;
         constexpr int RIGHT_SIDE = 6;

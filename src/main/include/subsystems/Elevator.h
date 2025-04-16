@@ -29,6 +29,7 @@ class Elevator : public frc2::SubsystemBase {
   Stage GetStage() { return m_stage; };
 
   void SetJoystickInput(double input);
+    bool IsAtCoralStation();
 
   void Periodic() override;
 
