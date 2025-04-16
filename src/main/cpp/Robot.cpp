@@ -21,6 +21,15 @@ void Robot::RobotPeriodic() {
   // std::cout << m_container.m_controllerCopilot.GetRawAxis(2) << m_container.m_controllerCopilot.GetRawAxis(3) << std::endl;
 }
 
+void Robot::Leave() {
+  if((m_container.m_drivetrain.DriveAuto() - initialPosition) > target)
+  {
+    m_container.m_drivetrain.SetPower(0.0);
+  }
+  else {
+      m_container.m_drivetrain.SetPower(0.5);
+  }
+}
 void Robot::DisabledInit() {
 }
 
@@ -46,13 +55,7 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  // if((m_container.m_drivetrain.DriveAuto() - initialPosition) > target)
-  // {
-  //   m_container.m_drivetrain.SetPower(0.0);
-  // }
-  // else {
-  //     m_container.m_drivetrain.SetPower(0.5);
-  // }
+  Leave();
 }
 
 void Robot::AutonomousExit() {

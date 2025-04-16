@@ -178,8 +178,8 @@ namespace strafferConstants
     }
     namespace Counter 
     {
-        constexpr int SEEK_APRIL_TAG = 8;
-        constexpr int STRAFF_TO_REEF = 25; // too slow
+        constexpr int SEEK_APRIL_TAG = 5;
+        constexpr int STRAFF_TO_REEF = 22;
         constexpr int STRAFF_TO_STATION = 20;
     }
 }
@@ -191,7 +191,7 @@ namespace driveConstants {
             constexpr int FRONT_MOTOR_ID = 2;
             constexpr int BACK_MOTOR_ID = 3;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = false;
+            constexpr bool MOTOR_INVERTED = true;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
@@ -212,7 +212,7 @@ namespace driveConstants {
             constexpr int FRONT_MOTOR_ID = 4;
             constexpr int BACK_MOTOR_ID = 5;
             constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = true;
+            constexpr bool MOTOR_INVERTED = false;
             constexpr int MOTOR_CURRENT_LIMIT = 40;
             constexpr double MOTOR_RAMP = 0.1;
             constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
@@ -277,7 +277,7 @@ namespace gripperConstants
     }
     namespace Counter 
     {
-        constexpr int PRESHOOT = 7;
+        constexpr int PRESHOOT = 10;
         constexpr int SHOOT = 20;
     }
 }

@@ -109,7 +109,7 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick, double heightF
     m_JoystickLimited_V.Update(FwdJoystick);
     m_JoystickLimited_W.Update(RotateJoystick);
 
-    m_sigma = NLERP(0.25, 0.5, NABS(RotateJoystick));
+    m_sigma = NLERP(0.1, 0.4, NABS(RotateJoystick));
 
     m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::LeftGearbox::WHEEL_SIDE));
     m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::RightGearbox::WHEEL_SIDE));

@@ -18,7 +18,7 @@ void Drive::Initialize() {}
 void Drive::Execute() {
   if(!m_pDrivetrain->isAuto) {
     double forward = -m_Forward();
-    double turn = m_Turn();
+    double turn = -m_Turn();
     double heightFactor = NORMALIZE_HEIGHT(m_pElevator->GetHeight());
     m_pDrivetrain->Drive(forward, turn, heightFactor);
   }

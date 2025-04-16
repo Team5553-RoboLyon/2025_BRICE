@@ -31,6 +31,8 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
   void TestExit() override;
 
+  void Leave();
+
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   // int count = 0;
@@ -38,8 +40,8 @@ class Robot : public frc::TimedRobot {
   // int *m_currentRumble[3];
   int m_rumbleCounter;
   bool canRumble = true;
-  // double initialPosition;
-  // double target = 3.0; // in meters
+  double initialPosition;
+  double target = 3.0; // in meters
 
   // int m_rumbleTable[5][3] //{intensity, side, number of cycles, time on, time off}}
   // {
