@@ -8,6 +8,8 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc/PWM.h>
+#include <subsystems/Camera.h>
 // #include "subsystems/Camera.h"
 // #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -42,6 +44,9 @@ class Robot : public frc::TimedRobot {
   bool canRumble = true;
   double initialPosition;
   double target = 3.0; // in meters
+  frc::PWM m_led{9};
+  Camera m_camera;
+
 
   // int m_rumbleTable[5][3] //{intensity, side, number of cycles, time on, time off}}
   // {
