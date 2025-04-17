@@ -34,6 +34,7 @@ class Robot : public frc::TimedRobot {
   void TestExit() override;
 
   void Leave();
+  void CenterToL4();
 
  private:
   std::optional<frc2::CommandPtr> m_autonomousCommand;
@@ -46,6 +47,14 @@ class Robot : public frc::TimedRobot {
   double target = 3.0; // in meters
   frc::PWM m_led{9};
   Camera m_camera;
+
+  enum class AutoState {
+    Leave, 
+    Elevate,
+    Align, 
+    Shoot
+  };
+  AutoState m_state = AutoState::Leave;
 
 
   // int m_rumbleTable[5][3] //{intensity, side, number of cycles, time on, time off}}

@@ -39,6 +39,7 @@ public:
   double GetHorizontalDistance(photon::PhotonTrackedTarget target);
   //The area (how much of the camera feed the bounding box takes up) as a percent (0-100).
   double GetArea(photon::PhotonTrackedTarget target);
+  double GetDistance(photon::PhotonTrackedTarget target);
   // The skew of the target in degrees (counter-clockwise positive).
   double GetSkew(photon::PhotonTrackedTarget target);
   // The camera to target transform.

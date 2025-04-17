@@ -19,7 +19,7 @@
 
 class Straffer : public frc2::SubsystemBase {
  public:
-  Straffer();
+  Straffer(Camera *pCamera);
   void SetControlMode(ControlMode mode);
   ControlMode GetControlMode();
 
@@ -62,7 +62,7 @@ class Straffer : public frc2::SubsystemBase {
   frc::DigitalInput m_rightLimitSwitch{strafferConstants::Sensor::LimitSwitch::RIGHT_ID};
   frc::Encoder m_encoder{strafferConstants::Sensor::Encoder::A_ID, strafferConstants::Sensor::Encoder::B_ID, strafferConstants::Sensor::Encoder::REVERSED};
 
-  Camera m_camera;
+  Camera *m_pCamera;
 
   bool m_isLeftLimitSwitchTriggered;
   bool m_isRightLimitSwitchTriggered;

@@ -90,7 +90,14 @@ bool Elevator::IsAtCoralStation()
         return true;
     else 
         return false;
-} 
+}
+bool Elevator::IsAtL4() 
+{
+    if(NABS(elevatorConstants::Setpoint::L4 - m_height) <= 0.04)
+        return true;
+    else 
+        return false;
+}
 void Elevator::SetJoystickInput(double input) 
 {
     // assert(((input <= 1) && (input >=-1)) && "Input Joustick Elevator out of range [-1;1].");
@@ -134,9 +141,10 @@ void Elevator::Reset()
         m_output = elevatorConstants::Speed::REST;
         m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
         isInitialized = true;
-        m_stage = Stage::HOME;
         m_encoder.Reset();
-        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::HOME);
+
+        m_stage = Stage::L2;
+        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L2);
     }
     else
     {

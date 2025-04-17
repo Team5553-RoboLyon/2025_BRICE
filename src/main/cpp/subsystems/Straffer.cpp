@@ -4,7 +4,7 @@
 
 #include "subsystems/Straffer.h"
 
-Straffer::Straffer() 
+Straffer::Straffer(Camera *pCamera)  : m_pCamera(pCamera)
 {
     // Set the motor configs
     m_motorConfig.SetIdleMode(strafferConstants::Motor::IDLE_MODE)
@@ -137,14 +137,14 @@ void Straffer::ClosedLoopControl()
         else 
         {
             m_counter--;
-            m_camera.Update();
-            if(m_camera.HasTargets())
+            m_pCamera->Update();
+            if(m_pCamera->HasTargets())
             {  
-                double currentAmbiguity =  m_camera.GetAmbiguity(m_camera.GetBestTarget());
+                double currentAmbiguity =  m_pCamera->GetAmbiguity(m_pCamera->GetBestTarget());
                 if (currentAmbiguity <= m_lowestAmbiguity)
                 {
                     m_lowestAmbiguity = currentAmbiguity;
-                    m_bestAprilTagOffset = m_camera.GetHorizontalDistance(m_camera.GetBestTarget());
+                    m_bestAprilTagOffset = m_pCamera->GetHorizontalDistance(m_pCamera->GetBestTarget());
                     frc::SmartDashboard::PutNumber("sBest AprilTag Offset", m_bestAprilTagOffset);
                 }
             }

@@ -58,4 +58,8 @@ double Camera::GetAmbiguity(photon::PhotonTrackedTarget target)
 {
     return target.GetPoseAmbiguity();
 }
+double Camera::GetDistance(photon::PhotonTrackedTarget target) 
+{
+    return target.GetBestCameraToTarget().X().value();
+}
 

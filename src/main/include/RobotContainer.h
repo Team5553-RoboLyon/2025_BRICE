@@ -16,11 +16,17 @@
 #include <frc2/command/button/CommandPS4Controller.h>
 #include <frc2/command/button/POVButton.h>
 #include <frc2/command/button/CommandGenericHID.h>
+#include <frc2/command/CommandHelper.h>
+#include <frc2/command/Commands.h>
+#include <chrono>
+#include <units/time.h>
+
 
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Elevator.h"
 #include "subsystems/Gripper.h"
 #include "subsystems/Straffer.h"
+#include "subsystems/Camera.h"
 #include "Constants.h"
 
 #include "commands/PreshootCmd.h"
@@ -31,6 +37,8 @@
 #include "commands/RunDefaultElevator.h"
 #include "commands/SetStageCmd.h"
 #include "commands/Drive.h"
+#include "commands/DriveDistanceCmd.h"
+
 
 class RobotContainer {
  public:
@@ -41,7 +49,8 @@ class RobotContainer {
     Drivetrain m_drivetrain;
     Elevator m_elevator;
     Gripper m_gripper;
-    Straffer m_straffer;
+    Camera m_camera;
+    Straffer m_straffer{&m_camera};
 
     frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
     frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};

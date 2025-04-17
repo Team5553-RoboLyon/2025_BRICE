@@ -40,8 +40,62 @@ void Robot::Leave() {
     m_container.m_drivetrain.SetPower(0.0);
   }
   else {
-      m_container.m_drivetrain.SetPower(0.5);
+      m_container.m_drivetrain.SetPower(0.3);
   }
+}
+void Robot::CenterToL4() {
+  m_container.m_camera.Update();
+  switch (m_state)
+  {
+  case AutoState::Leave:
+    if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.6) )
+    {
+      m_container.m_drivetrain.SetPower(0.0);
+      m_state = AutoState::Elevate;
+      m_container.m_elevator.SetDesiredStage(Stage::L4);
+    }
+    else 
+    {
+      m_container.m_drivetrain.SetPower(0.2);
+    }
+    break;
+  
+  case AutoState::Elevate :
+    if(m_container.m_elevator.IsAtL4())
+    {
+      m_state = AutoState::Align;
+      m_container.m_straffer.m_state = Straffer::State::SEEK_APRIL_TAG;
+      m_container.m_straffer.m_counter = strafferConstants::Counter::SEEK_APRIL_TAG; // counter for State::SEEK_APRIL_TAG 
+      m_container.m_straffer.m_targetOffset = -0.17; //LeftOffSet
+       m_container.m_straffer.m_lowestAmbiguity = 1.0;
+    }
+    break;
+  
+  case AutoState::Align : 
+    if(m_container.m_straffer.m_state == Straffer::State::AT_REEF)
+      {
+        m_state = AutoState::Shoot;
+        m_container.m_gripper.m_state = Gripper::State::PRESHOOT;
+        m_container.m_gripper.SetSpeedOuttake(gripperConstants::Speed::PRESHOOT);
+        m_container.m_gripper.m_ShoooootttttSpeed = 0.4;
+        m_container.m_gripper.m_counter = gripperConstants::Counter::PRESHOOT;
+      }
+    break;
+  
+  case AutoState::Shoot :
+    break;
+  default:
+    break;
+  }
+//   frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
+// return frc2::cmd::Sequence(
+//   frc2::CommandPtr(std::make_unique<DriveDistanceCmd>(&m_drivetrain)),
+//   frc2::CommandPtr(std::make_unique<SetStageCmd>(&m_elevator, &m_gripper, Stage::L4)),
+//   frc2::CommandPtr(std::make_unique<AlignStrafferCmd>(&m_straffer, &m_gripper, Side::LEFT)),
+//   frc2::cmd::Wait(std::chrono::milliseconds(50)),
+//   frc2::CommandPtr(std::make_unique<PreshootCmd>(&m_gripper, &m_straffer, &m_elevator))
+// );
+// };
 }
 void Robot::DisabledInit() {
 }
@@ -55,10 +109,10 @@ void Robot::DisabledExit() {
 }
 
 void Robot::AutonomousInit() {
-  m_container.m_drivetrain.isAuto = true;
-  m_container.m_gripper.SetControlMode(ControlMode::AUTO_LOOP);
-  m_container.m_straffer.SetControlMode(ControlMode::AUTO_LOOP);
-  m_container.m_elevator.SetControlMode(ControlMode::AUTO_LOOP);
+  // m_container.m_drivetrain.isAuto = true;
+  // m_container.m_gripper.SetControlMode(ControlMode::AUTO_LOOP);
+  // m_container.m_straffer.SetControlMode(ControlMode::AUTO_LOOP);
+  // m_container.m_elevator.SetControlMode(ControlMode::AUTO_LOOP);
   // initialPosition = m_container.m_drivetrain.DriveAuto();
   // m_container.m_drivetrain.SetPower(0.5);
   m_autonomousCommand = m_container.GetAutonomousCommand();
@@ -68,7 +122,8 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  Leave();
+  // Leave();
+  CenterToL4();
 }
 
 void Robot::AutonomousExit() {
