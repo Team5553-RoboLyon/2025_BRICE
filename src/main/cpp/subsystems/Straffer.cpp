@@ -75,7 +75,30 @@ void Straffer::Periodic() {
     frc::SmartDashboard::PutBoolean("sLeftLimit", m_isLeftLimitSwitchTriggered);
     frc::SmartDashboard::PutBoolean("sRightLimit", m_isRightLimitSwitchTriggered);
     frc::SmartDashboard::PutNumber("sWidth", m_width);
-    frc::SmartDashboard::PutNumber("sState", (int)m_state);
+    switch (m_state)
+    {
+    case State::IDLE:
+        frc::SmartDashboard::PutString("sState", "Idle");
+        break;
+    
+    case State::AT_REEF :
+    frc::SmartDashboard::PutString("sState", "At Reef");
+        break;
+    case State::AT_STATION:
+        frc::SmartDashboard::PutString("sState", "At Station");
+        break;
+    case State::SEEK_APRIL_TAG:
+        frc::SmartDashboard::PutString("sState", "Seek April Tag");
+        break;
+    case State::STRAFF_TO_REEF:
+        frc::SmartDashboard::PutString("sState", "Straff to Reef");
+        break;
+    case State::STRAFF_TO_STATION:
+        frc::SmartDashboard::PutString("sState", "Straff to station");
+        break;
+    default:
+        break;
+    }
 
     if(!isInitialized)
     {

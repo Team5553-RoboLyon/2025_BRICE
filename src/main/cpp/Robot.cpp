@@ -48,7 +48,7 @@ void Robot::CenterToL4() {
   switch (m_state)
   {
   case AutoState::Leave:
-    if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.6) )
+    if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.65) )
     {
       m_container.m_drivetrain.SetPower(0.0);
       m_state = AutoState::Elevate;
@@ -83,6 +83,10 @@ void Robot::CenterToL4() {
     break;
   
   case AutoState::Shoot :
+    if(m_container.m_gripper.m_state == Gripper::State::REST_EMPTY)
+    {
+      m_container.m_elevator.SetDesiredStage(Stage::CORAL_STATION);
+    }
     break;
   default:
     break;

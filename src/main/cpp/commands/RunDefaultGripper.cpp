@@ -16,15 +16,15 @@ void RunDefaultGripper::Initialize() {}
 void RunDefaultGripper::Execute() {
   if(m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP) 
   {
-    if(m_pGamepad->GetRawAxis(2) > 0.2)
+    if(m_pGamepad->GetRawAxis(3) > 0.1)
     {
-      m_pGripper->SetSpeedIntake(m_pGamepad->GetRawAxis(2)/3.0);
-      m_pGripper->SetSpeedOuttake(m_pGamepad->GetRawAxis(2)/3.0);
+      m_pGripper->SetSpeedIntake(m_pGamepad->GetRawAxis(3)/3.0);
+      m_pGripper->SetSpeedOuttake(m_pGamepad->GetRawAxis(3)/3.0);
     }
-    else if(m_pGamepad->GetRawAxis(3) >0.2)
+    else if(m_pGamepad->GetRawAxis(2) >0.1)
     {
-      m_pGripper->SetSpeedIntake(-m_pGamepad->GetRawAxis(3)/3.0);
-      m_pGripper->SetSpeedOuttake(-m_pGamepad->GetRawAxis(3)/3.0);
+      m_pGripper->SetSpeedIntake(-m_pGamepad->GetRawAxis(2)/3.0);
+      m_pGripper->SetSpeedOuttake(-m_pGamepad->GetRawAxis(2)/3.0);
     }
     else 
     {

@@ -84,6 +84,38 @@ void Gripper::Periodic()
     m_isIRBreakerUpTriggered = m_IRBreakerUp.Get() == gripperConstants::Sensor::IRbreaker::IS_TRIGGERED 
                             || m_IRBreakerUp2.Get() == gripperConstants::Sensor::IRbreaker::IS_TRIGGERED;
 
+    switch (m_state)
+    {
+    case State::IDLE:
+        frc::SmartDashboard::PutString("gState", "Idle");
+        break;
+    case State::INTAKE_EMPTY:
+        frc::SmartDashboard::PutString("gState", "Intake Empty");
+        break;
+    case State::INTAKE_FEEDING_BACKWARD:
+        frc::SmartDashboard::PutString("gState", "Intake Feeding Backward");
+        break;
+    case State::INTAKE_FEEDING_FORWARD:
+        frc::SmartDashboard::PutString("gState", "Intake Feeding Forward");
+        break;
+    case State::INTAKE_FEEDING_FORWARD_SHY:
+        frc::SmartDashboard::PutString("gState", "Intake Feeding Forward Shy");
+        break;
+    case State::PRESHOOT :
+        frc::SmartDashboard::PutString("gState", "Preshoot");
+        break;
+    case State::REST_EMPTY :
+        frc::SmartDashboard::PutString("gState", "Rest Empty");
+        break;
+    case State::REST_LOADED :
+        frc::SmartDashboard::PutString("gState", "Rest Loaded");
+        break;
+    case State::SHOOT :
+        frc::SmartDashboard::PutString("gState", "Shoot");
+        break;
+    default:
+        break;
+    }
     switch (m_controlMode)
     {
     case ControlMode::CLOSED_LOOP:
@@ -103,7 +135,7 @@ void Gripper::Periodic()
 
     frc::SmartDashboard::PutBoolean("gIRbreakerDown", m_isIRBreakerDownTriggered);
     frc::SmartDashboard::PutBoolean("gIRbreakerUp", m_isIRBreakerUpTriggered);
-    frc::SmartDashboard::PutNumber("gState", (int)m_state);
+    // frc::SmartDashboard::PutNumber("gState", (int)m_state);
     frc::SmartDashboard::PutNumber("gOuttakeMotor", m_outtakeMotor.GetAppliedOutput());
     frc::SmartDashboard::PutNumber("gIntakeMotor", m_intakeMotor.GetAppliedOutput());
 }
