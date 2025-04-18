@@ -6,8 +6,8 @@
 
 static double SpeedPerStageLUT[5] = { gripperConstants::Speed::SHOOTTTT,
                                        0.3, //L1
-                                        0.45,//L2
-                                         0.5,//L3
+                                        0.4,//L2
+                                         0.45,//L3
                                           0.4}; //L4
 
 

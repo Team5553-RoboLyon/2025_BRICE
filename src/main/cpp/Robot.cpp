@@ -48,7 +48,7 @@ void Robot::CenterToL4() {
   switch (m_state)
   {
   case AutoState::Leave:
-    if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.65) )
+    if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.62) )
     {
       m_container.m_drivetrain.SetPower(0.0);
       m_state = AutoState::Elevate;
