@@ -26,18 +26,14 @@ class Elevator : public frc2::SubsystemBase {
 
   double GetHeight();
   bool IsAtDesiredStage();
-  Stage GetStage() { return m_stage; };
+  Stage GetStage() { return m_WantedStage; };
 
   void SetJoystickInput(double input);
   bool IsAtCoralStation();
   bool IsAtL4();
   void Periodic() override;
 
-  bool isInitialized = false;
  private:
-  void ClosedLoopControl();
-  void OpenLoopControl();
-  void Reset();
 
   rev::spark::SparkMax m_leftMotor{elevatorConstants::Motors::Left::ID, rev::spark::SparkMax::MotorType::kBrushless};
   rev::spark::SparkBaseConfig m_leftMotorConfig;
@@ -53,7 +49,9 @@ class Elevator : public frc2::SubsystemBase {
 
   bool m_isBottomLimitSwitchTriggered;
   double m_height;
-  Stage m_stage = Stage::WHERE_AM_I;
+  Stage m_WantedStage = Stage::WHERE_AM_I;
+  bool isEncoderAlreadyReset = false;
+  bool isInitialized = false;
 
   double m_output;
   double m_joystickInput;

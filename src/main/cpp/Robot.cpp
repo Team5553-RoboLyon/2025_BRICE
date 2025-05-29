@@ -49,9 +49,10 @@ void Robot::CenterToL4() {
       m_state = AutoState::Elevate;
       m_container.m_elevator.SetDesiredStage(Stage::L4);
     }
-    else 
+    else
     {
       m_container.m_drivetrain.SetPower(0.2);
+      m_container.m_elevator.SetDesiredStage(Stage::L2); // position to detect targets
     }
     break;
   
@@ -94,7 +95,6 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::DisabledExit() {
-  m_container.m_elevator.isInitialized = false;
   m_container.m_straffer.isInitialized = false;
 }
 

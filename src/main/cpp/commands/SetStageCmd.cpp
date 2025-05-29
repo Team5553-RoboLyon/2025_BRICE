@@ -4,7 +4,7 @@
 
 #include "commands/SetStageCmd.h"
 
-SetStageCmd::SetStageCmd(Elevator *pElevator, Gripper *pGripper, Stage stage) : m_pElevator(pElevator),m_pGripper(pGripper), m_stage(stage) {
+SetStageCmd::SetStageCmd(Elevator *pElevator, Gripper *pGripper, Stage stage) : m_pElevator(pElevator),m_pGripper(pGripper), m_WantedStage(stage) {
   AddRequirements(m_pElevator);
 }
 
@@ -18,7 +18,7 @@ void SetStageCmd::Initialize() {
 void SetStageCmd::Execute() {
   if(m_pGripper->m_state == Gripper::State::REST_EMPTY || m_pGripper->m_state == Gripper::State::REST_LOADED || m_pGripper->GetControlMode() == ControlMode::OPEN_LOOP)
   {
-    m_pElevator->SetDesiredStage(m_stage);
+    m_pElevator->SetDesiredStage(m_WantedStage);
     isFinished = true;
   }
 }
