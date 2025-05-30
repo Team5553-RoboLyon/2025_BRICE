@@ -14,13 +14,8 @@ Robot::Robot() {
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
   m_camera.Update();
-  // m_camera.Update();
-  // frc::SmartDashboard::PutNumber("id", m_camera.GetAprilTagID(m_camera.GetBestTarget()));
-  // frc::SmartDashboard::PutNumber("amb", m_camera.GetAmbiguity(m_camera.GetBestTarget()));
-  // frc::SmartDashboard::PutNumber("y", m_camera.GetHorizontalDistance(m_camera.GetBestTarget()));
 
-  // std::cout << m_container.m_controllerCopilot.GetRawAxis(2) << m_container.m_controllerCopilot.GetRawAxis(3) << std::endl;
-  if(m_camera.HasTargets()) // TODO : REVIEW this
+  if(m_camera.HasTargets()) // TODO : REVIEW led that doesn't seem to work properly
   {
     m_led.SetSpeed(-0.39);
   }
@@ -34,7 +29,7 @@ void Robot::RobotPeriodic() {
   }
 }
 
-void Robot::Leave() {
+void Robot::Leave(double target) {
   if((m_container.m_drivetrain.DriveAuto() - initialPosition) > target)
   {
     m_container.m_drivetrain.SetPower(0.0);
@@ -54,9 +49,10 @@ void Robot::CenterToL4() {
       m_state = AutoState::Elevate;
       m_container.m_elevator.SetDesiredStage(Stage::L4);
     }
-    else 
+    else
     {
       m_container.m_drivetrain.SetPower(0.2);
+      m_container.m_elevator.SetDesiredStage(Stage::L2); // position to detect targets
     }
     break;
   
@@ -91,15 +87,6 @@ void Robot::CenterToL4() {
   default:
     break;
   }
-//   frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-// return frc2::cmd::Sequence(
-//   frc2::CommandPtr(std::make_unique<DriveDistanceCmd>(&m_drivetrain)),
-//   frc2::CommandPtr(std::make_unique<SetStageCmd>(&m_elevator, &m_gripper, Stage::L4)),
-//   frc2::CommandPtr(std::make_unique<AlignStrafferCmd>(&m_straffer, &m_gripper, Side::LEFT)),
-//   frc2::cmd::Wait(std::chrono::milliseconds(50)),
-//   frc2::CommandPtr(std::make_unique<PreshootCmd>(&m_gripper, &m_straffer, &m_elevator))
-// );
-// };
 }
 void Robot::DisabledInit() {
 }
@@ -108,8 +95,8 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::DisabledExit() {
-  m_container.m_elevator.isInitialized = false;
   m_container.m_straffer.isInitialized = false;
+  m_container.m_elevator.ActivateInit();
 }
 
 void Robot::AutonomousInit() {
@@ -126,7 +113,7 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  // Leave();
+  // Leave(3.0);
   CenterToL4();
 }
 

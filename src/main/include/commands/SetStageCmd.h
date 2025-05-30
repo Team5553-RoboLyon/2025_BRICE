@@ -28,6 +28,6 @@ class SetStageCmd
   private :
   Elevator* m_pElevator;
   Gripper* m_pGripper;
-  Stage m_stage;
+  Stage m_WantedStage;
   bool isFinished;
 };

@@ -54,7 +54,7 @@ void Elevator::SetDesiredHeight(double height)
 }
 void Elevator::SetDesiredStage(Stage stage) 
 {
-    m_stage = stage;
+    m_WantedStage = stage;
     switch (stage)
     {
     case Stage::HOME:
@@ -78,6 +78,13 @@ void Elevator::SetDesiredStage(Stage stage)
     default:
         // assert(false && "Stage unkown");
         break;
+    }
+}
+void Elevator::ActivateInit() 
+{
+    if(!isInitialized)
+    {
+        m_output = elevatorConstants::Speed::CALIBRATION;
     }
 }
 double Elevator::GetHeight() 
@@ -132,105 +139,70 @@ bool Elevator::IsAtDesiredStage()
     }
 }
 
-void Elevator::Reset() 
-{
-    if(m_isBottomLimitSwitchTriggered)
-    {
-        m_leftMotor.Set(elevatorConstants::Speed::REST);
-        m_rightMotor.Set(elevatorConstants::Speed::REST);
-        m_output = elevatorConstants::Speed::REST;
-        m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
-        isInitialized = true;
-        m_encoder.Reset();
-
-        m_stage = Stage::L2;
-        m_elevatorPIDController.SetSetpoint(elevatorConstants::Setpoint::L2);
-    }
-    else
-    {
-        m_leftMotor.Set(elevatorConstants::Speed::CALIBRATION);
-        m_rightMotor.Set(elevatorConstants::Speed::CALIBRATION);
-    }
-}
 void Elevator::Periodic() {
+
 
     // // ----------------- Save sensors value -----------------
     m_isBottomLimitSwitchTriggered = m_bottomLimitSwitch.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED 
                                     || m_bottomLimitSwitch2.Get() == elevatorConstants::Sensor::LimitSwitch::IS_TRIGGERED;
     m_height = m_encoder.GetDistance();
-    frc::SmartDashboard::PutBoolean("eBottomSide triggered", m_isBottomLimitSwitchTriggered);
-    frc::SmartDashboard::PutNumber("eHeight", m_height);
 
-    if(!isInitialized)
+    if(isInitialized)
     {
-        Reset();
-        return;
+        switch (m_controlMode)
+        {
+        case ControlMode::CLOSED_LOOP:
+            m_output = m_elevatorPIDController.Calculate(m_height);
+            frc::SmartDashboard::PutString("eControlMode", "ClosedLoop");
+            break;
+        case ControlMode::OPEN_LOOP:
+            m_output = m_joystickInput;
+            frc::SmartDashboard::PutString("eControlMode", "OpenLoop");
+            break;
+        case ControlMode::AUTO_LOOP:
+            frc::SmartDashboard::PutString("eControlMode", "AutoLoop");
+            break;
+        default:
+            break;
+        }
     }
 
-    switch (m_controlMode)
-    {
-    case ControlMode::CLOSED_LOOP:
-        ClosedLoopControl();
-        frc::SmartDashboard::PutString("eControlMode", "ClosedLoop");
-        break;
-    case ControlMode::OPEN_LOOP:
-        OpenLoopControl();
-        frc::SmartDashboard::PutString("eControlMode", "OpenLoop");
-        break;
-    case ControlMode::AUTO_LOOP:
-        frc::SmartDashboard::PutString("eControlMode", "AutoLoop");
-        break;
-    default:
-        break;
-    }
-    
-    frc::SmartDashboard::PutNumber("eLeftMotor", m_leftMotor.GetAppliedOutput());
-    frc::SmartDashboard::PutNumber("eRightMotor", m_rightMotor.GetAppliedOutput());
-    frc::SmartDashboard::PutBoolean("eIs At Setpoint", m_elevatorPIDController.AtSetpoint());
-}
 
-void Elevator::ClosedLoopControl()
-{
-    m_output = m_elevatorPIDController.Calculate(m_height);
-    if(m_height > elevatorConstants::Settings::TOP_LIMIT && m_output > 0.0) 
+    // ----------------- Limits -----------------
+    if (m_isBottomLimitSwitchTriggered)
     {
+        m_output = NMAX(0.0, m_output);
         m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
-    }
-    else if(m_height < elevatorConstants::Settings::BOTTOM_LIMIT && m_output < 0.0)
-    {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
-    }
-    else if(m_isBottomLimitSwitchTriggered && m_output < 0.0) 
-    {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
-    }
-    m_leftMotor.Set(m_output);
-    m_rightMotor.Set(m_output);
-}
 
-void Elevator::OpenLoopControl()
-{   
-    // std::cout << "m_joystickInput :" << m_joystickInput << std::endl;
-    m_output = m_joystickInput;
-    if(m_height > elevatorConstants::Settings::TOP_LIMIT && m_output > 0.0) 
-    {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        if(!isEncoderAlreadyReset)
+        {
+            m_encoder.Reset();
+            isEncoderAlreadyReset = true;
+            isInitialized = true;
+        }
     }
-    else if(m_height < elevatorConstants::Settings::BOTTOM_LIMIT && m_output < 0.0)
+    else if (isInitialized) // since we can't trust the encoder yet
     {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
-    }
-    else if(m_isBottomLimitSwitchTriggered && m_output < 0.0) 
-    {
-        m_rateLimiter.m_current = 0.0;
-        m_output = 0.0;
+        isEncoderAlreadyReset = false;
+
+        if(m_height > elevatorConstants::Settings::TOP_LIMIT && m_output > 0.0) 
+        {
+            m_rateLimiter.m_current = 0.0;
+            m_output = 0.0;
+        }
+        else if(m_height < elevatorConstants::Settings::BOTTOM_LIMIT && m_output < 0.0)
+        {
+            m_rateLimiter.m_current = 0.0;
+            m_output = 0.0;
+        } // useless since there are LimitSwitch. Yet, it's a protection if they are broken
     }
     // std::cout << "m_output" << m_output << std::endl;
     m_leftMotor.Set(m_output);
     m_rightMotor.Set(m_output);
+
+    frc::SmartDashboard::PutNumber("eLeftMotor", m_leftMotor.GetAppliedOutput());
+    frc::SmartDashboard::PutNumber("eRightMotor", m_rightMotor.GetAppliedOutput());
+    frc::SmartDashboard::PutBoolean("eIs At Setpoint", m_elevatorPIDController.AtSetpoint());
+    frc::SmartDashboard::PutBoolean("eBottomSide triggered", m_isBottomLimitSwitchTriggered);
+    frc::SmartDashboard::PutNumber("eHeight", m_height);
 }
