@@ -113,7 +113,7 @@ namespace elevatorConstants
     namespace Settings
     {
         constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25); // only for open-loop
-        constexpr double BOTTOM_LIMIT = 0.025;
+        constexpr double BOTTOM_LIMIT = 0.005;
         constexpr double TOP_LIMIT = 1.45;
         constexpr double JOYSTICK_REDUCTION = -2.0;
     }

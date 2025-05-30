@@ -32,6 +32,7 @@ class Elevator : public frc2::SubsystemBase {
   bool IsAtCoralStation();
   bool IsAtL4();
   void Periodic() override;
+  void ActivateInit();
 
  private:
 

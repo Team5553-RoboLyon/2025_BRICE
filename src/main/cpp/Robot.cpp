@@ -96,6 +96,7 @@ void Robot::DisabledPeriodic() {
 
 void Robot::DisabledExit() {
   m_container.m_straffer.isInitialized = false;
+  m_container.m_elevator.ActivateInit();
 }
 
 void Robot::AutonomousInit() {

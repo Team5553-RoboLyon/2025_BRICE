@@ -80,6 +80,13 @@ void Elevator::SetDesiredStage(Stage stage)
         break;
     }
 }
+void Elevator::ActivateInit() 
+{
+    if(!isInitialized)
+    {
+        m_output = elevatorConstants::Speed::CALIBRATION;
+    }
+}
 double Elevator::GetHeight() 
 {
     return m_height;
@@ -174,7 +181,7 @@ void Elevator::Periodic() {
             isInitialized = true;
         }
     }
-    else 
+    else if (isInitialized) // since we can't trust the encoder yet
     {
         isEncoderAlreadyReset = false;
 
@@ -187,7 +194,7 @@ void Elevator::Periodic() {
         {
             m_rateLimiter.m_current = 0.0;
             m_output = 0.0;
-        }
+        } // useless since there are LimitSwitch. Yet, it's a protection if they are broken
     }
     // std::cout << "m_output" << m_output << std::endl;
     m_leftMotor.Set(m_output);
