@@ -100,7 +100,8 @@ void Robot::DisabledExit() {
 }
 
 void Robot::AutonomousInit() {
-  // m_container.m_drivetrain.isAuto = true;
+  m_container.m_drivetrain.isAuto = true;
+  m_state = AutoState::Leave;
   // m_container.m_gripper.SetControlMode(ControlMode::AUTO_LOOP);
   // m_container.m_straffer.SetControlMode(ControlMode::AUTO_LOOP);
   // m_container.m_elevator.SetControlMode(ControlMode::AUTO_LOOP);
