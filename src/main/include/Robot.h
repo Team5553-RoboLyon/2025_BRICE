@@ -9,8 +9,8 @@
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc/PWM.h>
-#include <subsystems/Camera.h>
-
+#include <frc2/command/Commands.h>
+#include "subsystems/vision/Camera.h"
 
 #include "RobotContainer.h"
 
@@ -38,7 +38,7 @@ class Robot : public frc::TimedRobot {
   std::optional<frc2::CommandPtr> m_autonomousCommand;
   RobotContainer m_container;
   int m_rumbleCounter;
-  bool canRumble = true;
+  bool CanRumble = true;
   double initialPosition;
   frc::PWM m_led{9};
   Camera m_camera;

@@ -18,171 +18,18 @@ constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
 enum class ControlMode {
-    CLOSED_LOOP,
-    OPEN_LOOP,
-    AUTO_LOOP
+    PROFILED_PID, //Motion profiling + PID sur l'output
+    MOTION_PROFILING, 
+    POSITION_PID, 
+    VELOCITY, // RPM ou RPS
+    VOLTAGE, // volts (-12V à 12V)
+    DUTY_CYCLE, // percentage (-1 to 1)
+    OPEN_LOOP // bypass the StateMachine
 };
-enum class Stage {
-    WHERE_AM_I,
-    L1,
-    L2,
-    L3,
-    L4,
-    HOME,
-    CORAL_STATION
-};
-enum class Side {
-    LEFT,
-    CENTER,
-    RIGHT
-};
-// enum class Rumble {
-//     CAUGHT,
-//     DROPPED,
-//     LEFT_OUT_OF_RANGE,
-//     RIGHT_OUT_OF_RANGE,
-//     NOTHING
-// };
+#define ALLOWS_STATE_MACHINE(mode) ((mode) != (ControlMode::OPEN_LOOP))
 
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
-namespace elevatorConstants
-{   //1.46
-    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
-    namespace Motors
-    {
-        namespace Left
-        {
-            constexpr int ID = 6;
-            constexpr double VOLTAGE_COMPENSATION = 10.0;
-            constexpr double CURRENT_LIMIT = 40.0;
-            constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = false;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-        namespace Right
-        {
-            constexpr int ID = 7;
-            constexpr double VOLTAGE_COMPENSATION = 10.0;
-            constexpr double CURRENT_LIMIT = 40.0;
-            constexpr double RAMP_RATE = 0.0;
-            constexpr bool INVERTED = true;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-    }
-    namespace Sensor 
-    {
-        namespace Encoder 
-        {
-            constexpr int A_ID = 4;
-            constexpr int B_ID = 5;
-            constexpr bool REVERSED = true;
-            constexpr double REDUCTION = 1.0;
-            constexpr double CIRCUMFERENCE = 0.005*36.0;
-            constexpr double DISTANCE_PER_PULSE = CIRCUMFERENCE / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K2X;
-        }
-        namespace LimitSwitch 
-        {
-            constexpr int BOTTOM_2_ID = 6;
-            constexpr int BOTTOM_ID = 7;
-            constexpr bool IS_TRIGGERED = false;
-        }
-    }
-    namespace PID
-    {
-        constexpr double KP = 10.0;
-        constexpr double KI = 0.0;
-        constexpr double KD = 0.2;
-        constexpr double TOLERANCE = 0.001;
-    }
-    namespace Setpoint
-    {
-        constexpr double HOME = 0.00;
-        constexpr double CORAL_STATION = 0.00;
-        constexpr double L1 = 0.3;
-        constexpr double L2 = 0.45;
-        constexpr double L3 = 0.86;
-        constexpr double L4 = 1.45;
-    } 
-    namespace Speed 
-    {
-        constexpr double MAX = 1.0;
-        constexpr double MIN = -1.0;
-        constexpr double CALIBRATION = -0.25;
-        constexpr double REST = 0.0;
-    }
-    namespace Settings
-    {
-        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25); // only for open-loop
-        constexpr double BOTTOM_LIMIT = 0.005;
-        constexpr double TOP_LIMIT = 1.45;
-        constexpr double JOYSTICK_REDUCTION = -2.0;
-    }
-}
 
-namespace strafferConstants 
-{   //39.5
-    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
-    namespace Motor
-    {
-        constexpr int ID = 8;
-        constexpr double VOLTAGE_COMPENSATION = 10.0;
-        constexpr double CURRENT_LIMIT = 20.0;
-        constexpr double RAMP_RATE = 0.0;
-        constexpr bool INVERTED = true; 
-        constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-    }
-    namespace Sensor 
-    {
-        namespace LimitSwitch
-        {
-            constexpr int LEFT_ID = 12;
-            constexpr int RIGHT_ID = 11;
-            constexpr bool IS_TRIGGERED = false;;
-        }
-        namespace Encoder 
-        {
-            constexpr int A_ID = 8;
-            constexpr int B_ID = 9;
-            constexpr bool REVERSED = false;
-            constexpr double REDUCTION = 1.0;
-            constexpr double CIRCUMFERENCE = (0.005*18);
-            constexpr double DISTANCE_PER_PULSE = CIRCUMFERENCE / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K2X;
-        }
-    }
-    namespace Speed 
-    {
-        constexpr double REST = 0.0;
-        constexpr double MIN = -1.0;
-        constexpr double MAX = 1.0;
-        constexpr double CALIBRATION = - 0.25;
-    }
-    namespace PID // au pif
-    {
-        constexpr double KP = 6.5;
-        constexpr double KI = 0.000;
-        constexpr double KD = 0.4;
-        constexpr double TOLERANCE = 0.005;
-    }
-    namespace Setpoint 
-    {
-        constexpr double LEFT_SIDE = 0.099;
-        constexpr double RIGHT_SIDE = 0.296;
-        constexpr double CENTER = 0.1975;
-        constexpr double ORIGIN = CENTER;
-    } 
-    namespace Settings
-    {
-        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2); // only for open-loop
-        constexpr double LEFT_LIMIT = 0.025;
-        constexpr double RIGHT_LIMIT = 0.37;
-    }
-    namespace Counter 
-    {
-        constexpr int SEEK_APRIL_TAG = 5;
-        constexpr int STRAFF_TO_REEF = 22;
-        constexpr int STRAFF_TO_STATION = 20;
-    }
-}
 
 namespace driveConstants {
 
@@ -226,59 +73,6 @@ namespace driveConstants {
             constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION_K2X;
         }
         constexpr bool WHEEL_SIDE = false;
-    }
-}
-
-namespace gripperConstants
-{   
-    constexpr ControlMode defaultMode = ControlMode::CLOSED_LOOP;
-    namespace Motors
-    {
-        namespace Outtake 
-        {
-            constexpr int ID = 9;
-            constexpr double VOLTAGE_COMPENSATION = 10.0;
-            constexpr double CURRENT_LIMIT = 40.0;
-            constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = false;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-        namespace Intake 
-        {
-            constexpr int ID = 10;
-            constexpr double VOLTAGE_COMPENSATION = 10.0;
-            constexpr double CURRENT_LIMIT = 40.0;
-            constexpr double RAMP_RATE = 0.1;
-            constexpr bool INVERTED = true;
-            constexpr rev::spark::SparkBaseConfig::IdleMode IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-        }
-    }
-    namespace Sensor 
-    {
-        namespace IRbreaker
-        {
-            constexpr int DOWN_ID = 13;
-            constexpr int UP_ID = 18;
-            constexpr int UP2_ID = 19;
-            constexpr bool IS_TRIGGERED = false;
-        }
-    }
-    
-    namespace Speed
-    {
-        constexpr double REST = 0.0;
-        constexpr double SHY = 0.05;
-        constexpr double INTAKE_EMPTY = 0.5553;
-        constexpr double OUTTAKE_EMPTY = 0.4;
-        constexpr double FEEDING_FORWARD = 0.3;
-        constexpr double FEEDING_BACKWARD = -0.2;
-        constexpr double PRESHOOT = -0.2;
-        constexpr double SHOOTTTT = 0.4;
-    }
-    namespace Counter 
-    {
-        constexpr int PRESHOOT = 10;
-        constexpr int SHOOT = 20;
     }
 }
 

@@ -1,0 +1,95 @@
+#include "subsystems/elevator/ElevatorIOSpark.h"
+
+#include "frc/smartdashboard/SmartDashboard.h"
+#include <assert.h>
+ElevatorIOSpark::ElevatorIOSpark()
+{
+    // Set the left motor configs
+    m_leftMotorConfig.SetIdleMode(elevatorConstants::Motors::Left::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::Left::INVERTED)
+        .SmartCurrentLimit(elevatorConstants::Motors::Left::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::Left::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION);
+
+    // Set the right motor configs
+    m_rightMotorConfig.SetIdleMode(elevatorConstants::Motors::Right::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::Right::INVERTED)
+        .SmartCurrentLimit(elevatorConstants::Motors::Right::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::Right::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::Right::VOLTAGE_COMPENSATION);
+
+    // Apply the configs to the motors
+    m_leftMotor.Configure(  m_leftMotorConfig, 
+                            rev::spark::SparkBase::ResetMode::kResetSafeParameters,
+                            rev::spark::SparkBase::PersistMode::kPersistParameters);
+
+    m_rightMotor.Configure( m_rightMotorConfig, 
+                            rev::spark::SparkBase::ResetMode::kResetSafeParameters,
+                            rev::spark::SparkBase::PersistMode::kPersistParameters);
+    m_leftMotor.ClearFaults();
+    m_rightMotor.ClearFaults();
+
+    m_encoder.Reset();
+    m_encoder.SetDistancePerPulse(elevatorConstants::Encoder::DISTANCE_PER_PULSE);
+}
+
+void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs) 
+{
+    inputs.isLeftMotorConnected = (m_leftMotor.GetBusVoltage() !=0.0) && !m_leftMotor.GetFaults().can;
+    inputs.isRightMotorConnected = (m_rightMotor.GetBusVoltage() !=0.0) && !m_rightMotor.GetFaults().can;
+
+    inputs.leftMotorAppliedVoltage = m_leftMotor.GetAppliedOutput() * elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION;
+    inputs.rightMotorAppliedVoltage = m_rightMotor.GetAppliedOutput() * elevatorConstants::Motors::Right::VOLTAGE_COMPENSATION;
+    inputs.leftMotorBusVoltage = m_leftMotor.GetBusVoltage();
+    inputs.rightMotorBusVoltage = m_rightMotor.GetBusVoltage();
+    inputs.leftMotorCurrent = m_leftMotor.GetOutputCurrent();
+    inputs.rightMotorCurrent = m_rightMotor.GetOutputCurrent();
+    inputs.leftMotorTemperature = m_leftMotor.GetMotorTemperature();
+    inputs.rightMotorTemperature = m_rightMotor.GetMotorTemperature();
+
+    inputs.limitSwitchBottom = m_bottomLimitSwitch.Get() == elevatorConstants::LimitSwitch::IS_TRIGGERED;
+    inputs.limitSwitchBottom2 = m_bottomLimitSwitch2.Get() == elevatorConstants::LimitSwitch::IS_TRIGGERED;
+
+    inputs.heightPosition = m_encoder.GetDistance();
+
+    //only while waiting for AdScope (very bad performance)
+    frc::SmartDashboard::PutBoolean("El.Connection", inputs.isLeftMotorConnected);
+    frc::SmartDashboard::PutNumber("El.Voltage", inputs.leftMotorAppliedVoltage);
+    frc::SmartDashboard::PutNumber("El.BusVolt", inputs.leftMotorBusVoltage);
+    frc::SmartDashboard::PutNumber("El.Current", inputs.leftMotorCurrent);
+    frc::SmartDashboard::PutNumber("El.Temperature", inputs.leftMotorTemperature);
+
+    frc::SmartDashboard::PutBoolean("Er.Connection", inputs.isRightMotorConnected);
+    frc::SmartDashboard::PutNumber("Er.Voltage", inputs.rightMotorAppliedVoltage);
+    frc::SmartDashboard::PutNumber("Er.BusVolt", inputs.rightMotorBusVoltage);
+    frc::SmartDashboard::PutNumber("Er.Current", inputs.rightMotorCurrent);
+    frc::SmartDashboard::PutNumber("Er.Temperature", inputs.rightMotorTemperature);
+
+    frc::SmartDashboard::PutBoolean("E.LimitSwitch", inputs.limitSwitchBottom);
+    frc::SmartDashboard::PutBoolean("E.LimitSwitch2", inputs.limitSwitchBottom2);
+    frc::SmartDashboard::PutNumber("E.Height Position", inputs.heightPosition);
+}
+
+void ElevatorIOSpark::SetVoltage(double voltage)
+{
+    assert((voltage <= elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
+        && (voltage >= -elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
+        && "Elevator Voltage out of range");
+    
+    m_leftMotor.SetVoltage(units::volt_t(voltage));
+    m_rightMotor.SetVoltage(units::volt_t(voltage));
+}
+
+void ElevatorIOSpark::SetDutyCycle(double dutyCycle)
+{
+    assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            && "Straffer Duty Cycle out of range");
+    
+    m_leftMotor.Set(dutyCycle);
+    m_rightMotor.Set(dutyCycle);
+}
+
+void ElevatorIOSpark::ResetPosition()
+{
+    m_encoder.Reset();
+}

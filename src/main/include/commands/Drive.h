@@ -6,13 +6,13 @@
 
 #include <frc2/command/Command.h>
 #include <frc2/command/CommandHelper.h>
-#include "subsystems/DriveTrain.h"
-#include "subsystems/Elevator.h"
+#include "subsystems/drivetrain/Drivetrain.h"
+#include "subsystems/elevator/ElevatorSubsystem.h"
 
 class Drive
     : public frc2::CommandHelper<frc2::Command, Drive> {
  public:
-  Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, Elevator *pElevator);
+  Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, ElevatorSubsystem *pElevator);
 
   void Initialize() override;
 
@@ -26,5 +26,5 @@ class Drive
   std::function<double()> m_Forward;
   std::function<double()> m_Turn;
   Drivetrain *m_pDrivetrain;
-  Elevator *m_pElevator;
+  ElevatorSubsystem *m_pElevator;
 };

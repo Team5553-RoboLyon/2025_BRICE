@@ -5,7 +5,7 @@
 #include "commands/Drive.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
-Drive::Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, Elevator *pElevator)
+Drive::Drive(std::function<double()> forward, std::function<double()> turn, Drivetrain *pDrivetrain, ElevatorSubsystem *pElevator)
     : m_Forward(forward), m_Turn(turn), m_pDrivetrain(pDrivetrain), m_pElevator(pElevator)
 {
   AddRequirements({pDrivetrain});

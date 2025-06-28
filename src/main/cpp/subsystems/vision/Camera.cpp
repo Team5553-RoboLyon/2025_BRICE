@@ -1,4 +1,4 @@
-#include "subsystems/Camera.h"
+#include "subsystems/vision/Camera.h"
 
 Camera::Camera() {};
 

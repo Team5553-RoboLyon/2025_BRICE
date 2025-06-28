@@ -1,0 +1,352 @@
+#include "subsystems/straffer/StrafferSubsystem.h"
+#include "frc/smartdashboard/SmartDashboard.h"
+//FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG 
+StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) : 
+                                                    m_pStrafferIO(pIo),
+                                                    m_pCamera(pCamera)
+{
+    m_strafferPIDController.SetTolerance(strafferConstants::PID::TOLERANCE);
+    m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
+
+    m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
+}
+void StrafferSubsystem::SetControlMode(const ControlMode mode)
+{
+    m_controlMode = mode;
+    m_wantedState = WantedState::STAND_BY;
+    m_systemState = SystemState::IDLE;
+    m_rateLimiter.m_current = 0.0;
+    m_output = strafferConstants::Speed::REST;
+}
+ControlMode StrafferSubsystem::GetControlMode()
+{
+    return m_controlMode;
+}
+void StrafferSubsystem::SetWantedState(const WantedState wantedState)
+{
+    if(wantedState == WantedState::INITIALIZATION)
+    {
+        if(!m_isInitialized) // Skip initialization if the subsystem is already initialized
+            m_wantedState = WantedState::INITIALIZATION; 
+    }
+    else // if(wantedState != WantedState::INITIALIZATION)
+    {
+        m_wantedState = wantedState;
+    }
+}
+StrafferSubsystem::SystemState StrafferSubsystem::GetSystemState()
+{
+    return m_systemState;
+}
+void StrafferSubsystem::SetOutputInOpenLoop(double dutyCycle)
+{
+    if(m_controlMode == ControlMode::OPEN_LOOP)
+    {
+        assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            && "Straffer Duty Cycle out of range");
+        m_output = m_rateLimiter.Update(std::sin(dutyCycle * (M_PI / 2.0)));
+    }
+    else 
+    {
+        assert(false && "Straffer : Open Loop Output set while Closed Loop is used");
+    }
+}
+bool StrafferSubsystem::IsResting()
+{
+    assert(ALLOWS_STATE_MACHINE(m_controlMode) && "Straffer : IsResting() is used while Open Loop");
+    return ((m_systemState == SystemState::AT_STATION) || 
+            (m_systemState == SystemState::AT_LEFT_REEF) || 
+            (m_systemState == SystemState::AT_RIGHT_REEF) ||
+            (m_systemState == SystemState::AT_LEFT_SIDE) ||
+            (m_systemState == SystemState::AT_RIGHT_SIDE));
+}
+
+// This method will be called once per scheduler run
+void StrafferSubsystem::Periodic() 
+{
+    m_currentWantedState = m_wantedState;
+
+    m_pStrafferIO->UpdateInputs(inputs);
+    m_motorDisconnected.Set(!inputs.isMotorConnected);
+    m_motorOverheating.Set(inputs.temperature > strafferConstants::Motor::OVERHEATING_THRESHOLD);
+    m_motorHot.Set(inputs.temperature > strafferConstants::Motor::HOT_THRESHOLD);
+
+    if(!m_isInitialized)
+    {
+        if(m_currentWantedState == WantedState::INITIALIZATION)
+        {
+            m_output = strafferConstants::Speed::CALIBRATION;
+        }
+    }
+    else 
+    {
+        if(ALLOWS_STATE_MACHINE(m_controlMode))
+        {
+            RunStateMachine();
+        }
+
+        switch (m_controlMode) //actualise motion
+        {
+        case ControlMode::POSITION_PID :
+            switch (m_systemState)
+            {
+            case SystemState::AT_STATION :
+            case SystemState::AT_LEFT_REEF :
+            case SystemState::AT_LEFT_SIDE :
+            case SystemState::AT_RIGHT_REEF :
+            case SystemState::AT_RIGHT_SIDE :
+            case SystemState::IDLE :
+            case SystemState::SEEKING_APRIL_TAG :
+                m_output = strafferConstants::Speed::REST; 
+                break;
+            case SystemState::STRAFFING_TO_LEFT_REEF :
+            case SystemState::STRAFFING_TO_RIGHT_REEF :
+                m_output = m_strafferPIDController.Calculate(m_selectedReefWidthPosition,
+                                                            inputs.widthPosition);
+                
+                break;
+            case SystemState::STRAFFING_TO_LEFT_SIDE :
+                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::LEFT_SIDE,
+                                                            inputs.widthPosition);
+                break;
+            case SystemState::STRAFFING_TO_RIGHT_SIDE :
+                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::RIGHT_SIDE,
+                                                            inputs.widthPosition);
+                break;
+            case SystemState::STRAFFING_TO_STATION :
+                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::CENTER,
+                                                            inputs.widthPosition);
+                break;
+            default:
+                break;
+            }
+            break;
+        case ControlMode::MOTION_PROFILING :
+            // TODO : implement motion profiling logic here.
+            break;
+        case ControlMode::PROFILED_PID : 
+            //TODO : later
+            break;
+        case ControlMode::OPEN_LOOP :
+            //look at void SetOutputInOpenLoop(const double dutyCycle)
+            break;
+        default:
+            assert(false && "Straffer : wrong ControlMode chosen");
+            m_output = 0.0; // protection
+            break;
+        }
+    }
+
+
+    // ----------------- Limits -----------------
+    if(inputs.limitSwitchLeft)
+    {
+        m_output = NMAX(0.0, m_output); // prevent the straffer to go through the left side
+        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the left side
+        if(!m_isEncoderAlreadyReset)
+        {
+            m_pStrafferIO->ResetPositionLeft();
+            m_isEncoderAlreadyReset = true; // prevent the encoder to reset many times
+            if(!m_isInitialized)
+            {
+                m_isInitialized = true;
+                m_currentWantedState = WantedState::STAND_BY;
+            }
+        }
+    }
+    else if(inputs.limitSwitchRight)
+    {
+        m_output = NMIN(0.0, m_output); // prevent the straffer to go through the right side
+        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the right side
+        if(!m_isEncoderAlreadyReset)
+        {
+            m_pStrafferIO->ResetPositionRight();
+            m_isEncoderAlreadyReset = true; // prevent the encoder to reset many times
+        }
+    }
+    else // if(!inputs.limitSwitchLeft && !inputs.limitSwitchRight)
+    {
+        //IFBUG : add slowed zones on left and right sides if the move is too brutal .(eg : If zones -> speed/2.0) ?
+        m_isEncoderAlreadyReset = false;
+    }
+    m_pStrafferIO->SetDutyCycle(m_output);
+
+
+
+
+
+    //LOG
+    frc::SmartDashboard::PutNumber("S.WantedState", (int)m_currentWantedState);
+    frc::SmartDashboard::PutNumber("S.SystemState", (int)m_systemState);
+    frc::SmartDashboard::PutNumber("S.ControlMode", (int)m_controlMode);
+    frc::SmartDashboard::PutNumber("S.Setpoint", m_strafferPIDController.GetSetpoint());
+    frc::SmartDashboard::PutBoolean("S.isInit", m_isInitialized);
+}
+
+void StrafferSubsystem::RunStateMachine()
+{
+    switch (m_currentWantedState) //Handle State transition
+    {
+    case WantedState::ALIGN_LEFT_REEF :
+    case WantedState::ALIGN_RIGHT_REEF :
+    case WantedState::AUTO_ALIGN :
+        if( (m_systemState != SystemState::SEEKING_APRIL_TAG) &&
+            (m_systemState != SystemState::STRAFFING_TO_LEFT_REEF) &&
+            (m_systemState != SystemState::STRAFFING_TO_RIGHT_REEF) )
+        {
+            m_systemState = SystemState::SEEKING_APRIL_TAG;
+            m_counter = strafferConstants::Seeking::COUNTER;
+            m_lowestAmbiguity = 1.0;
+            m_bestAprilTagOffset = 0.0;
+            // m_currentWantedState = WantedState::STAND_BY; 
+            // m_wantedState = WantedState::STAND_BY;
+            // //HACK : Ensures these values are set only once during each call to avoid redundant resets
+        }
+        break; //end of WantedState::ALIGN_TO_REEF
+    
+    case WantedState::GO_TO_LEFT_SIDE :
+        m_systemState = SystemState::STRAFFING_TO_LEFT_SIDE;
+        break; //end of WantedState::GO_TO_LEFT_SIDE
+    case WantedState::GO_TO_STATION :
+        m_systemState = SystemState::STRAFFING_TO_STATION;
+        break; //end of WantedState::GO_TO_STATION
+    case WantedState::GO_TO_RIGHT_SIDE :
+        m_systemState = SystemState::STRAFFING_TO_RIGHT_SIDE;
+        break; //end of WantedState::GO_TO_RIGHT_SIDE
+
+    case WantedState::INITIALIZATION :
+    case WantedState::STAND_BY :
+        break; //end of Others States
+    default:
+        break;
+    }
+
+    switch (m_systemState) // Change System State
+    {
+    case SystemState::IDLE:
+        if(NABS(inputs.widthPosition - strafferConstants::Setpoint::LEFT_SIDE) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_LEFT_SIDE;
+        }
+        else if(NABS(inputs.widthPosition - strafferConstants::Setpoint::RIGHT_SIDE) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_RIGHT_SIDE;
+        }
+        else if(NABS(inputs.widthPosition - strafferConstants::Setpoint::CENTER) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_STATION;
+        }
+        else
+        {
+            // The current width position does not match any predefined setpoints (LEFT_SIDE, RIGHT_SIDE, CENTER).
+            // This indicates an unexpected state, so we reset the system state to STRAFFING_TO_STATION
+            // to ensure the subsystem moves to the center position as a safe fallback.
+            m_systemState = SystemState::STRAFFING_TO_STATION;
+        }
+        break; //end of SystemState::IDLE
+    case SystemState::STRAFFING_TO_STATION:
+        if(NABS(inputs.widthPosition - strafferConstants::Setpoint::CENTER) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_STATION;
+            m_currentWantedState = WantedState::STAND_BY;
+            m_wantedState = WantedState::STAND_BY;
+        }
+        break; //end of SystemState::STRAFFING_TO_STATION
+    case SystemState::STRAFFING_TO_LEFT_SIDE:
+        if(NABS(inputs.widthPosition - strafferConstants::Setpoint::LEFT_SIDE) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_LEFT_SIDE;
+            m_currentWantedState = WantedState::STAND_BY;
+            m_wantedState = WantedState::STAND_BY;
+        }
+        break;//end of SystemState::STRAFFING_TO_LEFT_SIDE
+    case SystemState::STRAFFING_TO_RIGHT_SIDE:
+        if(NABS(inputs.widthPosition - strafferConstants::Setpoint::RIGHT_SIDE) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_RIGHT_SIDE;
+            m_currentWantedState = WantedState::STAND_BY;
+            m_wantedState = WantedState::STAND_BY;
+        }
+        break;//end of SystemState::STRAFFING_TO_RIGHT_SIDE
+    case SystemState::STRAFFING_TO_LEFT_REEF:
+        if(NABS(inputs.widthPosition - m_selectedReefWidthPosition) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_LEFT_REEF;
+            m_currentWantedState = WantedState::STAND_BY;
+            m_wantedState = WantedState::STAND_BY;
+        }
+        break;//end of SystemState::STRAFFING_TO_LEFT_REEF
+    case SystemState::STRAFFING_TO_RIGHT_REEF:
+        if(NABS(inputs.widthPosition - m_selectedReefWidthPosition) < strafferConstants::Setpoint::TOLERANCE)
+        {
+            m_systemState = SystemState::AT_RIGHT_REEF;
+            m_currentWantedState = WantedState::STAND_BY;
+            m_wantedState = WantedState::STAND_BY;
+        }
+        break;//end of SystemState::STRAFFING_TO_RIGHT_REEF
+    case SystemState::SEEKING_APRIL_TAG :
+        //TODO : rework camera's usage
+        if(m_counter == 0)
+        { 
+            if (m_lowestAmbiguity > strafferConstants::Seeking::HIGHEST_AMBIGUITY_ACCEPTED) {
+                m_bestAprilTagOffset = 0.0;
+            }
+            double baseTarget = strafferConstants::Setpoint::CENTER - m_bestAprilTagOffset;
+            double offsetSide = 0.0;
+
+            switch (m_currentWantedState) {
+                case WantedState::ALIGN_LEFT_REEF:
+                    offsetSide = strafferConstants::Seeking::LEFT_OFFSET;
+                    m_systemState = SystemState::STRAFFING_TO_LEFT_REEF;
+                    break;
+                case WantedState::ALIGN_RIGHT_REEF:
+                    offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
+                    m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
+                    break;
+                case WantedState::AUTO_ALIGN:
+                    if(baseTarget >= strafferConstants::Setpoint::CENTER)
+                    {
+                        offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
+                        m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
+                    }
+                    else
+                    {
+                        offsetSide = strafferConstants::Seeking::LEFT_OFFSET;
+                        m_systemState = SystemState::STRAFFING_TO_LEFT_REEF;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            m_selectedReefWidthPosition = baseTarget + offsetSide;
+            if (m_selectedReefWidthPosition < strafferConstants::Settings::LEFT_LIMIT ||
+                m_selectedReefWidthPosition > strafferConstants::Settings::RIGHT_LIMIT) {
+                m_systemState = SystemState::STRAFFING_TO_STATION;
+                CanRumble = true;
+            }
+        }
+        else 
+        {
+            m_counter--;
+            m_pCamera->Update();
+            if(m_pCamera->HasTargets())
+            {  
+                double currentAmbiguity =  m_pCamera->GetAmbiguity(m_pCamera->GetBestTarget());
+                if (currentAmbiguity <= m_lowestAmbiguity)
+                {
+                    m_lowestAmbiguity = currentAmbiguity;
+                    m_bestAprilTagOffset = m_pCamera->GetHorizontalDistance(m_pCamera->GetBestTarget());
+                }
+            }
+        }
+        break; //end of SystemState::SEEKING_APRIL_TAGS
+    case SystemState::AT_STATION :
+    case SystemState::AT_LEFT_REEF :
+    case SystemState::AT_LEFT_SIDE :
+    case SystemState::AT_RIGHT_REEF :
+    case SystemState::AT_RIGHT_SIDE :
+        break; //end of other states
+    default:
+        break;
+    }
+}

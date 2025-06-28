@@ -4,6 +4,8 @@
 
 #pragma once
 
+
+//TODO : clear all includes that are not used
 #include <frc2/command/CommandPtr.h>
 #include <frc/Joystick.h>
 #include <frc/PS4Controller.h>
@@ -20,25 +22,23 @@
 #include <frc2/command/Commands.h>
 #include <chrono>
 #include <units/time.h>
+#include "frc2/command/button/Trigger.h"
 
-
-#include "subsystems/Drivetrain.h"
-#include "subsystems/Elevator.h"
-#include "subsystems/Gripper.h"
-#include "subsystems/Straffer.h"
-#include "subsystems/Camera.h"
 #include "Constants.h"
+#include "subsystems/drivetrain/Drivetrain.h"
+#include "subsystems/elevator/ElevatorSubsystem.h"
+#include "subsystems/gripper/GripperSubsystem.h"
+#include "subsystems/vision/Camera.h"
+#include "subsystems/straffer/StrafferSubsystem.h"
+#include "subsystems/superstructure/Superstruture.h"
 
-#include "commands/PreshootCmd.h"
-#include "commands/IntakeCoralCmd.h"
-#include "commands/RunDefaultGripper.h"
-#include "commands/AlignStrafferCmd.h"
-#include "commands/RunDefaultStraffer.h"
-#include "commands/RunDefaultElevator.h"
-#include "commands/SetStageCmd.h"
+#include "subsystems/elevator/ElevatorIOSpark.h"
+#include "subsystems/straffer/StrafferIOSpark.h"
+#include "subsystems/gripper/GripperIOSpark.h"
+
 #include "commands/Drive.h"
-#include "commands/DriveDistanceCmd.h"
 
+#include "lib/RevGamepad.h"
 
 class RobotContainer {
  public:
@@ -47,37 +47,57 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
     Drivetrain m_drivetrain;
-    Elevator m_elevator;
-    Gripper m_gripper;
     Camera m_camera;
-    Straffer m_straffer{&m_camera};
+    StrafferSubsystem m_straffer{new StrafferIOSpark(), &m_camera};
+    ElevatorSubsystem m_elevator{new ElevatorIOSpark()};
+    GripperSubsystem m_gripper{new GripperIOSpark()};
+
+    Superstructure m_superstructure{&m_straffer, &m_elevator, &m_gripper};
 
     frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
     frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
-    frc::PS4Controller m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
+    RevGamepad m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
  private:
     frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
     frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
 
-    frc2::JoystickButton m_CoralStationButton{&m_controllerCopilot, ControlPanelConstants::Button::CORAL_STATION};
-    frc2::JoystickButton m_L1Button{&m_controllerCopilot, ControlPanelConstants::Button::L1};
-    frc2::JoystickButton m_L2Button{&m_controllerCopilot, ControlPanelConstants::Button::L2};
-    frc2::JoystickButton m_L3Button{&m_controllerCopilot, ControlPanelConstants::Button::L3};
-    frc2::JoystickButton m_L4Button{&m_controllerCopilot, ControlPanelConstants::Button::L4};
-
-    frc2::JoystickButton m_leftSideButton{&m_controllerCopilot, ControlPanelConstants::Button::LEFT_SIDE};
-    frc2::JoystickButton m_rightSideButton{&m_controllerCopilot, ControlPanelConstants::Button::RIGHT_SIDE};
-
-    frc2::JoystickButton m_OpenLoopOuttakeButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_OUTTAKE};
-    frc2::JoystickButton m_OpenLoopElevatorButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_ELEVATOR};
-    frc2::JoystickButton m_OpenLoopStrafferButton{&m_controllerCopilot, ControlPanelConstants::Button::OPEN_LOOP_STRAFFER};
-
-      frc2::Trigger m_IntakeButton{[this] { //L2 trigger
-          return m_controllerCopilot.GetRawAxis(2) > 0.5;
+    frc2::Trigger m_stageCoralStationButton{[this] { // X and not Advance mode
+          return m_controllerCopilot.GetCrossButton() && 
+                !m_controllerCopilot.GetShareButton();
     }};
-
-    frc2::Trigger m_ShootButton{[this] { //R2 trigger
-        return m_controllerCopilot.GetRawAxis(3) > 0.5;
+    frc2::Trigger m_stageL1Button{[this] { // Option and not Advance mode
+        return m_controllerCopilot.GetOptionsButton() && 
+                !m_controllerCopilot.GetShareButton();
+    }};
+    frc2::Trigger m_stageL2Button{[this] { // Cicle and not Advance mode
+        return m_controllerCopilot.GetCircleButton() && 
+                !m_controllerCopilot.GetShareButton();
+    }};
+    frc2::Trigger m_stageL3Button{[this] { // square and not Advance mode
+        return m_controllerCopilot.GetSquareButton() && 
+                !m_controllerCopilot.GetCrossButton();
+    }};
+    frc2::Trigger m_stageL4Button{[this] { // triangle and not Advance mode
+        return m_controllerCopilot.GetTriangleButton() && 
+                !m_controllerCopilot.GetCrossButton();
+    }};
+    frc2::Trigger m_LeftReefButton{[this] { // Left only
+        return m_controllerCopilot.GetL1Button() && 
+                !m_controllerCopilot.GetR1Button();
+    }};
+    frc2::Trigger m_RightReefButton{[this] { // Right only
+        return m_controllerCopilot.GetR1Button() && 
+                !m_controllerCopilot.GetL1Button();
+    }};
+    frc2::Trigger m_activateAlignAssist{[this] { // Align Assist
+        return m_controllerCopilot.GetL1Button() && 
+                m_controllerCopilot.GetR1Button();
+    }};
+    frc2::Trigger m_scoreButton{[this] { // Score
+        return m_controllerCopilot.GetR2AsButton();
+    }}; 
+    frc2::Trigger m_intakeButton{[this] { // Intake
+        return m_controllerCopilot.GetL2AsButton();
     }};
   void ConfigureBindings();
 };
