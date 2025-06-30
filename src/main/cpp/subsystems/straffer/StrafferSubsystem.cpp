@@ -1,5 +1,6 @@
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <frc/Timer.h>
 //FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG 
 StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) : 
                                                     m_pStrafferIO(pIo),
@@ -7,6 +8,7 @@ StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) :
 {
     m_strafferPIDController.SetTolerance(strafferConstants::PID::TOLERANCE);
     m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
+    m_strafferPIDController.SetInputLimits(strafferConstants::Settings::LEFT_LIMIT, strafferConstants::Settings::RIGHT_LIMIT);
 
     m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
 }
@@ -64,6 +66,7 @@ bool StrafferSubsystem::IsResting()
 // This method will be called once per scheduler run
 void StrafferSubsystem::Periodic() 
 {
+    m_timestamp = frc::Timer::GetFPGATimestamp().value();
     m_currentWantedState = m_wantedState;
 
     m_pStrafferIO->UpdateInputs(inputs);
@@ -101,21 +104,25 @@ void StrafferSubsystem::Periodic()
                 break;
             case SystemState::STRAFFING_TO_LEFT_REEF :
             case SystemState::STRAFFING_TO_RIGHT_REEF :
-                m_output = m_strafferPIDController.Calculate(m_selectedReefWidthPosition,
-                                                            inputs.widthPosition);
+                m_output = m_strafferPIDController.CalculateWithRealTime(m_selectedReefWidthPosition,
+                                                                        inputs.widthPosition,
+                                                                        m_timestamp);
                 
                 break;
             case SystemState::STRAFFING_TO_LEFT_SIDE :
-                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::LEFT_SIDE,
-                                                            inputs.widthPosition);
+                m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::LEFT_SIDE,
+                                                                        inputs.widthPosition,
+                                                                        m_timestamp);
                 break;
             case SystemState::STRAFFING_TO_RIGHT_SIDE :
-                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::RIGHT_SIDE,
-                                                            inputs.widthPosition);
+                m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::RIGHT_SIDE,
+                                                                        inputs.widthPosition,
+                                                                        m_timestamp);
                 break;
             case SystemState::STRAFFING_TO_STATION :
-                m_output = m_strafferPIDController.Calculate(strafferConstants::Setpoint::CENTER,
-                                                            inputs.widthPosition);
+                m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::CENTER,
+                                                                        inputs.widthPosition,
+                                                                        m_timestamp);
                 break;
             default:
                 break;

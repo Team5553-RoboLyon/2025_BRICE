@@ -4,7 +4,7 @@
 #include "rev/SparkMax.h"
 #include <frc/DigitalInput.h>
 #include "GripperConstants.h"
-#include  "lib/pid_rbl.h"
+#include  "lib/pidRBL.h"
 //TODO : add clear config in param
 class GripperIOSpark final : public GripperIO
 {
@@ -22,16 +22,19 @@ class GripperIOSpark final : public GripperIO
     PidRBL m_feederVelocityPID{
         feederConstants::VelocityPID::KP, 
         feederConstants::VelocityPID::KI,
-        feederConstants::VelocityPID::KD
+        feederConstants::VelocityPID::KD,
+        feederConstants::VelocityPID::KFF
     };
     PidRBL m_outtakeVelocityPID{
         outtakeConstants::VelocityPID::KP,
         outtakeConstants::VelocityPID::KI,
-        outtakeConstants::VelocityPID::KD
+        outtakeConstants::VelocityPID::KD,
+        outtakeConstants::VelocityPID::KFF
     };
 
     double m_feederVelocity{0.0};
     double m_outtakeVelocity{0.0};
+    double m_timestamp{0.0};
 
   public:
     GripperIOSpark();

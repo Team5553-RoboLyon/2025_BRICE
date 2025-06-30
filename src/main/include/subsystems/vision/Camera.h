@@ -9,7 +9,6 @@
 #include "frc/filter/MedianFilter.h"
 #include "frc/filter/LinearFilter.h"
 #include "lib/UtilsRBL.h"
-#include "lib/pid_rbl.h"
 #include "Constants.h"
 #include "photon/targeting/PhotonTrackedTarget.h"
 #include <vector>

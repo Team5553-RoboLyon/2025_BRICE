@@ -9,7 +9,7 @@
 #include "ElevatorIO.h"
 #include "Constants.h"
 #include "ElevatorConstants.h"
-#include "lib/pid_rbl.h"
+#include "lib/pidRBL.h"
 #include "lib/rate_limiter.h"
 #include "lib/Alert.h"
 
@@ -70,10 +70,14 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     ElevatorIOInputs inputs;
 
     double m_output{0.0};
+    double m_timestamp{0.0};
     bool m_isInitialized = false;
     bool m_isEncoderAlreadyReset = false;
 
-    PidRBL m_elevatorPIDController{elevatorConstants::PID::KP, elevatorConstants::PID::KI, elevatorConstants::PID::KD};
+    PidRBL m_elevatorPIDController{elevatorConstants::PID::KP, 
+                                  elevatorConstants::PID::KI, 
+                                  elevatorConstants::PID::KD,
+                                  elevatorConstants::PID::KFF};
     RateLimiter m_rateLimiter;
 
     Alert m_leftMotorDisconnected{"Elevator Left Motor: Disconnected", Alert::AlertType::ERROR};

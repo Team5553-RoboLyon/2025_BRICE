@@ -42,6 +42,8 @@ namespace feederConstants
         constexpr double REST = 0.0;
         constexpr double REJECTING_BACKWARD = -600; //TUNEME
         constexpr double REJECTING_FORWARD = 600; //TUNEME
+        constexpr double MAX = 600.0; //TUNEME
+        constexpr double MIN = -600.0; //TUNEME
     }
     namespace DutyCycle
     {
@@ -55,6 +57,7 @@ namespace feederConstants
         constexpr double KP = 0.5; //TUNEME
         constexpr double KI = 0.0; //TUNEME
         constexpr double KD = 0.0; //TUNEME
+        constexpr double KFF = 0.0; //TUNEME
         constexpr double MAX = 1.0;
         constexpr double MIN = -1.0;
     }
@@ -87,6 +90,8 @@ namespace outtakeConstants
         constexpr double HIGH_SHOOTING = 600.0; //TUNEME
         constexpr double MIDDLE_SHOOTING = 645.0; //TUNEME
         constexpr double LOW_SHOOTING = 150.0; //TUNEME
+        constexpr double MAX = 600.0; //TUNEME  
+        constexpr double MIN = -600.0; //TUNEME
     }
     namespace DutyCycle
     {
@@ -108,6 +113,7 @@ namespace outtakeConstants
         constexpr double KP = 0.5; //TUNEME
         constexpr double KI = 0.0; //TUNEME
         constexpr double KD = 0.0; //TUNEME
+        constexpr double KFF = 0.0; //TUNEME
         constexpr double MAX = 1.0;
         constexpr double MIN = -1.0;
     }

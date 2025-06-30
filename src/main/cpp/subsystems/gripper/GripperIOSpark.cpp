@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/Timer.h>
 
 GripperIOSpark::GripperIOSpark()
 {
@@ -31,6 +32,12 @@ GripperIOSpark::GripperIOSpark()
                                         feederConstants::VelocityPID::MAX);
     m_outtakeVelocityPID.SetOutputLimits(outtakeConstants::VelocityPID::MIN, 
                                         outtakeConstants::VelocityPID::MAX); 
+    m_feederVelocityPID.SetInputLimits(feederConstants::RPM::MIN, 
+                                        feederConstants::RPM::MAX);
+    m_outtakeVelocityPID.SetInputLimits(outtakeConstants::RPM::MIN,
+                                        outtakeConstants::RPM::MAX);
+    
+
     }
 
 void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
@@ -107,10 +114,12 @@ void GripperIOSpark::SetOuttakeDutyCycle(const double dutyCycle)
 
 void GripperIOSpark::SetFeederRPM(const double RPM)
 {
-    m_feederMotor.Set(m_feederVelocityPID.Calculate(RPM, m_feederVelocity));
+    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_feederMotor.Set(m_feederVelocityPID.CalculateWithRealTime(RPM, m_feederVelocity, m_timestamp));
 }
 
 void GripperIOSpark::SetOuttakeRPM(const double RPM)
 {
-    m_outtakeMotor.Set(m_outtakeVelocityPID.Calculate(RPM, m_outtakeVelocity));
+    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_outtakeMotor.Set(m_outtakeVelocityPID.CalculateWithRealTime(RPM, m_outtakeVelocity, m_timestamp));
 }

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * 
- * File        : RevGamepad.h (1.0)
- * Library     : LyonLib (from 2025_ROBOT)
+ * File        : RevGamepad.h (v1.0)
+ * Library     : LyonLib (from 2025_BRICE)
  * Description : Handle input from REV Robotics Gamepad connected to the Driver Station.
  * 
- * Authors     : AKA (XXXX), last update by AKA (2025)
+ * Authors     : AKA (2025), last update by AKA (2025)
  * Organization: Robo'Lyon - FRC Team 5553
  *               Lycée Notre-Dame-de-Bellegarde, France
  * Github      : https://github.com/Team5553-RoboLyon

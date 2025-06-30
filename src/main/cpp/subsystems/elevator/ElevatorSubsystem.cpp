@@ -1,6 +1,7 @@
 #include "subsystems/elevator/ElevatorSubsystem.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <frc/Timer.h>
 
 ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) : 
                                                     m_pElevatorIO(pIO)
@@ -8,6 +9,8 @@ ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) :
     m_elevatorPIDController.SetTolerance(elevatorConstants::PID::TOLERANCE);
     m_elevatorPIDController.Reset(elevatorConstants::Setpoint::HOME);
     m_elevatorPIDController.SetOutputLimits(elevatorConstants::Speed::MIN, elevatorConstants::Speed::MAX);
+    m_elevatorPIDController.SetInputLimits( elevatorConstants::Settings::BOTTOM_LIMIT, 
+                                            elevatorConstants::Settings::TOP_LIMIT);
 
     m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
 }
@@ -74,6 +77,7 @@ void ElevatorSubsystem::SetOutputInOpenLoop(const double dutyCycle)
 void ElevatorSubsystem::Periodic()
 {
     m_currentWantedState = m_wantedState;
+    m_timestamp = frc::Timer::GetFPGATimestamp().value();
 
     m_pElevatorIO->UpdateInputs(inputs);
     m_leftMotorDisconnected.Set(!inputs.isLeftMotorConnected);
@@ -105,38 +109,45 @@ void ElevatorSubsystem::Periodic()
             //HACK : same behaviour for steady and transition state to ensure PID stability
             case SystemState::MOVING_TO_HOME :
             case SystemState::AT_HOME :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::HOME,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::HOME,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_HOME
             case SystemState::MOVING_TO_STATION :
             case SystemState::AT_STATION :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::CORAL_STATION,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::CORAL_STATION,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_STATION
             case SystemState::MOVING_TO_VISION : 
             case SystemState::AT_VISION :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::VISION,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::VISION,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_VISION           
             case SystemState::MOVING_TO_L1 :
             case SystemState::AT_L1 :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::L1,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L1,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_L1
             case SystemState::MOVING_TO_L2 :
             case SystemState::AT_L2 :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::L2,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L2,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_L2
             case SystemState::MOVING_TO_L3 :
             case SystemState::AT_L3 :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::L3,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L3,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_L3
             case SystemState::MOVING_TO_L4 :
             case SystemState::AT_L4 :
-                m_output = m_elevatorPIDController.Calculate(elevatorConstants::Setpoint::L4,
-                                                            inputs.heightPosition);
+                m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L4,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
                 break; //end of SystemState::MOVING_TO_L4    
 
             case SystemState::IDLE :

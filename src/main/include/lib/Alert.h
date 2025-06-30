@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : Alert.h (1.0)
+ * File        : Alert.h (v1.1)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Persistent alert system for displaying categorized runtime messages
  *               to the SmartDashboard using NetworkTables.

@@ -51,6 +51,7 @@ namespace elevatorConstants
         constexpr double KP = 10.0; //TUNEME
         constexpr double KI = 0.0; //TUNEME
         constexpr double KD = 0.2; //TUNEME
+        constexpr double KFF = 0.0; //TUNEME
         constexpr double TOLERANCE = 0.001;
     }
     namespace Setpoint

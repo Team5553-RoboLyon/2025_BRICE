@@ -47,6 +47,7 @@ namespace strafferConstants
         constexpr double KP = 6.5; //TUNEME
         constexpr double KI = 0.000; //TUNEME
         constexpr double KD = 0.4; //TUNEME
+        constexpr double KFF = 0.0; //TUNEME
         constexpr double TOLERANCE = 0.005; //TUNEME
     }
     namespace Setpoint 
@@ -54,7 +55,7 @@ namespace strafferConstants
         constexpr double LEFT_SIDE = 0.05; //TUNEME
         constexpr double RIGHT_SIDE = 0.34; //TUNEME
         constexpr double CENTER = 0.1975; //TUNEME
-        constexpr double TOLERANCE = 0.05; //TUNEME
+        constexpr double TOLERANCE = 0.005; //TUNEME
     } 
     namespace Settings
     {

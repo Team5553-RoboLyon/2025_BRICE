@@ -1,0 +1,165 @@
+/*******************************************************************************
+ * 
+ * File        : PidRBL.h (v3.0)
+ * Library     : LyonLib (from 2025_BRICE)
+ * Description : Advanced PID controller class implementing 
+ *               Proportional-Integral-Derivative control with optional 
+ *               Feedforward. Supports real-time update, input/output clamping, 
+ *               tolerance checking, and continuous inputs (e.g. angle 
+ *               wrap-around).
+ * 
+ * Authors     : Gaspard (2023), last update by AKA (2025) 
+ *                                and inspired by Team 1678
+ * Organization: Robo'Lyon - FRC Team 5553
+ *               Lycée Notre-Dame-de-Bellegarde, France
+ * Github      : https://github.com/Team5553-RoboLyon
+ * 
+ *******************************************************************************/
+#pragma once
+
+#include <string>
+#define THEORETICAL_DT (0.02)
+
+class PidRBL {
+public :
+  PidRBL(const double kp, const double ki, const double kd);
+  PidRBL(double kp, double ki, double kd, double kf);
+
+
+  void SetGains(const double kp, const double ki, const double kd, const double kf = 0.0);
+  /**
+   * @brief Sets the desired setpoint for the PID controller, clamping it within the allowed input range.
+   * 
+   * @param setpoint The desired setpoint value for the PID controller.
+   */
+  void SetSetpoint(const double setpoint);
+  /**
+   * @brief Sets the tolerance for the PID controller.
+   * 
+   * @param tolerance The absolute error below which the controller is considered "at setpoint"
+   */
+  void SetTolerance(const double tolerance);
+  /**
+   * Sets the output limits for the PID controller.
+   *
+   * @param min The minimum output value that the PID controller can produce.
+   * @param max The maximum output value that the PID controller can produce.
+   */
+  void SetOutputLimits(const double min, const double max);
+  /**
+   * @brief Sets the input limits (acceptable range for setpoint values) for the PID controller.
+   * 
+   * @param min The minimum allowable input value.
+   * @param max The maximum allowable input value.
+   */
+  void SetInputLimits(const double min, const double max);
+  /**
+   * @brief Sets whether the PID controller should handle inputs as continuous.
+   * 
+   * When enabled, the controller will treat the input range as circular, allowing
+   * for seamless transitions between the minimum and maximum values.
+   * 
+   * @param isContinuous A boolean indicating whether circular input handling is enabled.
+   */
+  void SetContinuous(const bool isContinuous);
+
+  double GetKP() const;
+  double GetKI() const;
+  double GetKD() const;
+  double GetKF() const;
+  double GetError() const;
+  double GetSetpoint() const;
+  /**
+   * @brief Retrieves the current state of the PID controller as a formatted string.
+   * 
+   * @return A string containing the formatted state of the PID controller.
+   */
+  std::string GetState() const;
+
+    /**
+   * Calculates the PID output using theoretical delta time (0.02s in FRC).
+   *    
+   * @param measurement The current value of the system being controlled.
+   * @return The PID output value.
+   */
+  double Calculate(const double measurement);
+  /**
+   * Calculates the PID output using theoretical delta time (0.02s in FRC).
+   *    
+   * @param setpoint The desired target value for the system.
+   * @param measurement The current value of the system being controlled.
+   * @return The PID output value.
+   */
+  double Calculate(const double setpoint, const double measurement);
+    /**
+   * Calculates the PID output using real timestamp.
+   *
+   * @param measurement The current value of the system being controlled.
+   * @param timestamp The current time in seconds, used for real-time calculations.
+   * @return The PID output value.
+   */
+  double CalculateWithRealTime(const double measurement, const double timestamp);
+  /**
+   * Calculates the PID output using real timestamp.
+   *
+   * @param setpoint The desired target value for the system.
+   * @param measurement The current value of the system being controlled.
+   * @param timestamp The current time in seconds, used for real-time calculations.
+   * @return The PID output value.
+   */
+  double CalculateWithRealTime(const double setpoint, const double measurement, const double timestamp);
+   /**
+   * @brief Resets the PID controller state.
+   * 
+   * This function initializes the PID controller by resetting the setpoint, previous error,
+   * current error, output, and integrative term to zero.
+   */
+  void Reset();
+  /**
+   * @brief Resets the PID controller state and sets a new setpoint.
+   * 
+   * This function initializes the PID controller by resetting the previous error,
+   * current error, output, and integrative term to zero. It also sets the desired
+   * setpoint for the controller.
+   * 
+   * @param setpoint The target value for the PID controller to achieve.
+   */
+  void Reset(const double setpoint);
+  /**
+   * @brief Resets the integrative term accumulator to zero.
+   * 
+   * This function clears the I-term accumulator to prevent integrative windup
+   * in the PID controller. It does not affect other components of the PID
+   * controller.
+   */
+  void ResetIntegrative();
+  /**
+   * @brief Determines if the current error with the setpoint is within the acceptable tolerance.
+   * @return true if the current error is within the tolerance, false otherwise.
+   */
+  bool AtSetpoint() const;
+private:
+
+  double m_kp;  // factor for Proportional gain
+  double m_ki;  // factor for Integral gain
+  double m_kd;  // factor for Derivative gain
+  double m_kf;  // factor for Feedforward gain
+
+  double m_outputMin{-1.0};   // Min output value
+  double m_outputMax{1.0};    // Max output value
+  double m_inputMin;    // Min setpoint value allowed
+  double m_inputMax;    // Max setpoint value allowed
+
+  bool m_isContinuous{false}; // do the endpoints wrap around?
+
+  double m_previousError{0.0};  // the prior error for derivative calculation
+  double m_integrative{0.0};     // Total accumulated error for integral term
+  double m_setpoint{0.0};       // Desired setpoint
+  double m_currentError;        // Error between the setpoint and the measurement
+
+  double m_output;              // Output of the PID controller.
+  double m_tolerance{0.0};      // Tolerance for considering the measurement at the setpoint.
+  
+  double m_lastTimestamp{0.0};  // Last time the PID controller was updated
+  double m_dt{0.02}; // Time step for the PID controller, default in  FRC is 20ms
+}; 

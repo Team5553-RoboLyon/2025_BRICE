@@ -24,7 +24,7 @@ Alert::Alert(const std::string& group, const std::string& text, AlertType type)
 
 void Alert::Set(bool newActive) {
     if (newActive && !active) {
-        activeStartTime = (double)frc::Timer::GetFPGATimestamp();
+        activeStartTime = frc::Timer::GetFPGATimestamp().value();
         switch (type) {
             case AlertType::ERROR:
                 FRC_ReportError(frc::err::Error, text.c_str());

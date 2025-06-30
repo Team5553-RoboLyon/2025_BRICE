@@ -4,7 +4,7 @@
 #include "StrafferIO.h"
 #include "StrafferConstants.h"
 #include "lib/Alert.h"
-#include "lib/pid_rbl.h"
+#include "lib/PidRBL.h"
 #include "lib/rate_limiter.h"
 #include "subsystems/vision/Camera.h"
 
@@ -63,13 +63,17 @@ class StrafferSubsystem : public frc2::SubsystemBase {
 
     int m_counter{0};
     double m_output{0.0}; 
+    double m_timestamp{0.0};
     double m_selectedReefWidthPosition{0.0}; //COMMENTME
     double m_lowestAmbiguity{1.0}; //COMMENTME
     double m_bestAprilTagOffset{0.0}; //COMMENTME
     bool m_isInitialized = false; 
     bool m_isEncoderAlreadyReset = false;
 
-    PidRBL m_strafferPIDController{strafferConstants::PID::KP, strafferConstants::PID::KI, strafferConstants::PID::KD};
+    PidRBL m_strafferPIDController{strafferConstants::PID::KP, 
+                                  strafferConstants::PID::KI, 
+                                  strafferConstants::PID::KD,
+                                  strafferConstants::PID::KFF};
     RateLimiter m_rateLimiter; 
 
     Alert m_motorDisconnected{"Straffer Motor: Disconnected", Alert::AlertType::ERROR};
