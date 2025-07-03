@@ -1,6 +1,6 @@
 #include "subsystems/gripper/GripperIOSpark.h"
 
-#include <assert.h>
+#include "lib/DebugUtils.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Timer.h>
 
@@ -86,29 +86,29 @@ void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
 
 void GripperIOSpark::SetFeederVoltage(const double voltage) 
 {
-    assert((voltage <= feederConstants::Motor::VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((voltage <= feederConstants::Motor::VOLTAGE_COMPENSATION) 
     && (voltage >= -feederConstants::Motor::VOLTAGE_COMPENSATION) 
-    && "Feeder Voltage out of range");
+    ,"Feeder Voltage out of range");
     m_feederMotor.SetVoltage(units::volt_t(voltage));
 }
 
 void GripperIOSpark::SetOuttakeVoltage(const double voltage)
 {
-    assert((voltage <= outtakeConstants::Motor::VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((voltage <= outtakeConstants::Motor::VOLTAGE_COMPENSATION) 
     && (voltage >= -outtakeConstants::Motor::VOLTAGE_COMPENSATION) 
-    && "Outtake Voltage out of range");
+    ,"Outtake Voltage out of range");
     m_outtakeMotor.SetVoltage(units::volt_t(voltage));
 }
 
 void GripperIOSpark::SetFeederDutyCycle(const double dutyCycle)
 {
-    assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) && "Feeder Duty Cycle out of range");
+    DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0),"Feeder Duty Cycle out of range");
     m_feederMotor.Set(dutyCycle);
 }
 
 void GripperIOSpark::SetOuttakeDutyCycle(const double dutyCycle)
 {
-    assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) && "Outtake Duty Cycle out of range");
+    DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0),"Outtake Duty Cycle out of range");
     m_outtakeMotor.Set(dutyCycle);
 }
 

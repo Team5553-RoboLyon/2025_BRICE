@@ -1,6 +1,8 @@
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc/Timer.h>
+#include "lib/DebugUtils.h"
+
 //FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG 
 StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) : 
                                                     m_pStrafferIO(pIo),
@@ -10,14 +12,13 @@ StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) :
     m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
     m_strafferPIDController.SetInputLimits(strafferConstants::Settings::LEFT_LIMIT, strafferConstants::Settings::RIGHT_LIMIT);
 
-    m_rateLimiter.Reset(0.0, 0.0, strafferConstants::Settings::RATE_LIMITER);
 }
 void StrafferSubsystem::SetControlMode(const ControlMode mode)
 {
     m_controlMode = mode;
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
-    m_rateLimiter.m_current = 0.0;
+    m_rateLimiter.Reset();
     m_output = strafferConstants::Speed::REST;
 }
 ControlMode StrafferSubsystem::GetControlMode()
@@ -44,18 +45,18 @@ void StrafferSubsystem::SetOutputInOpenLoop(double dutyCycle)
 {
     if(m_controlMode == ControlMode::OPEN_LOOP)
     {
-        assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            && "Straffer Duty Cycle out of range");
+        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            , "Straffer Duty Cycle out of range");
         m_output = m_rateLimiter.Update(std::sin(dutyCycle * (M_PI / 2.0)));
     }
     else 
     {
-        assert(false && "Straffer : Open Loop Output set while Closed Loop is used");
+        DEBUG_ASSERT(false , "Straffer : Open Loop Output set while Closed Loop is used");
     }
 }
 bool StrafferSubsystem::IsResting()
 {
-    assert(ALLOWS_STATE_MACHINE(m_controlMode) && "Straffer : IsResting() is used while Open Loop");
+    DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode) , "Straffer : IsResting() is used while Open Loop");
     return ((m_systemState == SystemState::AT_STATION) || 
             (m_systemState == SystemState::AT_LEFT_REEF) || 
             (m_systemState == SystemState::AT_RIGHT_REEF) ||
@@ -138,7 +139,7 @@ void StrafferSubsystem::Periodic()
             //look at void SetOutputInOpenLoop(const double dutyCycle)
             break;
         default:
-            assert(false && "Straffer : wrong ControlMode chosen");
+            DEBUG_ASSERT(false , "Straffer : wrong ControlMode chosen");
             m_output = 0.0; // protection
             break;
         }
@@ -149,7 +150,7 @@ void StrafferSubsystem::Periodic()
     if(inputs.limitSwitchLeft)
     {
         m_output = NMAX(0.0, m_output); // prevent the straffer to go through the left side
-        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the left side
+        m_rateLimiter.Reset(); // prevent the "rate Limiter's inertia" to go through the left side
         if(!m_isEncoderAlreadyReset)
         {
             m_pStrafferIO->ResetPositionLeft();
@@ -164,7 +165,7 @@ void StrafferSubsystem::Periodic()
     else if(inputs.limitSwitchRight)
     {
         m_output = NMIN(0.0, m_output); // prevent the straffer to go through the right side
-        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the right side
+        m_rateLimiter.Reset(); // prevent the "rate Limiter's inertia" to go through the right side
         if(!m_isEncoderAlreadyReset)
         {
             m_pStrafferIO->ResetPositionRight();

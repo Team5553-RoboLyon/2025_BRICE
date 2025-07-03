@@ -1,8 +1,6 @@
 #pragma once
 #include "rev/SparkMax.h"
 #include "lib/UtilsRBL.h"
-#include "lib/rate_limiter.h"
-
 // Write ALL your robot-specific constants here
 // Use namespacing to group constants together depending on the subsystems
 // Example: namespace DriveConstants {}
@@ -102,8 +100,8 @@ namespace ControlPanelConstants {
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;
         constexpr double DEADBAND = 0.05;
-        constexpr double RATE_LIMITER_FOWARD = TIME_TO_REACH_MAX(0.8);
-        constexpr double RATE_LIMITER_ROTATION = TIME_TO_REACH_MAX(0.5);
+        constexpr double TIME_TO_REACH_FULL_FORWARD = 0.8;
+        constexpr double TIME_TO_REACH_FULL_ROTATION = 0.5;
         constexpr double DEADBAND_OPEN_LOOP = 0.1;
         constexpr double MIN_MOVING_V = 0.07;
         constexpr double MIN_MOVING_W = 0.25;

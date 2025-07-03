@@ -74,7 +74,7 @@ namespace elevatorConstants
     }
     namespace Settings
     {
-        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.25); // only for open-loop
+        constexpr double TIME_TO_REACH_FULL_SPEED = 0.25; // only for open-loop //TUNEME
         constexpr double BOTTOM_LIMIT = 0.005; //TUNEME
         constexpr double TOP_LIMIT = 1.45; //TUNEME
     }

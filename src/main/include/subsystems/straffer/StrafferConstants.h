@@ -59,7 +59,7 @@ namespace strafferConstants
     } 
     namespace Settings
     {
-        constexpr double RATE_LIMITER = TIME_TO_REACH_MAX(0.2); // only for open-loop //TUNEME
+        constexpr double TIME_TO_REACH_FULL_SPEED = 0.2; // only for open-loop //TUNEME
         constexpr double LEFT_LIMIT = 0.025; //TUNEME
         constexpr double RIGHT_LIMIT = 0.37; //TUNEME
     } 

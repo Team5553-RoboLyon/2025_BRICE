@@ -1,7 +1,7 @@
 #include "subsystems/gripper/GripperSubsystem.h"
 #include "frc/smartdashboard/SmartDashboard.h"
 
-#include <assert.h>
+#include "lib/DebugUtils.h"
 GripperSubsystem::GripperSubsystem(GripperIO *pIo) : 
                                                     m_pGripperIO(pIo)
 {
@@ -33,7 +33,7 @@ void GripperSubsystem::ToggleControlMode()
         m_controlMode = gripperConstants::DefaultMode;
         break;
     default:
-        assert(false && "Gripper : Toggle impossible with an unrecognized mode.");
+        DEBUG_ASSERT(false,"Gripper : Toggle impossible with an unrecognized mode.");
         break;
     }
 }
@@ -49,35 +49,35 @@ void GripperSubsystem::SetOutputInOpenLoop(double dutyCycle)
 {
     if(m_controlMode == ControlMode::OPEN_LOOP)
     {
-        assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            && "Gripper Duty Cycle out of range");
+        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            , "Gripper Duty Cycle out of range");
         m_feederOutput = (std::sin(dutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
         m_outtakeOutput = (std::sin(dutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
     }
     else 
     {
-        assert(false && "Gripper : Open Loop Output set while Closed Loop is used");
+        DEBUG_ASSERT(false,"Gripper : Open Loop Output set while Closed Loop is used");
     }
 }
 void GripperSubsystem::SetOutputInOpenLoop(double feederDutyCycle, double outtakeDutyCycle)
 {
     if(m_controlMode == ControlMode::OPEN_LOOP)
     {
-        assert((feederDutyCycle <= 1.0) && (feederDutyCycle >= -1.0) 
-            && "Feeder Duty Cycle out of range");
-        assert((outtakeDutyCycle <= 1.0) && (outtakeDutyCycle >= -1.0) 
-            && "Outtake Duty Cycle out of range");
+        DEBUG_ASSERT((feederDutyCycle <= 1.0) && (feederDutyCycle >= -1.0) 
+            , "Feeder Duty Cycle out of range");
+        DEBUG_ASSERT((outtakeDutyCycle <= 1.0) && (outtakeDutyCycle >= -1.0) 
+            , "Outtake Duty Cycle out of range");
         m_feederOutput = (std::sin(feederDutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
         m_outtakeOutput = (std::sin(outtakeDutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
     }
     else 
     {
-        assert(false && "Gripper : Open Loop Output set while Closed Loop is used");
+        DEBUG_ASSERT(false, "Gripper : Open Loop Output set while Closed Loop is used");
     }
 }
 bool GripperSubsystem::IsResting()
 {
-    assert(ALLOWS_STATE_MACHINE(m_controlMode) && "Gripper : IsResting() is used while Open Loop");
+    DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode), "Gripper : IsResting() is used while Open Loop");
     return ((m_systemState == SystemState::REST_EMPTY) || 
             (m_systemState == SystemState::REST_LOADED) || 
             (m_systemState == SystemState::REST_SHIFTED));
@@ -259,7 +259,7 @@ void GripperSubsystem::Periodic()
         m_pGripperIO->SetOuttakeRPM(m_outtakeOutput);
         break; //end of ControlMode::Velocity
     default:
-        assert(false && "Gripper : wrong ControlMode chosen");
+        DEBUG_ASSERT(false, "Gripper : wrong ControlMode chosen");
         m_feederOutput = 0.0; // protection
         m_outtakeOutput = 0.0; // protection
         break;
@@ -392,7 +392,7 @@ void GripperSubsystem::RunStateMachine()
                 m_systemState = SystemState::HIGH_SHOOTING;
                 break;
             default:
-                assert(false && "Gripper : No shoot desired after Preshoot ???");
+                DEBUG_ASSERT(false, "Gripper : No shoot desired after Preshoot ???");
                 break;
             }
             m_counter = gripperConstants::Counter::SHOOT;

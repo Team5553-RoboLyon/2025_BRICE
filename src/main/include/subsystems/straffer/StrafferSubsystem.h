@@ -5,7 +5,7 @@
 #include "StrafferConstants.h"
 #include "lib/Alert.h"
 #include "lib/PidRBL.h"
-#include "lib/rate_limiter.h"
+#include "lib/RateLimiter.h"
 #include "subsystems/vision/Camera.h"
 
 class StrafferSubsystem : public frc2::SubsystemBase {
@@ -74,7 +74,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
                                   strafferConstants::PID::KI, 
                                   strafferConstants::PID::KD,
                                   strafferConstants::PID::KFF};
-    RateLimiter m_rateLimiter; 
+    RateLimiter m_rateLimiter{strafferConstants::Settings::TIME_TO_REACH_FULL_SPEED};
 
     Alert m_motorDisconnected{"Straffer Motor: Disconnected", Alert::AlertType::ERROR};
     Alert m_motorHot{"Straffer Motor: Temperature exceeds 55°C", Alert::AlertType::WARNING};

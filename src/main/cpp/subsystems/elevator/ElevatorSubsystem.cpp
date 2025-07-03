@@ -2,6 +2,7 @@
 
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc/Timer.h>
+#include "lib/DebugUtils.h"
 
 ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) : 
                                                     m_pElevatorIO(pIO)
@@ -11,8 +12,6 @@ ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) :
     m_elevatorPIDController.SetOutputLimits(elevatorConstants::Speed::MIN, elevatorConstants::Speed::MAX);
     m_elevatorPIDController.SetInputLimits( elevatorConstants::Settings::BOTTOM_LIMIT, 
                                             elevatorConstants::Settings::TOP_LIMIT);
-
-    m_rateLimiter.Reset(0.0, 0.0, elevatorConstants::Settings::RATE_LIMITER);
 }
 
 void ElevatorSubsystem::SetWantedState(const WantedState wantedState)
@@ -38,7 +37,7 @@ void ElevatorSubsystem::SetControlMode(const ControlMode mode)
     m_controlMode = mode;
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
-    m_rateLimiter.m_current = 0.0;
+    m_rateLimiter.Reset();
     m_output = elevatorConstants::Speed::REST;
 }
 
@@ -49,7 +48,7 @@ ControlMode ElevatorSubsystem::GetControlMode()
 
 bool ElevatorSubsystem::IsResting()
 {  
-    assert(ALLOWS_STATE_MACHINE(m_controlMode) && "Straffer : IsResting() is used while Open Loop");
+    DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode), "Straffer : IsResting() is used while Open Loop");
     return ((m_systemState == SystemState::AT_HOME) ||
             (m_systemState == SystemState::AT_L1) ||
             (m_systemState == SystemState::AT_L2) ||
@@ -63,13 +62,13 @@ void ElevatorSubsystem::SetOutputInOpenLoop(const double dutyCycle)
 {
     if(m_controlMode == ControlMode::OPEN_LOOP)
     {
-        assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            && "Elevator Duty Cycle out of range");
+        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            , "Elevator Duty Cycle out of range");
         m_output = m_rateLimiter.Update((std::sin(dutyCycle * (M_PI / 2.0)) / elevatorConstants::OPEN_LOOP_REDUC) );
     }
     else 
     {
-        assert(false && "Elevator : Open Loop Output set while Closed Loop is used");
+        DEBUG_ASSERT(false, "Elevator : Open Loop Output set while Closed Loop is used");
     }
 }
 
@@ -175,7 +174,7 @@ void ElevatorSubsystem::Periodic()
     if(inputs.limitSwitchBottom || inputs.limitSwitchBottom2)
     {
         m_output = NMAX(0.0, m_output); // prevent the elevator to go through the bottom
-        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the left side
+        m_rateLimiter.Reset(); // prevent the "rate Limiter's inertia" to go through the left side
         if(!m_isEncoderAlreadyReset)
         {
             m_pElevatorIO->ResetPosition();
@@ -191,7 +190,7 @@ void ElevatorSubsystem::Periodic()
     else if(inputs.heightPosition > elevatorConstants::Settings::TOP_LIMIT)
     {
         m_output = NMIN(0.0, m_output); // prevent the straffer to go through the right side
-        m_rateLimiter.m_current = 0.0; // prevent the "rate Limiter's inertia" to go through the right side
+        m_rateLimiter.Reset(); // prevent the "rate Limiter's inertia" to go through the right side
     }
     else
     {

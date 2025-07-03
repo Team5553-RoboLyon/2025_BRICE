@@ -10,7 +10,7 @@
 #include "Constants.h"
 #include "ElevatorConstants.h"
 #include "lib/pidRBL.h"
-#include "lib/rate_limiter.h"
+#include "lib/RateLimiter.h"
 #include "lib/Alert.h"
 
 class ElevatorSubsystem : public frc2::SubsystemBase {
@@ -78,7 +78,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
                                   elevatorConstants::PID::KI, 
                                   elevatorConstants::PID::KD,
                                   elevatorConstants::PID::KFF};
-    RateLimiter m_rateLimiter;
+    RateLimiter m_rateLimiter{elevatorConstants::Settings::TIME_TO_REACH_FULL_SPEED};
 
     Alert m_leftMotorDisconnected{"Elevator Left Motor: Disconnected", Alert::AlertType::ERROR};
     Alert m_rightMotorDisconnected{"Elevator Right Motor: Disconnected", Alert::AlertType::ERROR};

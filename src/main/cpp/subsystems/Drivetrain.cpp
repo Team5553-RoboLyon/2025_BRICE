@@ -33,9 +33,6 @@ Drivetrain::Drivetrain() {
     // Set distance per pulse
     m_EncoderLeft.SetDistancePerPulse(driveConstants::LeftGearbox::Encoder::DISTANCE_PER_PULSE);
     m_EncoderRight.SetDistancePerPulse(driveConstants::RightGearbox::Encoder::DISTANCE_PER_PULSE);
-
-    m_JoystickLimited_V.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_FOWARD);
-    m_JoystickLimited_W.Reset(0.0, 0.0, ControlPanelConstants::Settings::RATE_LIMITER_ROTATION);
 }
 
 void Drivetrain::SetPower(double v_motor) {
@@ -111,8 +108,8 @@ void Drivetrain::Drive(double FwdJoystick, double RotateJoystick, double heightF
 
     m_sigma = NLERP(0.1, 0.45, NABS(RotateJoystick));
 
-    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::LeftGearbox::WHEEL_SIDE));
-    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.m_current, std::sin(m_JoystickLimited_W.m_current * (NF64_PI / 2)), driveConstants::RightGearbox::WHEEL_SIDE));
+    m_MotorBackLeft.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.GetCurrentSpeed(), std::sin(m_JoystickLimited_W.GetCurrentSpeed() * (NF64_PI / 2)), driveConstants::LeftGearbox::WHEEL_SIDE));
+    m_MotorBackRight.Set(Calcul_Of_Our_Cher_JM(m_JoystickLimited_V.GetCurrentSpeed(), std::sin(m_JoystickLimited_W.GetCurrentSpeed() * (NF64_PI / 2)), driveConstants::RightGearbox::WHEEL_SIDE));
     frc::SmartDashboard::PutNumber("dLeft Power", m_MotorBackLeft.Get());
     frc::SmartDashboard::PutNumber("dRight Power", m_MotorBackRight.Get());
 

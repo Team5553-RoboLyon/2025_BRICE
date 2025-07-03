@@ -1,7 +1,7 @@
 #include "subsystems/elevator/ElevatorIOSpark.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
-#include <assert.h>
+#include "lib/DebugUtils.h"
 ElevatorIOSpark::ElevatorIOSpark()
 {
     // Set the left motor configs
@@ -72,9 +72,9 @@ void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs)
 
 void ElevatorIOSpark::SetVoltage(double voltage)
 {
-    assert((voltage <= elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((voltage <= elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
         && (voltage >= -elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
-        && "Elevator Voltage out of range");
+        ,"Elevator Voltage out of range");
     
     m_leftMotor.SetVoltage(units::volt_t(voltage));
     m_rightMotor.SetVoltage(units::volt_t(voltage));
@@ -82,8 +82,8 @@ void ElevatorIOSpark::SetVoltage(double voltage)
 
 void ElevatorIOSpark::SetDutyCycle(double dutyCycle)
 {
-    assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            && "Straffer Duty Cycle out of range");
+    DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            ,"Straffer Duty Cycle out of range");
     
     m_leftMotor.Set(dutyCycle);
     m_rightMotor.Set(dutyCycle);

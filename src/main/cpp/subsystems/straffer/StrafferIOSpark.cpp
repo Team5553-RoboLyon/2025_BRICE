@@ -1,6 +1,6 @@
 #include "subsystems/straffer/StrafferIOSpark.h"
 
-#include <assert.h>
+#include "lib/DebugUtils.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
 StrafferIOSpark::StrafferIOSpark()
@@ -46,15 +46,15 @@ void StrafferIOSpark::UpdateInputs(StrafferIOInputs& inputs)
 
 void StrafferIOSpark::SetVoltage(const double voltage) 
 {
-    assert((voltage <= strafferConstants::Motor::VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((voltage <= strafferConstants::Motor::VOLTAGE_COMPENSATION) 
         && (voltage >= -strafferConstants::Motor::VOLTAGE_COMPENSATION) 
-        && "Straffer Voltage out of range");
+        , "Straffer Voltage out of range");
     m_motor.SetVoltage(units::volt_t(voltage));
 }
 void StrafferIOSpark::SetDutyCycle(const double dutyCycle)
 {
-    assert((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            && "Straffer Duty Cycle out of range");
+    DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+            , "Straffer Duty Cycle out of range");
     m_motor.Set(dutyCycle);
 }
 void StrafferIOSpark::ResetPosition() 
