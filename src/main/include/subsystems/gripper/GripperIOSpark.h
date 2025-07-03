@@ -5,7 +5,6 @@
 #include <frc/DigitalInput.h>
 #include "GripperConstants.h"
 #include  "lib/pidRBL.h"
-//TODO : add clear config in param
 class GripperIOSpark final : public GripperIO
 {
   private:

@@ -6,7 +6,6 @@
 #include "ElevatorConstants.h"
 #include "frc/Encoder.h"
 //TODO : verif comment utiliser encoder avec motion
-//TODO : add clear config in param
 
 class ElevatorIOSpark  final : public ElevatorIO
 {

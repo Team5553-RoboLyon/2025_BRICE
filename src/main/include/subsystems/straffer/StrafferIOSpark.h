@@ -6,7 +6,6 @@
 #include "StrafferConstants.h"
 #include "frc/Encoder.h"
 //TODO : verif comment utiliser encoder avec motion
-//TODO : add clear config in param
 
 class StrafferIOSpark  final : public StrafferIO
 {

@@ -7,9 +7,9 @@
 #include <frc2/command/SubsystemBase.h>
 #include <frc/Encoder.h>
 #include "rev/SparkFlex.h"
-#include "Constants.h"
+#include "DrivetrainConstants.h"
 #include "lib/UtilsRBL.h"
-#include "lib/rate_limiter.h"
+#include "lib/RateLimiter.h"
 // #include "lib/NRollingAverage.h"
 // #include "lib/Dynamic.h"
 #include "lib/utils.h"
@@ -115,6 +115,8 @@ class Drivetrain : public frc2::SubsystemBase {
   double m_sigma = 0.0; //rotation weighting factor
   bool m_reversedDrive = false; //flag to indicate if the drive direction is reversed
 
-  RateLimiter m_JoystickLimited_V;    // joystick V rate limiter, used to smooth out the joystick input for forward/backward movement
-  RateLimiter m_JoystickLimited_W;    // joystick W rate limiter, used to smooth out the joystick input for rotation movement
+  // joystick V rate limiter, used to smooth out the joystick input for forward/backward movement
+  RateLimiter m_JoystickLimited_V{ControlPanelConstants::Settings::TIME_TO_REACH_FULL_FORWARD};    
+  // joystick W rate limiter, used to smooth out the joystick input for rotation movement
+  RateLimiter m_JoystickLimited_W{ControlPanelConstants::Settings::TIME_TO_REACH_FULL_ROTATION};    
 };

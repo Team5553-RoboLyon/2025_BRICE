@@ -1,19 +1,27 @@
 #pragma once
 #include "rev/SparkMax.h"
 #include "lib/UtilsRBL.h"
-// Write ALL your robot-specific constants here
-// Use namespacing to group constants together depending on the subsystems
-// Example: namespace DriveConstants {}
-// Example for variable : constexpr int kMOTOR_DRIVE = 0;
-// Example for macro : #define SQUARE(x) x*x
+#include "lib/DebugUtils.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
+#define BRICE_COMPETITION 0
+#define BRICE_TRAINING 1
+#define BABY_BRICE 2
+// #define T_NOR 3 TODO
+#define SIMULATION 4
+
+#define ROBOT_MODEL (BRICE_TRAINING) // Change this to the desired robot model
+#if (ROBOT_MODEL != (BRICE_COMPETITION))
+#define DEBUG_MODE
+#endif
 
 constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
+
+
 
 enum class ControlMode {
     PROFILED_PID, //Motion profiling + PID sur l'output
@@ -26,53 +34,7 @@ enum class ControlMode {
 };
 #define ALLOWS_STATE_MACHINE(mode) ((mode) != (ControlMode::OPEN_LOOP))
 
-#define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 
-
-namespace driveConstants {
-
-    namespace LeftGearbox{
-        namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 2;
-            constexpr int BACK_MOTOR_ID = 3;
-            constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = true;
-            constexpr int MOTOR_CURRENT_LIMIT = 40;
-            constexpr double MOTOR_RAMP = 0.1;
-            constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
-        }
-
-        namespace Encoder{
-            constexpr int ID_ENCODER_A = 0;
-            constexpr int ID_ENCODER_B = 1;
-            constexpr bool REVERSE_ENCODER = true; 
-            constexpr double RADIUS = 0.0254 *2;
-            constexpr double DISTANCE_PER_PULSE = (2.0 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION_K2X;
-        }
-        constexpr bool WHEEL_SIDE = true;
-    }
-
-    namespace RightGearbox{
-        namespace Motor{
-            constexpr int FRONT_MOTOR_ID = 4;
-            constexpr int BACK_MOTOR_ID = 5;
-            constexpr rev::spark::SparkBaseConfig::IdleMode MOTOR_IDLE_MODE = rev::spark::SparkBaseConfig::IdleMode::kBrake;
-            constexpr bool MOTOR_INVERTED = false;
-            constexpr int MOTOR_CURRENT_LIMIT = 40;
-            constexpr double MOTOR_RAMP = 0.1;
-            constexpr double MOTOR_VOLTAGE_COMPENSATION = 12.0;
-        }
-
-        namespace Encoder{
-            constexpr int ID_ENCODER_A = 2;
-            constexpr int ID_ENCODER_B = 3;
-            constexpr bool REVERSE_ENCODER = false;
-            constexpr double RADIUS = 0.0254 *2;
-            constexpr double DISTANCE_PER_PULSE = (2 * M_PI * RADIUS)/ENCODER_TICKS_PER_REVOLUTION_K2X;
-        }
-        constexpr bool WHEEL_SIDE = false;
-    }
-}
 
 namespace ControlPanelConstants {
     namespace Joystick{
