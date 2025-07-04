@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : RevGamepad.h (v1.0)
+ * File        : RevGamepad.h (v1.1)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Handle input from REV Robotics Gamepad connected to the Driver Station.
  * 
@@ -13,6 +13,7 @@
 #pragma once
 
 #include "frc/GenericHID.h"
+#include "frc2/command/button/Trigger.h"
 
 //WARNING: all functions are not tested, please report any bug you find
 
@@ -360,4 +361,28 @@ class RevGamepad : public frc::GenericHID{
 
         bool L2AsButtonPressed = false;
         bool R2AsButtonPressed = false;
+
+
+    protected :
+      frc2::Trigger _squareButton{[this] { return GetSquareButton(); }};
+      frc2::Trigger _crossButton{[this] { return GetCrossButton(); }};
+      frc2::Trigger _circleButton{[this] { return GetCircleButton(); }};
+      frc2::Trigger _triangleButton{[this] { return GetTriangleButton(); }};
+      frc2::Trigger _L1Button{[this] { return GetL1Button(); }};
+      frc2::Trigger _R1Button{[this] { return GetR1Button(); }};
+      frc2::Trigger _L2AsButton{[this] { return GetL2AsButton(); }};
+      frc2::Trigger _R2AsButton{[this] { return GetR2AsButton(); }};
+      frc2::Trigger _L3AsButton{[this] { return GetL3AsButton(); }};
+      frc2::Trigger _R3AsButton{[this] { return GetR3AsButton(); }};
+      frc2::Trigger _optionsButton{[this] { return GetOptionsButton(); }};
+      frc2::Trigger _shareButton{[this] { return GetShareButton(); }};
+
+      frc2::Trigger _upPOVButton{[this] { return GetPOV() == 0; }};
+      frc2::Trigger _rightPOVButton{[this] { return GetPOV() == 90; }};
+      frc2::Trigger _downPOVButton{[this] { return GetPOV() == 180; }};
+      frc2::Trigger _leftPOVButton{[this] { return GetPOV() == 270; }};
+      frc2::Trigger _upRightPOVButton{[this] { return GetPOV() == 45; }};
+      frc2::Trigger _downRightPOVButton{[this] { return GetPOV() == 135; }};
+      frc2::Trigger _downLeftPOVButton{[this] { return GetPOV() == 225; }};
+      frc2::Trigger _upLeftPOVButton{[this] { return GetPOV() == 315; }};
 };

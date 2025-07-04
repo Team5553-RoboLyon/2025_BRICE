@@ -46,18 +46,7 @@ namespace ControlPanelConstants {
         // FORWARD Joystick
         constexpr int REVERSED_DRIVE_BUTTON = 1;
         // ROTATION Joystick
-        constexpr int SLOW_DRIVE_BUTTON = 1; 
-        // XBOX_CONTROLLER
-        constexpr int CORAL_STATION = 1;
-        constexpr int L1 = 8;
-        constexpr int L2 = 2;
-        constexpr int L3 = 3;
-        constexpr int L4 = 4;
-        constexpr int LEFT_SIDE = 5;
-        constexpr int RIGHT_SIDE = 6;
-        constexpr int OPEN_LOOP_OUTTAKE = 7;
-        constexpr int OPEN_LOOP_ELEVATOR = 9;
-        constexpr int OPEN_LOOP_STRAFFER = 10;
+        constexpr int SLOW_DRIVE_BUTTON = 1;
     }
     namespace Settings{
         constexpr double SLOW_RATE = 2.0;

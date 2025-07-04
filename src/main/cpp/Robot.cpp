@@ -119,30 +119,29 @@ void Robot::TeleopInit() {
 }
 
 void Robot::TeleopPeriodic() {
-  // if(CanRumble)
-  // {
-  //   // TODO : add rumble
-  //   if(/*m_container.m_gripper.m_rumble ||*/ m_container.m_straffer.m_rumble)
-  //   {
-  //     CanRumble = false;
-  //     m_rumbleCounter = 11;
-  //   }
-  // }
-  // else
-  // {
-  //   m_rumbleCounter--;
-  //   if(m_rumbleCounter == 0)
-  //   {
-  //     CanRumble = true;
-  //     m_container.m_straffer.m_rumble = false;
-  //     // m_container.m_gripper.m_rumble = false;
-  //     m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.0);
-  //   }
-  //   else 
-  //   {
-  //     m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.5553);
-  //   }
-  // }
+  if(CanRumble)
+  {
+    if(m_container.m_gripper.CanRumble || m_container.m_straffer.CanRumble)
+    {
+      CanRumble = false;
+      m_rumbleCounter = 11;
+    }
+  }
+  else
+  {
+    m_rumbleCounter--;
+    if(m_rumbleCounter == 0)
+    {
+      CanRumble = true;
+      m_container.m_straffer.CanRumble = false;
+      m_container.m_gripper.CanRumble = false;
+      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.0);
+    }
+    else 
+    {
+      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.5553);
+    }
+  }
 }
 
 void Robot::TeleopExit() {}

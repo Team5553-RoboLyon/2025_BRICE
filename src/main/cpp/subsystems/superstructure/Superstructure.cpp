@@ -1,5 +1,6 @@
 #include "subsystems/superstructure/Superstruture.h"
 
+#include "frc/smartdashboard/SmartDashboard.h"
 Superstructure::Superstructure(StrafferSubsystem *pStrafferSubsystem,
                                  ElevatorSubsystem *pElevatorSubsystem,
                                  GripperSubsystem *pGripperSubsystem) 
@@ -47,10 +48,25 @@ void Superstructure::SetAssistMode(bool alignAssist, bool shootAssist)
     m_alignAssistEnabled = alignAssist;
     m_shootAssistEnabled = shootAssist;
 }
+void Superstructure::ToggleAssistMode()
+{
+    m_alignAssistEnabled = !m_alignAssistEnabled;
+    m_shootAssistEnabled = !m_shootAssistEnabled;
+}
+void Superstructure::ToggleAlignAssist()
+{
+    m_alignAssistEnabled = !m_alignAssistEnabled;
+}
+void Superstructure::ToggleShootAssist()
+{
+    m_shootAssistEnabled = !m_shootAssistEnabled;
+}
 
 void Superstructure::Periodic() 
 {
     m_currentWantedSuperState = m_wantedSuperState;
+    frc::SmartDashboard::PutNumber("WantedSuperState", (int)m_currentWantedSuperState);
+    frc::SmartDashboard::PutNumber("SystemSuperState", (int)m_systemSuperState);
 
     if(m_currentWantedSuperState == WantedSuperState::INITIALIZATION)
     {
@@ -274,10 +290,14 @@ void Superstructure::RunSuperStateMachine()
             if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_EMPTY)
             {
                 m_systemSuperState = SystemSuperState::AT_HOME_EMPTY;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             else if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
             {
                 m_systemSuperState = SystemSuperState::AT_HOME_COLLECTED;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
         }
         break;
@@ -298,6 +318,8 @@ void Superstructure::RunSuperStateMachine()
            m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_STATION)
         {
             m_systemSuperState = SystemSuperState::READY_TO_COLLECT;
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+            m_currentWantedSuperState = WantedSuperState::STAND_BY;  
         }
         break;
     case SystemSuperState::PREPARING_TO_SCORE:
@@ -308,6 +330,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_STATION)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L2:
@@ -316,6 +340,8 @@ void Superstructure::RunSuperStateMachine()
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L2)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L3:
@@ -324,6 +350,8 @@ void Superstructure::RunSuperStateMachine()
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L3)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L4:
@@ -332,6 +360,8 @@ void Superstructure::RunSuperStateMachine()
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L4)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L2_A:
@@ -339,6 +369,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L2_B:
@@ -346,6 +378,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L3_A:
@@ -353,6 +387,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L3_B:
@@ -360,6 +396,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
             break;
         case WantedSuperState::ALIGN_L4_A:
@@ -367,6 +405,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
             break;
         case WantedSuperState::ALIGN_L4_B: 
@@ -374,6 +414,8 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
             break;
         default:
@@ -386,6 +428,8 @@ void Superstructure::RunSuperStateMachine()
            m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_STATION)
         {
             m_systemSuperState = SystemSuperState::AT_HOME_EMPTY;
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+            m_currentWantedSuperState = WantedSuperState::STAND_BY;
         }
         break;
     case SystemSuperState::RETURNING_TO_HOME_COLLECTED:
@@ -393,18 +437,24 @@ void Superstructure::RunSuperStateMachine()
            m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_STATION)
         {
             m_systemSuperState = SystemSuperState::AT_HOME_COLLECTED;
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+            m_currentWantedSuperState = WantedSuperState::STAND_BY;
         }
         break;
     case SystemSuperState::COLLECTING:
         if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
         {
             m_systemSuperState = SystemSuperState::AT_STATION_COLLECTED;
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+            m_currentWantedSuperState = WantedSuperState::STAND_BY;
         }
         break;
     case SystemSuperState::SCORING:
         if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_EMPTY)
         {
             m_systemSuperState = SystemSuperState::RETURNING_TO_HOME_EMPTY;
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+            m_currentWantedSuperState = WantedSuperState::STAND_BY;
         }
         break;
     case SystemSuperState::TOGGLING:
@@ -413,14 +463,20 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_HOME)
             {
                 m_systemSuperState = SystemSuperState::AT_HOME_COLLECTED;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
             else if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_STATION)
             {
                 m_systemSuperState = SystemSuperState::AT_STATION_COLLECTED;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
             else
             {
                 m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_wantedSuperState = WantedSuperState::STAND_BY;
+                m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
         }
         break;

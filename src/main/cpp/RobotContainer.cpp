@@ -21,18 +21,31 @@ RobotContainer::RobotContainer() :
 }
 
 void RobotContainer::ConfigureBindings() {
-  //TODO add operator class 
-  //TODO add interaction with other command
   m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
   m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
 
-  m_scoreButton.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::SCORE); }).ToPtr());
-  m_intakeButton.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::COLLECT); }).ToPtr());
-  m_stageL2Button.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::ALIGN_L2); }).ToPtr());
-  m_stageL3Button.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::ALIGN_L3); }).ToPtr());
-  m_stageL4Button.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::ALIGN_L4); }).ToPtr());
-  m_stageL1Button.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::ALIGN_L1); }).ToPtr());
-  m_stageCoralStationButton.WhileTrue(frc2::InstantCommand([this] { m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::MOVE_TO_STATION); }).ToPtr());
+
+  //SUPERSTRUCTURE CONTROLLER BINDINGS
+  m_controllerCopilot.scoreButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::SCORE).ToPtr());
+  m_controllerCopilot.intakeButton.WhileTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::COLLECT).ToPtr());
+
+  m_controllerCopilot.stageCoralStationButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::MOVE_TO_STATION).ToPtr());
+  m_controllerCopilot.stageHomeButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::MOVE_TO_HOME).ToPtr());
+  
+  m_controllerCopilot.stageL1Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L1).ToPtr());
+  m_controllerCopilot.stageL2Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2).ToPtr());
+  m_controllerCopilot.stageL3Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3).ToPtr());
+  m_controllerCopilot.stageL4Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4).ToPtr());
+  m_controllerCopilot.stageL2AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2_A).ToPtr());
+  m_controllerCopilot.stageL2BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2_B).ToPtr());
+  m_controllerCopilot.stageL3AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3_A).ToPtr());
+  m_controllerCopilot.stageL3BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3_B).ToPtr());
+  m_controllerCopilot.stageL4AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4_A).ToPtr());
+  m_controllerCopilot.stageL4BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4_B).ToPtr()); 
+
+  m_controllerCopilot.toggleAlignAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAlignAssist(); }).ToPtr());
+  m_controllerCopilot.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleShootAssist(); }).ToPtr());
+  m_controllerCopilot.toggleAssistModeButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAssistMode(); }).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

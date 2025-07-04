@@ -37,8 +37,9 @@
 #include "subsystems/gripper/GripperIOSpark.h"
 
 #include "commands/Drive.h"
+#include "commands/SetWantedSuperStateCmd.h"
 
-#include "lib/RevGamepad.h"
+#include "subsystems/operator/Operator.h"
 
 class RobotContainer {
  public:
@@ -56,48 +57,11 @@ class RobotContainer {
 
     frc::Joystick m_joystickForward{ControlPanelConstants::Joystick::FORWARD_ID};
     frc::Joystick m_joystickRotation{ControlPanelConstants::Joystick::ROTATION_ID};
-    RevGamepad m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
+    Operator m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
+
  private:
     frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
     frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
 
-    frc2::Trigger m_stageCoralStationButton{[this] { // X and not Advance mode
-          return m_controllerCopilot.GetCrossButton() && 
-                !m_controllerCopilot.GetShareButton();
-    }};
-    frc2::Trigger m_stageL1Button{[this] { // Option and not Advance mode
-        return m_controllerCopilot.GetOptionsButton() && 
-                !m_controllerCopilot.GetShareButton();
-    }};
-    frc2::Trigger m_stageL2Button{[this] { // Cicle and not Advance mode
-        return m_controllerCopilot.GetCircleButton() && 
-                !m_controllerCopilot.GetShareButton();
-    }};
-    frc2::Trigger m_stageL3Button{[this] { // square and not Advance mode
-        return m_controllerCopilot.GetSquareButton() && 
-                !m_controllerCopilot.GetCrossButton();
-    }};
-    frc2::Trigger m_stageL4Button{[this] { // triangle and not Advance mode
-        return m_controllerCopilot.GetTriangleButton() && 
-                !m_controllerCopilot.GetCrossButton();
-    }};
-    frc2::Trigger m_LeftReefButton{[this] { // Left only
-        return m_controllerCopilot.GetL1Button() && 
-                !m_controllerCopilot.GetR1Button();
-    }};
-    frc2::Trigger m_RightReefButton{[this] { // Right only
-        return m_controllerCopilot.GetR1Button() && 
-                !m_controllerCopilot.GetL1Button();
-    }};
-    frc2::Trigger m_activateAlignAssist{[this] { // Align Assist
-        return m_controllerCopilot.GetL1Button() && 
-                m_controllerCopilot.GetR1Button();
-    }};
-    frc2::Trigger m_scoreButton{[this] { // Score
-        return m_controllerCopilot.GetR2AsButton();
-    }}; 
-    frc2::Trigger m_intakeButton{[this] { // Intake
-        return m_controllerCopilot.GetL2AsButton();
-    }};
   void ConfigureBindings();
 };

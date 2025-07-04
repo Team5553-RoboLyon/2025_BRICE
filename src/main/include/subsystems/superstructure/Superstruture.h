@@ -63,6 +63,9 @@ class Superstructure : public frc2::SubsystemBase {
 
 
   void SetAssistMode(bool alignAssist, bool shootAssist);
+  void ToggleAssistMode();
+  void ToggleAlignAssist();
+  void ToggleShootAssist();
   void SetWantedSuperState(const WantedSuperState wantedSuperState);
   SystemSuperState GetSystemSuperState();
 
