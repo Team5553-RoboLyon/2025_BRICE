@@ -38,7 +38,7 @@ void Superstructure::SetWantedSuperState(const WantedSuperState wantedState)
     }
 }
 
-Superstructure::SystemSuperState Superstructure::GetSystemSuperState()
+Superstructure::SystemSuperState Superstructure::GetSystemSuperState() const
 {
     return m_systemSuperState;
 }
@@ -62,6 +62,24 @@ void Superstructure::ToggleShootAssist()
     m_shootAssistEnabled = !m_shootAssistEnabled;
 }
 
+std::function<bool()> Superstructure::HasCoral() const
+{
+    return [this]() { 
+            GripperSubsystem::SystemState state = m_pGripperSubsystem->GetSystemState();
+        switch (state) {
+            case GripperSubsystem::SystemState::REST_LOADED:
+            case GripperSubsystem::SystemState::REST_SHIFTED:
+            case GripperSubsystem::SystemState::FEEDING_BACKWARD:
+            case GripperSubsystem::SystemState::FEEDING_FORWARD:
+            case GripperSubsystem::SystemState::FEEDING_FORWARD_SHY:
+            case GripperSubsystem::SystemState::PRESHOOT:
+            case GripperSubsystem::SystemState::SHIFTING_FORWARD:
+                return true;
+            default:
+                return false;
+        }
+    };
+}
 void Superstructure::Periodic() 
 {
     m_currentWantedSuperState = m_wantedSuperState;

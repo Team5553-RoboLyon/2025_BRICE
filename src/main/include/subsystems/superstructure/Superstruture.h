@@ -66,8 +66,9 @@ class Superstructure : public frc2::SubsystemBase {
   void ToggleAssistMode();
   void ToggleAlignAssist();
   void ToggleShootAssist();
+  std::function<bool()> HasCoral() const;
   void SetWantedSuperState(const WantedSuperState wantedSuperState);
-  SystemSuperState GetSystemSuperState();
+  SystemSuperState GetSystemSuperState() const;
 
   void Periodic() override;
   void RunSuperStateMachine();

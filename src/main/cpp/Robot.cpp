@@ -5,7 +5,6 @@
 #include "Robot.h"
 
 #include <frc2/command/CommandScheduler.h>
-#include <frc/smartdashboard/SmartDashboard.h> 
 #include <iostream>
 
 Robot::Robot() {
@@ -135,11 +134,11 @@ void Robot::TeleopPeriodic() {
       CanRumble = true;
       m_container.m_straffer.CanRumble = false;
       m_container.m_gripper.CanRumble = false;
-      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.0);
+      m_container.m_controllerCopilot.SetRumble(Operator::RumbleType::kBothRumble, 0.0);
     }
     else 
     {
-      m_container.m_controllerCopilot.SetRumble(frc::PS4Controller::RumbleType::kBothRumble, 0.5553);
+      m_container.m_controllerCopilot.SetRumble(Operator::RumbleType::kBothRumble, 0.5553);
     }
   }
 }

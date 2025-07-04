@@ -4,13 +4,9 @@
 
 #pragma once
 
-#include <optional>
-
 #include <frc/TimedRobot.h>
-#include <frc2/command/CommandPtr.h>
 #include <frc/PWM.h>
-#include <frc2/command/Commands.h>
-#include "subsystems/vision/Camera.h"
+#include <frc2/command/CommandPtr.h>
 
 #include "RobotContainer.h"
 
