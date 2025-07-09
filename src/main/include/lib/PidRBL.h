@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : PidRBL.h (v3.0)
+ * File        : PidRBL.h (v3.1)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Advanced PID controller class implementing 
  *               Proportional-Integral-Derivative control with optional 
@@ -53,6 +53,16 @@ public :
    * @param max The maximum allowable input value.
    */
   void SetInputLimits(const double min, const double max);
+  /**
+   * @brief Sets the input limits for the PID controller.
+   * 
+   * This function activates or deactivates the input limits for the PID controller
+   * based on the provided boolean parameter. When input limits are active, the 
+   * controller will constrain the input values within a predefined range.
+   * 
+   * @param isActive A boolean value indicating whether input limits should be active.
+   */
+  void SetInputLimits(const bool isActive);
   /**
    * @brief Sets whether the PID controller should handle inputs as continuous.
    * 
@@ -151,6 +161,7 @@ private:
   double m_inputMax;    // Max setpoint value allowed
 
   bool m_isContinuous{false}; // do the endpoints wrap around?
+  bool m_isInputLimitsActive{false}; // When set to true, the inputs will be constrained within specified limits.
 
   double m_previousError{0.0};  // the prior error for derivative calculation
   double m_integrative{0.0};     // Total accumulated error for integral term

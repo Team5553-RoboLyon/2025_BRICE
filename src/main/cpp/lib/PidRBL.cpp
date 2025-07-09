@@ -24,13 +24,14 @@ void PidRBL::SetGains(const double kp, const double ki, const double kd, const d
 
 void PidRBL::SetSetpoint(const double setpoint)
 {
-    if(setpoint > m_inputMax)
+    if(m_isInputLimitsActive) 
     {
-        m_setpoint = m_inputMax;
-    }
-    else if(setpoint < m_inputMin)
-    {
-        m_setpoint = m_inputMin;
+        if(setpoint > m_inputMax)
+            m_setpoint = m_inputMax;
+        else if(setpoint < m_inputMin)
+            m_setpoint = m_inputMin;
+        else 
+            m_setpoint = setpoint;
     }
     else 
     {
@@ -53,6 +54,11 @@ void PidRBL::SetInputLimits(const double min, const double max)
 {
     m_inputMin = min;
     m_inputMax = max;
+}
+
+void PidRBL::SetInputLimits(const bool isActive)
+{
+    m_isInputLimitsActive = isActive;
 }
 
 void PidRBL::SetContinuous(const bool isContinuous)
