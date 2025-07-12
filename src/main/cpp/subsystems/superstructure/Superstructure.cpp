@@ -31,11 +31,21 @@ void Superstructure::SetWantedSuperState(const WantedSuperState wantedState)
     {
         if(!m_isInitialized) // Skip initialization if the robot is already initialized
             m_wantedSuperState = WantedSuperState::INITIALIZATION; 
+        else if(m_systemSuperState != SystemSuperState::AT_HOME_EMPTY && 
+                m_systemSuperState != SystemSuperState::AT_HOME_COLLECTED)
+        {
+            m_wantedSuperState = WantedSuperState::MOVE_TO_HOME; // Already initialized, no need to reinitialize
+        }
+        else 
+        {
+            m_wantedSuperState = WantedSuperState::STAND_BY;
+        }
     }
     else // if(wantedState != WantedState::INITIALIZATION)
     {
         m_wantedSuperState = wantedState;
     }
+        frc::SmartDashboard::PutNumber("WantedSuperState", (int)m_wantedSuperState);
 }
 
 Superstructure::SystemSuperState Superstructure::GetSystemSuperState() const
@@ -83,7 +93,7 @@ std::function<bool()> Superstructure::HasCoral() const
 void Superstructure::Periodic() 
 {
     m_currentWantedSuperState = m_wantedSuperState;
-    frc::SmartDashboard::PutNumber("WantedSuperState", (int)m_currentWantedSuperState);
+    frc::SmartDashboard::PutNumber("CurrentWantedSuperState", (int)m_currentWantedSuperState);
     frc::SmartDashboard::PutNumber("SystemSuperState", (int)m_systemSuperState);
 
     if(m_currentWantedSuperState == WantedSuperState::INITIALIZATION)
@@ -178,6 +188,14 @@ void Superstructure::Periodic()
             m_pGripperSubsystem->SetWantedState(GripperSubsystem::WantedState::TOGGLE);
             break;
         case SystemSuperState::READY_TO_COLLECT :
+            if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
+                m_systemSuperState = SystemSuperState::AT_STATION_COLLECTED;
+        
+            m_pGripperSubsystem->SetWantedState(GripperSubsystem::WantedState::STAND_BY);
+            m_pElevatorSubsystem->SetWantedState(ElevatorSubsystem::WantedState::STAND_BY);
+            m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::STAND_BY);
+
+            break;
         case SystemSuperState::READY_TO_SCORE :
         case SystemSuperState::AT_HOME_EMPTY :
         case SystemSuperState::AT_HOME_COLLECTED :
@@ -208,7 +226,14 @@ void Superstructure::RunSuperStateMachine()
     case WantedSuperState::STAND_BY :
         if(m_systemSuperState == SystemSuperState::COLLECTING)
         {
-            m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+            if(m_pGripperSubsystem->GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
+            {
+                m_systemSuperState = SystemSuperState::AT_STATION_COLLECTED;
+            }
+            else
+            {
+                m_systemSuperState = SystemSuperState::READY_TO_COLLECT;
+            }
         }
         break;
     
@@ -253,6 +278,15 @@ void Superstructure::RunSuperStateMachine()
         }
         break;
     case WantedSuperState::ALIGN_L1 :
+        if(m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
+           m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
+           m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
+           m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
+        {
+            m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
+        }
+        break;
     case WantedSuperState::ALIGN_L2 :
     case WantedSuperState::ALIGN_L3 :
     case WantedSuperState::ALIGN_L4 :
@@ -262,7 +296,7 @@ void Superstructure::RunSuperStateMachine()
            m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
-            m_systemSuperState = SystemSuperState::PREPARING_TO_COLLECT;
+            m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
             if(m_alignAssistEnabled)
             {
                 m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::AUTO_ALIGN);
@@ -278,7 +312,7 @@ void Superstructure::RunSuperStateMachine()
            m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
-            m_systemSuperState = SystemSuperState::PREPARING_TO_COLLECT;
+            m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
             m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::ALIGN_LEFT_REEF);
         }
         break;  
@@ -291,7 +325,7 @@ void Superstructure::RunSuperStateMachine()
            m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
-            m_systemSuperState = SystemSuperState::PREPARING_TO_COLLECT;
+            m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
             m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::ALIGN_RIGHT_REEF);
         }
         break;

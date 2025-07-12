@@ -107,7 +107,7 @@ namespace outtakeConstants
         constexpr double REST = 0.0;
         constexpr double HIGH_SHOOTING = 0.4; //TUNEME
         constexpr double MIDDLE_SHOOTING = 0.43; //TUNEME
-        constexpr double LOW_SHOOTING = 0.1; //TUNEME
+        constexpr double LOW_SHOOTING = 0.08; //TUNEME
     }
     namespace VelocityPID
     {

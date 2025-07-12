@@ -66,9 +66,9 @@ namespace strafferConstants
     } 
     namespace Seeking
     {
-        constexpr int COUNTER = 5; //TUNEME
+        constexpr int COUNTER = 10; //TUNEME
         constexpr double LEFT_OFFSET = -0.17; //TUNEME
-        constexpr double RIGHT_OFFSET = 0.17; //TUNEME
+        constexpr double RIGHT_OFFSET = 0.19; //TUNEME
         constexpr double HIGHEST_AMBIGUITY_ACCEPTED = 0.2;
     }
 }

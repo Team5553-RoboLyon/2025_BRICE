@@ -36,13 +36,15 @@ public:
   /**
    * Constructor that takes a dashboard key (name of the tunable number).
    * The key will be used in NetworkTables under "/Tuning/" path.
+   * @note The TunableValue won't work until a defaultValue is set.
    * 
    * @param dashboardKey The name of the tunable value on the dashboard.
    */
   explicit TunableValueLogger(const std::string& dashboardKey);
 
   /**
-   * Constructor that also sets a default value right away.
+   * Constructor that takes a dashboard key (name of the tunable number).
+   * The key will be used in NetworkTables under "/Tuning/" path.
    * 
    * @param dashboardKey The name of the tunable value.
    * @param defaultValue The default number used if dashboard value is not set.
@@ -60,7 +62,9 @@ public:
 
   /**
    * Get the current value of the tunable number.
-   * If tuning is active, it returns the dashboard value; otherwise returns the default.
+   * It returns the dashboard value; otherwise returns the default.
+   * 
+   * @note It works only if the defaultValue is set.
    * 
    * @return The current tunable number value.
    */

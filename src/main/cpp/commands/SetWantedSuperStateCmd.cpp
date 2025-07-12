@@ -70,6 +70,7 @@ bool SetWantedSuperStateCmd::IsFinished() {
   case Superstructure::WantedSuperState::ALIGN_L3_B:
   case Superstructure::WantedSuperState::ALIGN_L4_A:
   case Superstructure::WantedSuperState::ALIGN_L4_B:
+    //FIXME : cancel previous cmd
     if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE)
       return true;
     break;

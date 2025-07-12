@@ -81,7 +81,7 @@ void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
 
     frc::SmartDashboard::PutBoolean("G.Up IRbreaker", inputs.IRBreakerUp);
     frc::SmartDashboard::PutBoolean("G.Up2 IRbreaker", inputs.IRBreakerUp2);
-    frc::SmartDashboard::PutNumber("G.Down IRbreaker", inputs.IRBreakerDown);
+    frc::SmartDashboard::PutBoolean("G.Down IRbreaker", inputs.IRBreakerDown);
 }
 
 void GripperIOSpark::SetFeederVoltage(const double voltage) 

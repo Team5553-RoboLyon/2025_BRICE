@@ -20,45 +20,46 @@ class Superstructure : public frc2::SubsystemBase {
                    double *pGripperAxis);
     enum class WantedSuperState 
     {
-      STAND_BY, // no wanted state scheduled. (It's all good man, it's all good !)
-      SCORE,
-      COLLECT,
-      TOGGLE,
-      MOVE_TO_STATION,
-      MOVE_TO_HOME,
-      ALIGN_L1,
-      ALIGN_L2,
-      ALIGN_L3,
-      ALIGN_L4,
-      ALIGN_L2_A,
-      ALIGN_L2_B,
-      ALIGN_L3_A,
-      ALIGN_L3_B,
-      ALIGN_L4_A,
-      ALIGN_L4_B,
-      INITIALIZATION
+      STAND_BY =0, // no wanted state scheduled. (It's all good man, it's all good !)
+      SCORE =1,
+      COLLECT =2,
+      TOGGLE =3, //to be tested
+      MOVE_TO_STATION =4,
+      MOVE_TO_HOME =5,
+      ALIGN_L1 =6, // TODO : try to score while straffing
+      ALIGN_L2 =7,
+      ALIGN_L3 =9,
+      ALIGN_L4 =10,
+      ALIGN_L2_A =11,
+      ALIGN_L2_B =12,
+      ALIGN_L3_A =13,
+      ALIGN_L3_B =14,
+      ALIGN_L4_A =15,
+      ALIGN_L4_B =16,
+      INITIALIZATION =17
       // DEFENSE,
       // GOODBYE_ALGAE,    //TODO
       // LE_CASSE_DE_BRICE //TODO
     };
+    //BUG? : prevent moving to stage after shooting while collecting 
 
     enum class SystemSuperState
     {
-      IDLE,
+      IDLE =0,
       //Steady states
-      AT_HOME_EMPTY,  // ELEAVATOR + STRAFFER = HOME & GRIPPER EMPTY
-      AT_HOME_COLLECTED, // ELEAVATOR + STRAFFER = HOME & GRIPPER LOADED
-      AT_STATION_COLLECTED, // ELEAVATOR + STRAFFER = CS & GRIPPER LOADED
-      READY_TO_COLLECT,  // ELEAVATOR + STRAFFER = CS & GRIPPER EMPTY
-      READY_TO_SCORE, // ELEAVATOR + STRAFFER = STAGE & GRIPPER LOADED
+      AT_HOME_EMPTY =1,  // ELEVATOR + STRAFFER = HOME & GRIPPER EMPTY
+      AT_HOME_COLLECTED =2, // ELEVATOR + STRAFFER = HOME & GRIPPER LOADED
+      AT_STATION_COLLECTED =3, // ELEVATOR + STRAFFER = CS & GRIPPER LOADED
+      READY_TO_COLLECT =4,  // ELEVATOR + STRAFFER = CS & GRIPPER EMPTY
+      READY_TO_SCORE =5, // ELEVATOR + STRAFFER = STAGE & GRIPPER LOADED
       //Transition state
-      PREPARING_TO_COLLECT, // ELEVAOR + STRAFFER = GO TO CS & GRIPPER EMPTY
-      PREPARING_TO_SCORE, // ELEVAOR + STRAFFER = GO TO STAGE & GRIPPER LOADED
-      RETURNING_TO_HOME_EMPTY, // ELEVAOR + STRAFFER = GO TO HOME & GRIPPER EMPTY
-      RETURNING_TO_HOME_COLLECTED,  // ELEVAOR + STRAFFER = GO TO HOME & GRIPPER LOADED
-      COLLECTING, // ELEVAOR + STRAFFER = CS & GRIPPER COLLECTING
-      SCORING, // ELEVAOR + STRAFFER = STAGE & GRIPPER SCORING
-      TOGGLING // ELEVAOR + STRAFFER = REST & GRIPPER TOGGLING
+      PREPARING_TO_COLLECT =6, // ELEVATOR + STRAFFER = GO TO CS & GRIPPER EMPTY
+      PREPARING_TO_SCORE =7, // ELEVATOR + STRAFFER = GO TO STAGE & GRIPPER LOADED
+      RETURNING_TO_HOME_EMPTY =8, // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER EMPTY
+      RETURNING_TO_HOME_COLLECTED =9,  // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER LOADED
+      COLLECTING =10, // ELEVATOR + STRAFFER = CS & GRIPPER COLLECTING
+      SCORING =11, // ELEVATOR + STRAFFER = STAGE & GRIPPER SCORING
+      TOGGLING =12 // ELEVATOR + STRAFFER = REST & GRIPPER TOGGLING
     };
 
 

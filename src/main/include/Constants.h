@@ -13,7 +13,15 @@
 // #define T_NOR 3 TODO
 #define SIMULATION 4
 
+#define ADAM 0
+#define VICTOR 1
+#define ALEXIS 2
+#define TEST 3
+
 #define ROBOT_MODEL (BRICE_TRAINING) // Change this to the desired robot model
+#define PILOT (ALEXIS)
+#define OPERATOR (ADAM)
+
 #if (ROBOT_MODEL != (BRICE_COMPETITION))
 #define DEBUG_MODE
 #endif
