@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : DebugUtils.h (v1.0)
+ * File        : DebugUtils.h (v1.1)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Debugging utilities for logging and assertions.
  * 
@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <frc/Errors.h>
+#include <Constants.h>
 
 // write #define DEBUG_MODE to enable debug mode in Robot.h ( NEVER IN COMPETITION MODE )
 #ifdef DEBUG_MODE

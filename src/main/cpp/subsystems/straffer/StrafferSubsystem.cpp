@@ -126,6 +126,7 @@ void StrafferSubsystem::Periodic()
                                                                         m_timestamp);
                 break;
             default:
+                DEBUG_ASSERT(false, "Straffer : impossible state");
                 break;
             }
             break;
@@ -226,6 +227,7 @@ void StrafferSubsystem::RunStateMachine()
     case WantedState::STAND_BY :
         break; //end of Others States
     default:
+        DEBUG_ASSERT(false, "Straffer : impossible state");
         break;
     }
 
@@ -296,41 +298,51 @@ void StrafferSubsystem::RunStateMachine()
         //TODO : rework camera's usage
         if(m_counter == 0)
         { 
-            if (m_lowestAmbiguity > strafferConstants::Seeking::HIGHEST_AMBIGUITY_ACCEPTED) {
-                m_bestAprilTagOffset = 0.0;
+            if (m_lowestAmbiguity > strafferConstants::Seeking::HIGHEST_AMBIGUITY_ACCEPTED) 
+            {
+                m_systemState = SystemState::STRAFFING_TO_STATION;
+                m_wantedState = WantedState::STAND_BY;
+                m_currentWantedState = WantedState::STAND_BY;
+                CanRumble = true;
             }
-            double baseTarget = strafferConstants::Setpoint::CENTER - m_bestAprilTagOffset;
-            double offsetSide = 0.0;
+            else 
+            {
+                double baseTarget = strafferConstants::Setpoint::CENTER - m_bestAprilTagOffset;
+                double offsetSide = 0.0;
 
-            switch (m_currentWantedState) {
-                case WantedState::ALIGN_LEFT_REEF:
-                    offsetSide = strafferConstants::Seeking::LEFT_OFFSET;
-                    m_systemState = SystemState::STRAFFING_TO_LEFT_REEF;
-                    break;
-                case WantedState::ALIGN_RIGHT_REEF:
-                    offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
-                    m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
-                    break;
-                case WantedState::AUTO_ALIGN:
-                    if(baseTarget >= strafferConstants::Setpoint::CENTER)
-                    {
-                        offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
-                        m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
-                    }
-                    else
-                    {
+                switch (m_currentWantedState) {
+                    case WantedState::ALIGN_LEFT_REEF:
                         offsetSide = strafferConstants::Seeking::LEFT_OFFSET;
                         m_systemState = SystemState::STRAFFING_TO_LEFT_REEF;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            m_selectedReefWidthPosition = baseTarget + offsetSide;
-            if (m_selectedReefWidthPosition < strafferConstants::Settings::LEFT_LIMIT ||
-                m_selectedReefWidthPosition > strafferConstants::Settings::RIGHT_LIMIT) {
-                m_systemState = SystemState::STRAFFING_TO_STATION;
-                CanRumble = true;
+                        break;
+                    case WantedState::ALIGN_RIGHT_REEF:
+                        offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
+                        m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
+                        break;
+                    case WantedState::AUTO_ALIGN:
+                        if(baseTarget >= strafferConstants::Setpoint::CENTER)
+                        {
+                            offsetSide = strafferConstants::Seeking::RIGHT_OFFSET;
+                            m_systemState = SystemState::STRAFFING_TO_RIGHT_REEF;
+                        }
+                        else
+                        {
+                            offsetSide = strafferConstants::Seeking::LEFT_OFFSET;
+                            m_systemState = SystemState::STRAFFING_TO_LEFT_REEF;
+                        }
+                        break;
+                    default:
+                        DEBUG_ASSERT(false, "Straffer : impossible state");
+                        break;
+                }
+                m_selectedReefWidthPosition = baseTarget + offsetSide;
+                if (m_selectedReefWidthPosition < strafferConstants::Settings::LEFT_LIMIT ||
+                    m_selectedReefWidthPosition > strafferConstants::Settings::RIGHT_LIMIT) {
+                    m_systemState = SystemState::STRAFFING_TO_STATION;
+                    m_wantedState = WantedState::STAND_BY;
+                    m_currentWantedState = WantedState::STAND_BY;
+                    CanRumble = true;
+                }
             }
         }
         else 
@@ -339,11 +351,12 @@ void StrafferSubsystem::RunStateMachine()
             m_pCamera->Update();
             if(m_pCamera->HasTargets())
             {  
-                double currentAmbiguity =  m_pCamera->GetAmbiguity(m_pCamera->GetBestTarget());
+                photon::PhotonTrackedTarget bestTarget = m_pCamera->GetBestTarget();
+                double currentAmbiguity =  m_pCamera->GetAmbiguity(bestTarget);
                 if (currentAmbiguity <= m_lowestAmbiguity)
                 {
                     m_lowestAmbiguity = currentAmbiguity;
-                    m_bestAprilTagOffset = m_pCamera->GetHorizontalDistance(m_pCamera->GetBestTarget());
+                    m_bestAprilTagOffset = m_pCamera->GetHorizontalDistance(bestTarget);
                 }
             }
         }
@@ -355,6 +368,7 @@ void StrafferSubsystem::RunStateMachine()
     case SystemState::AT_RIGHT_SIDE :
         break; //end of other states
     default:
+        DEBUG_ASSERT(false, "SuperStructure : impossible state");
         break;
     }
 }

@@ -23,7 +23,7 @@ class Superstructure : public frc2::SubsystemBase {
       STAND_BY =0, // no wanted state scheduled. (It's all good man, it's all good !)
       SCORE =1,
       COLLECT =2,
-      TOGGLE =3, //to be tested
+      TOGGLE =3, //TEST
       MOVE_TO_STATION =4,
       MOVE_TO_HOME =5,
       ALIGN_L1 =6, // TODO : try to score while straffing
@@ -51,22 +51,25 @@ class Superstructure : public frc2::SubsystemBase {
       AT_HOME_COLLECTED =2, // ELEVATOR + STRAFFER = HOME & GRIPPER LOADED
       AT_STATION_COLLECTED =3, // ELEVATOR + STRAFFER = CS & GRIPPER LOADED
       READY_TO_COLLECT =4,  // ELEVATOR + STRAFFER = CS & GRIPPER EMPTY
-      READY_TO_SCORE =5, // ELEVATOR + STRAFFER = STAGE & GRIPPER LOADED
+      READY_TO_SCORE_AT_L1 =5, // ELEVATOR + STRAFFER = STAGE L1 & GRIPPER LOADED
+      READY_TO_SCORE_AT_L2 =6, // ELEVATOR + STRAFFER = STAGE L2 & GRIPPER LOADED
+      READY_TO_SCORE_AT_L3 =7, // ELEVATOR + STRAFFER = STAGE L3 & GRIPPER LOADED
+      READY_TO_SCORE_AT_L4 =8, // ELEVATOR + STRAFFER = STAGE L4 & GRIPPER LOADED
       //Transition state
-      PREPARING_TO_COLLECT =6, // ELEVATOR + STRAFFER = GO TO CS & GRIPPER EMPTY
-      PREPARING_TO_SCORE =7, // ELEVATOR + STRAFFER = GO TO STAGE & GRIPPER LOADED
-      RETURNING_TO_HOME_EMPTY =8, // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER EMPTY
-      RETURNING_TO_HOME_COLLECTED =9,  // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER LOADED
-      COLLECTING =10, // ELEVATOR + STRAFFER = CS & GRIPPER COLLECTING
-      SCORING =11, // ELEVATOR + STRAFFER = STAGE & GRIPPER SCORING
-      TOGGLING =12 // ELEVATOR + STRAFFER = REST & GRIPPER TOGGLING
+      PREPARING_TO_COLLECT =9, // ELEVATOR + STRAFFER = GO TO CS & GRIPPER EMPTY
+      PREPARING_TO_SCORE =10, // ELEVATOR + STRAFFER = GO TO STAGE & GRIPPER LOADED
+      RETURNING_TO_HOME_EMPTY =11, // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER EMPTY
+      RETURNING_TO_HOME_COLLECTED =12,  // ELEVATOR + STRAFFER = GO TO HOME & GRIPPER LOADED
+      COLLECTING =13, // ELEVATOR + STRAFFER = CS & GRIPPER COLLECTING
+      SCORING =14, // ELEVATOR + STRAFFER = STAGE & GRIPPER SCORING
+      TOGGLING =15 // ELEVATOR + STRAFFER = REST & GRIPPER TOGGLING
     };
 
 
-  void SetAssistMode(bool alignAssist, bool shootAssist);
-  void ToggleAssistMode();
-  void ToggleAlignAssist();
-  void ToggleShootAssist();
+  void SetAssistMode(bool alignAssist, bool shootAssist); //TEST
+  void ToggleAssistMode(); //TEST
+  void ToggleAlignAssist();//TEST
+  void ToggleShootAssist();//TEST
   std::function<bool()> HasCoral() const;
   void SetWantedSuperState(const WantedSuperState wantedSuperState);
   SystemSuperState GetSystemSuperState() const;

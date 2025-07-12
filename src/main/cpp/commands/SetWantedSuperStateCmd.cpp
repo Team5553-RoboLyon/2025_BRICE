@@ -45,7 +45,10 @@ bool SetWantedSuperStateCmd::IsFinished() {
   case Superstructure::WantedSuperState::TOGGLE:
     if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::AT_HOME_COLLECTED ||
        m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::AT_STATION_COLLECTED ||
-       m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE)
+       m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L1 ||
+       m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L2 ||
+       m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L3 ||
+       m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L4)
       return true;
     break;
   
@@ -61,21 +64,30 @@ bool SetWantedSuperStateCmd::IsFinished() {
     break;
 
   case Superstructure::WantedSuperState::ALIGN_L1:
+    if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L1)
+      return true;
+    break;
   case Superstructure::WantedSuperState::ALIGN_L2:
-  case Superstructure::WantedSuperState::ALIGN_L3:
-  case Superstructure::WantedSuperState::ALIGN_L4:
   case Superstructure::WantedSuperState::ALIGN_L2_A:
   case Superstructure::WantedSuperState::ALIGN_L2_B:
+    if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L2)
+      return true;
+    break;
+  case Superstructure::WantedSuperState::ALIGN_L3:
   case Superstructure::WantedSuperState::ALIGN_L3_A:
   case Superstructure::WantedSuperState::ALIGN_L3_B:
+    if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L3)
+      return true;
+    break;
+  case Superstructure::WantedSuperState::ALIGN_L4:
   case Superstructure::WantedSuperState::ALIGN_L4_A:
   case Superstructure::WantedSuperState::ALIGN_L4_B:
-    //FIXME : cancel previous cmd
-    if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE)
+    if(m_pSuperstructure->GetSystemSuperState() == Superstructure::SystemSuperState::READY_TO_SCORE_AT_L4)
       return true;
     break;
 
   default:
+    DEBUG_ASSERT(false, "Cmd : impossible state");
     break;
   }
 

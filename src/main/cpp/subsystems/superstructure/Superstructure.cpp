@@ -146,6 +146,7 @@ void Superstructure::Periodic()
                 m_pElevatorSubsystem->SetWantedState(ElevatorSubsystem::WantedState::L4);
                 break;
             default:
+                DEBUG_ASSERT(false, "SuperStructure : impossible state");
                 break;
             }
             m_pGripperSubsystem->SetWantedState(GripperSubsystem::WantedState::STAND_BY);
@@ -196,7 +197,10 @@ void Superstructure::Periodic()
             m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::STAND_BY);
 
             break;
-        case SystemSuperState::READY_TO_SCORE :
+        case SystemSuperState::READY_TO_SCORE_AT_L1 :
+        case SystemSuperState::READY_TO_SCORE_AT_L2 :
+        case SystemSuperState::READY_TO_SCORE_AT_L3 :
+        case SystemSuperState::READY_TO_SCORE_AT_L4 :
         case SystemSuperState::AT_HOME_EMPTY :
         case SystemSuperState::AT_HOME_COLLECTED :
         case SystemSuperState::AT_STATION_COLLECTED :
@@ -213,6 +217,7 @@ void Superstructure::Periodic()
                 m_pGripperSubsystem->SetWantedState(GripperSubsystem::WantedState::STAND_BY);
             }
         default:
+            DEBUG_ASSERT(false, "SuperStructure : impossible state");
             break;
         }
     }
@@ -238,7 +243,10 @@ void Superstructure::RunSuperStateMachine()
         break;
     
     case WantedSuperState::SCORE :
-        if(m_systemSuperState == SystemSuperState::READY_TO_SCORE)
+        if(m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4)
         {
             m_systemSuperState = SystemSuperState::SCORING;
         }
@@ -251,8 +259,11 @@ void Superstructure::RunSuperStateMachine()
         break;
     case WantedSuperState::TOGGLE :
         if(m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
-           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
-            m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED)
+            m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+            m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4)
         {
             m_systemSuperState = SystemSuperState::TOGGLING;
         }
@@ -270,7 +281,10 @@ void Superstructure::RunSuperStateMachine()
         {
             m_systemSuperState = SystemSuperState::RETURNING_TO_HOME_EMPTY;
         }
-        else if(m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
+        else if(m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+                m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+                m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+                m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4 ||
                 m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
                 m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED)
         {
@@ -281,7 +295,9 @@ void Superstructure::RunSuperStateMachine()
         if(m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
            m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
            m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
-           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4 ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
             m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
@@ -293,7 +309,10 @@ void Superstructure::RunSuperStateMachine()
         if(m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
            m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
            m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
-           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4 ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
             m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
@@ -309,7 +328,10 @@ void Superstructure::RunSuperStateMachine()
         if(m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
            m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
            m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
-           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4 ||
            m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
         {
             m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
@@ -322,14 +344,18 @@ void Superstructure::RunSuperStateMachine()
         if(m_systemSuperState == SystemSuperState::AT_HOME_COLLECTED ||
            m_systemSuperState == SystemSuperState::AT_STATION_COLLECTED ||
            m_systemSuperState == SystemSuperState::PREPARING_TO_SCORE ||
-           m_systemSuperState == SystemSuperState::READY_TO_SCORE ||
-           m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED) 
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L1 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L2 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L3 ||
+           m_systemSuperState == SystemSuperState::READY_TO_SCORE_AT_L4 ||
+           m_systemSuperState == SystemSuperState::RETURNING_TO_HOME_COLLECTED)  
         {
             m_systemSuperState = SystemSuperState::PREPARING_TO_SCORE;
             m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::ALIGN_RIGHT_REEF);
         }
         break;
     default:
+        DEBUG_ASSERT(false, "SuperStructure : impossible state");
         break;
     }
 
@@ -354,7 +380,10 @@ void Superstructure::RunSuperStateMachine()
         }
         break;
     
-    case SystemSuperState::READY_TO_SCORE:
+    case SystemSuperState::READY_TO_SCORE_AT_L1:
+    case SystemSuperState::READY_TO_SCORE_AT_L2:
+    case SystemSuperState::READY_TO_SCORE_AT_L3:
+    case SystemSuperState::READY_TO_SCORE_AT_L4:
         if(m_shootAssistEnabled)
         {
             m_systemSuperState = SystemSuperState::SCORING;
@@ -381,7 +410,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L1 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_STATION)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L1;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -391,7 +420,7 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF) 
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L2)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L2;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -401,7 +430,7 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF) 
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L3)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L3;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -411,7 +440,7 @@ void Superstructure::RunSuperStateMachine()
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF) 
                && m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L4)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L4;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -420,7 +449,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L2 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L2;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -429,7 +458,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L2 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L2;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -438,7 +467,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L3 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L3;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -447,7 +476,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L3 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L3;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;  
             }
@@ -456,7 +485,7 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L4 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_LEFT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L4;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
@@ -465,12 +494,13 @@ void Superstructure::RunSuperStateMachine()
             if(m_pElevatorSubsystem->GetSystemState() == ElevatorSubsystem::SystemState::AT_L4 &&
                m_pStrafferSubsystem->GetSystemState() == StrafferSubsystem::SystemState::AT_RIGHT_REEF)
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L4;
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
             break;
         default:
+            DEBUG_ASSERT(false, "SuperStructure : impossible state");
             break;
         }
         break;
@@ -526,13 +556,31 @@ void Superstructure::RunSuperStateMachine()
             }
             else
             {
-                m_systemSuperState = SystemSuperState::READY_TO_SCORE;
+                switch (m_pElevatorSubsystem->GetSystemState())
+                {
+                case ElevatorSubsystem::SystemState::AT_L1 :
+                    m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L1;
+                    break;
+                case ElevatorSubsystem::SystemState::AT_L2 :
+                    m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L2;
+                    break;
+                case ElevatorSubsystem::SystemState::AT_L3 :
+                    m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L3;
+                    break;
+                case ElevatorSubsystem::SystemState::AT_L4 :
+                    m_systemSuperState = SystemSuperState::READY_TO_SCORE_AT_L4;
+                    break;
+                default:
+                    DEBUG_ASSERT(false, "SuperStructure : impossible state");
+                    break;
+                }
                 m_wantedSuperState = WantedSuperState::STAND_BY;
                 m_currentWantedSuperState = WantedSuperState::STAND_BY;
             }
         }
         break;
     default:
+        DEBUG_ASSERT(false, "SuperStructure : impossible state");
         break;
     }
 }

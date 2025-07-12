@@ -173,6 +173,7 @@ void GripperSubsystem::Periodic()
             break; //end of "resting" states
 
         default:
+            DEBUG_ASSERT(false, "Gripper : impossible state");
             break;
         }
 
@@ -252,6 +253,7 @@ void GripperSubsystem::Periodic()
             break; //end of "resting" states
 
         default:
+            DEBUG_ASSERT(false, "Gripper : impossible state");
             break;
         }
 
@@ -324,6 +326,7 @@ void GripperSubsystem::RunStateMachine()
         break; //end of WantedState::REJECT_FORWARD
 
     default:
+        DEBUG_ASSERT(false, "Gripper : impossible state");
         break;
     } // switch(m_currentWantedState)
 
@@ -455,6 +458,7 @@ void GripperSubsystem::RunStateMachine()
         break;
 
     default:
+        DEBUG_ASSERT(false, "Gripper : impossible state");
         break;
     }
 }

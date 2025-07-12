@@ -153,6 +153,7 @@ void ElevatorSubsystem::Periodic()
                 m_output = elevatorConstants::Speed::REST;
                 break;      
             default:
+                DEBUG_ASSERT(false, "Elevator : impossible state");
                 break;
             }
             break; //end of ControlMode::POSITION_PID
@@ -165,6 +166,7 @@ void ElevatorSubsystem::Periodic()
             //TODO later
             break; //end of Motion Profiling
         default:
+            DEBUG_ASSERT(false, "Elevator : impossible state");
             break;
         }
     }
@@ -238,6 +240,7 @@ void ElevatorSubsystem::RunStateMachine()
     case WantedState::STAND_BY :
         break; //end of Others States
     default:
+        DEBUG_ASSERT(false, "Elevator : impossible state");
         break;
     }
 
@@ -312,6 +315,7 @@ void ElevatorSubsystem::RunStateMachine()
     case SystemState::AT_HOME :
         break; //end of other states
     default:
+        DEBUG_ASSERT(false, "Elevator : impossible state");
         break;
     }
 }
