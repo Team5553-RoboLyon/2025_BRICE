@@ -25,6 +25,24 @@ ControlMode StrafferSubsystem::GetControlMode()
 {
     return m_controlMode;
 }
+void StrafferSubsystem::ToggleControlMode()
+{
+    m_wantedState = WantedState::STAND_BY;
+    m_systemState = SystemState::IDLE;
+    m_output = 0.0;
+    switch (m_controlMode)
+    {
+    case strafferConstants::DefaultMode :
+        m_controlMode = ControlMode::OPEN_LOOP;
+        break;
+    case ControlMode::OPEN_LOOP : 
+        m_controlMode = strafferConstants::DefaultMode;
+        break;
+    default:
+        DEBUG_ASSERT(false,"Straffer : Toggle impossible with an unrecognized mode.");
+        break;
+    }
+}
 void StrafferSubsystem::SetWantedState(const WantedState wantedState)
 {
     if(wantedState == WantedState::INITIALIZATION)

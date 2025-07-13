@@ -53,6 +53,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     SystemState GetSystemState();
     void SetControlMode(const ControlMode mode);
     ControlMode GetControlMode();
+    void ToggleControlMode();
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME

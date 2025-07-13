@@ -44,10 +44,11 @@ class StrafferSubsystem : public frc2::SubsystemBase {
     SystemState GetSystemState();
     void SetControlMode(const ControlMode mode);
     ControlMode GetControlMode();
+    void ToggleControlMode();
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME
-    void SetOutputInOpenLoop(double dutyCycle);
+    void SetOutputInOpenLoop(double dutyCycle); //TODO : rework all Output in Open Loop and Control Mode
     void Periodic() override;
 
     bool CanRumble = false; //COMMENTME

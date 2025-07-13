@@ -1,5 +1,6 @@
 #pragma once
 #include <frc2/command/SubsystemBase.h>
+#include <functional>
 
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "subsystems/elevator/ElevatorSubsystem.h"
@@ -15,9 +16,10 @@ class Superstructure : public frc2::SubsystemBase {
     Superstructure(StrafferSubsystem *pStrafferSubsystem,
                    ElevatorSubsystem *pElevatorSubsystem,
                    GripperSubsystem *pGripperSubsystem, 
-                   double *pElevatorAxis,
-                   double *pStrafferAxis,
-                   double *pGripperAxis);
+                   std::function<double()> fxElevatorAxis,
+                   std::function<double()> fxStrafferAxis,
+                   std::function<double()> fxGripperAxis);
+
     enum class WantedSuperState 
     {
       STAND_BY =0, // no wanted state scheduled. (It's all good man, it's all good !)
@@ -65,31 +67,48 @@ class Superstructure : public frc2::SubsystemBase {
       TOGGLING =15 // ELEVATOR + STRAFFER = REST & GRIPPER TOGGLING
     };
 
+    enum class SuperControlMode 
+    {
+      SuperStateMachine,
+      Manual
+    };
 
-  void SetAssistMode(bool alignAssist, bool shootAssist); //TEST
+
+  void SetAssistMode(const bool alignAssist, const bool shootAssist); //TEST
   void ToggleAssistMode(); //TEST
   void ToggleAlignAssist();//TEST
   void ToggleShootAssist();//TEST
+
+  void ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
+                          const std::function<double()> fxStrafferAxis,
+                          const std::function<double()> fxGripperAxis);
+  void ToggleGripperControlMode();
+  void ToggleElevatorControlMode();
+  void ToggleStrafferControlMode();
+  
   std::function<bool()> HasCoral() const;
   void SetWantedSuperState(const WantedSuperState wantedSuperState);
   SystemSuperState GetSystemSuperState() const;
 
   void Periodic() override;
-  void RunSuperStateMachine();
 
   private :
-    bool m_alignAssistEnabled = false;
-    bool m_shootAssistEnabled = false;
+    void UpdateSuperControlMode();
+    void RunSuperStateMachine();
+    bool m_alignAssistEnabled{false};
+    bool m_shootAssistEnabled{false};
 
-    WantedSuperState m_wantedSuperState = WantedSuperState::STAND_BY;
-    WantedSuperState m_currentWantedSuperState = m_wantedSuperState; //Local discrete snapshot of m_wantedSuperState for each cycle
-    SystemSuperState m_systemSuperState = SystemSuperState::IDLE;
+    WantedSuperState m_wantedSuperState{WantedSuperState::STAND_BY};
+    WantedSuperState m_currentWantedSuperState{m_wantedSuperState}; //Local discrete snapshot of m_wantedSuperState for each cycle
+    SystemSuperState m_systemSuperState{SystemSuperState::IDLE};
+    SuperControlMode m_SuperControlMode;
 
-    double *m_pElevatorAxis;
-    double *m_pStrafferAxis;
-    double *m_pGripperAxis;
+    std::function<double()> m_fxElevatorAxis;
+    std::function<double()> m_fxStrafferAxis;
+    std::function<double()> m_fxGripperAxis;
+    bool m_fxAxisAreActive{false};
 
-    bool m_isInitialized = false;
+    bool m_isInitialized{false};
 
     StrafferSubsystem *m_pStrafferSubsystem;
     ElevatorSubsystem *m_pElevatorSubsystem;

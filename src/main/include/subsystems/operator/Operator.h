@@ -37,9 +37,9 @@ public:
     // frc2::Trigger goodbyeAlgaeButton{_upPOVButton || _upRightPOVButton || _upLeftPOVButton};
     // frc2::Trigger leCasseDeBriceButton{(_downPOVButton || _downRightPOVButton || _downLeftPOVButton) && m_advanceMode}; 
 
-    // frc2::Trigger toggleGripperManualControlButton{_optionsButton && m_advanceMode};
-    // frc2::Trigger toggleElevatorManualControlButton{_L3AsButton};
-    // frc2::Trigger toggleStrafferManualControlButton{_R3AsButton};
+    frc2::Trigger toggleGripperManualControlButton{_optionsButton && m_advanceMode};
+    frc2::Trigger toggleElevatorManualControlButton{_L3AsButton};
+    frc2::Trigger toggleStrafferManualControlButton{_R3AsButton};
 
     frc2::Trigger scoreButton{_R2AsButton && (!_L2AsButton) && (!m_advanceMode)};
     frc2::Trigger intakeButton{_L2AsButton && (!_R2AsButton) && (!m_advanceMode)};

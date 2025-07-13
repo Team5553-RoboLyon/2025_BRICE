@@ -19,6 +19,10 @@ RobotContainer::RobotContainer()
                                       [this]
     { return m_joystickRotation.GetZ(); },
     &m_drivetrain, &m_elevator));
+
+    m_superstructure.ConfigureManualAxis([this] { return -m_controllerCopilot.GetLeftY(); },
+                                         [this] { return m_controllerCopilot.GetRightX(); },
+                                         [this] { return (-m_controllerCopilot.GetL2Axis() + m_controllerCopilot.GetR2Axis()); });
 }
 
 void RobotContainer::ConfigureBindings() {
@@ -63,6 +67,10 @@ void RobotContainer::ConfigureBindings() {
   m_controllerCopilot.toggleAlignAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAlignAssist(); }).ToPtr());
   m_controllerCopilot.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleShootAssist(); }).ToPtr());
   m_controllerCopilot.toggleAssistModeButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAssistMode(); }).ToPtr());
+
+  m_controllerCopilot.toggleElevatorManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleElevatorControlMode(); }).ToPtr());
+  m_controllerCopilot.toggleStrafferManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleStrafferControlMode(); }).ToPtr());
+  m_controllerCopilot.toggleGripperManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleGripperControlMode(); }).ToPtr());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

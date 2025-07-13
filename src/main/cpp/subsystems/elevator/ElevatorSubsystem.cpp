@@ -46,6 +46,25 @@ ControlMode ElevatorSubsystem::GetControlMode()
     return m_controlMode;
 }
 
+void ElevatorSubsystem::ToggleControlMode()
+{
+    m_wantedState = WantedState::STAND_BY;
+    m_systemState = SystemState::IDLE;
+    m_output = 0.0;
+    switch (m_controlMode)
+    {
+    case elevatorConstants::DefaultMode :
+        m_controlMode = ControlMode::OPEN_LOOP;
+        break;
+    case ControlMode::OPEN_LOOP : 
+        m_controlMode = elevatorConstants::DefaultMode;
+        break;
+    default:
+        DEBUG_ASSERT(false,"Elevator : Toggle impossible with an unrecognized mode.");
+        break;
+    }
+}
+
 bool ElevatorSubsystem::IsResting()
 {  
     DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode), "Straffer : IsResting() is used while Open Loop");
@@ -247,7 +266,6 @@ void ElevatorSubsystem::RunStateMachine()
     switch (m_systemState) // Change System State
     {
     case SystemState::IDLE:
-            //TODO : add verif steady pos
             m_systemState = SystemState::MOVING_TO_HOME;
         break; //end of SystemState::IDLE
     case SystemState::MOVING_TO_L1:
