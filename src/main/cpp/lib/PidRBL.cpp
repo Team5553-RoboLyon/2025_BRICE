@@ -200,9 +200,9 @@ void PidRBL::Reset()
     m_integrative = 0.0;
 }
 
-void PidRBL::Reset(const double setpoint)
+void PidRBL::Reset(const double timestamp)
 {
-    SetSetpoint(setpoint);
+    m_lastTimestamp = timestamp;
     m_previousError = 0.0;
     m_currentError = 0.0;
     m_output = 0.0;

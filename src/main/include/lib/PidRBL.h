@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : PidRBL.h (v3.1)
+ * File        : PidRBL.h (v3.2)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Advanced PID controller class implementing 
  *               Proportional-Integral-Derivative control with optional 
@@ -126,15 +126,14 @@ public :
    */
   void Reset();
   /**
-   * @brief Resets the PID controller state and sets a new setpoint.
+   * @brief Resets the PID controller state and the timestamp.
    * 
    * This function initializes the PID controller by resetting the previous error,
-   * current error, output, and integrative term to zero. It also sets the desired
-   * setpoint for the controller.
+   * current error, output, and integrative term to zero. It also reset the timestamp.
    * 
-   * @param setpoint The target value for the PID controller to achieve.
+   * @param timestamp The current time in seconds, used for real-time calculations
    */
-  void Reset(const double setpoint);
+  void Reset(const double timestamp);
   /**
    * @brief Resets the integrative term accumulator to zero.
    * 

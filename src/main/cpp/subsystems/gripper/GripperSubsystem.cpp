@@ -26,11 +26,11 @@ void GripperSubsystem::ToggleControlMode()
     m_outtakeOutput = 0.0;
     switch (m_controlMode)
     {
-    case gripperConstants::DefaultMode :
-        m_controlMode = ControlMode::OPEN_LOOP;
+    case gripperConstants::MainControlMode :
+        m_controlMode = gripperConstants::EmergencyControlMode;
         break;
-    case ControlMode::OPEN_LOOP : 
-        m_controlMode = gripperConstants::DefaultMode;
+    case gripperConstants::EmergencyControlMode : 
+        m_controlMode = gripperConstants::MainControlMode;
         break;
     default:
         DEBUG_ASSERT(false,"Gripper : Toggle impossible with an unrecognized mode.");
@@ -45,30 +45,30 @@ GripperSubsystem::SystemState GripperSubsystem::GetSystemState()
 {
     return m_systemState;
 }
-void GripperSubsystem::SetOutputInOpenLoop(double dutyCycle)
+void GripperSubsystem::SetManualAxis(const double value)
 {
-    if(m_controlMode == ControlMode::OPEN_LOOP)
+    if(BYPASS_STATE_MACHINE(m_controlMode))
     {
-        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            , "Gripper Duty Cycle out of range");
-        m_feederOutput = (std::sin(dutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
-        m_outtakeOutput = (std::sin(dutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
+            , "Gripper Manual value out of range");
+        m_feederOutput = value;
+        m_outtakeOutput = value;
     }
     else 
     {
         DEBUG_ASSERT(false,"Gripper : Open Loop Output set while Closed Loop is used");
     }
 }
-void GripperSubsystem::SetOutputInOpenLoop(double feederDutyCycle, double outtakeDutyCycle)
+void GripperSubsystem::SetManualAxis(const double feederValue, const double outtakeValue)
 {
-    if(m_controlMode == ControlMode::OPEN_LOOP)
+    if(BYPASS_STATE_MACHINE(m_controlMode))
     {
-        DEBUG_ASSERT((feederDutyCycle <= 1.0) && (feederDutyCycle >= -1.0) 
+        DEBUG_ASSERT((feederValue <= 1.0) && (feederValue >= -1.0) 
             , "Feeder Duty Cycle out of range");
-        DEBUG_ASSERT((outtakeDutyCycle <= 1.0) && (outtakeDutyCycle >= -1.0) 
+        DEBUG_ASSERT((outtakeValue <= 1.0) && (outtakeValue >= -1.0) 
             , "Outtake Duty Cycle out of range");
-        m_feederOutput = (std::sin(feederDutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
-        m_outtakeOutput = (std::sin(outtakeDutyCycle * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        m_outtakeOutput = outtakeValue;
+        m_feederOutput = feederValue;
     }
     else 
     {
@@ -129,10 +129,10 @@ void GripperSubsystem::Periodic()
             m_outtakeOutput = outtakeConstants::DutyCycle::SHY;
             break; //end of SystemState::FEEDING_FORWARD_SHY
 
-        case SystemState::PRESHOOT :
+        case SystemState::PRESCORE :
             m_feederOutput = feederConstants::DutyCycle::REST;
-            m_outtakeOutput = outtakeConstants::DutyCycle::PRESHOOT;
-            break; //end of SystemState::PRESHOOT
+            m_outtakeOutput = outtakeConstants::DutyCycle::PRESCORE;
+            break; //end of SystemState::PRESCORE
 
         case SystemState::REJECTING_BACKWARD :
             m_feederOutput = feederConstants::DutyCycle::REJECTING_BACKWARD;
@@ -149,20 +149,20 @@ void GripperSubsystem::Periodic()
             m_outtakeOutput = outtakeConstants::DutyCycle::FEEDING_FORWARD;
             break; //end of SystemState::SHIFTING_FORWARD
 
-        case SystemState::HIGH_SHOOTING :
+        case SystemState::HIGH_SCORING :
             m_feederOutput = feederConstants::DutyCycle::REST;
-            m_outtakeOutput = outtakeConstants::DutyCycle::HIGH_SHOOTING;
-            break; //end of SystemState::HIGH_SHOOTING
+            m_outtakeOutput = outtakeConstants::DutyCycle::HIGH_SCORING;
+            break; //end of SystemState::HIGH_SCORING
         
-        case SystemState::MIDDLE_SHOOTING :
+        case SystemState::MIDDLE_SCORING :
             m_feederOutput = feederConstants::DutyCycle::REST;
-            m_outtakeOutput = outtakeConstants::DutyCycle::MIDDLE_SHOOTING;
-            break; //end of SystemState::MIDDLE_SHOOTING
+            m_outtakeOutput = outtakeConstants::DutyCycle::MIDDLE_SCORING;
+            break; //end of SystemState::MIDDLE_SCORING
         
-        case SystemState::LOW_SHOOTING :
+        case SystemState::LOW_SCORING :
             m_feederOutput = feederConstants::DutyCycle::REST;
-            m_outtakeOutput = outtakeConstants::DutyCycle::LOW_SHOOTING;
-            break; //end of SystemState::LOW_SHOOTING
+            m_outtakeOutput = outtakeConstants::DutyCycle::LOW_SCORING;
+            break; //end of SystemState::LOW_SCORING
             
         case SystemState::REST_EMPTY :
         case SystemState::REST_LOADED : 
@@ -181,12 +181,7 @@ void GripperSubsystem::Periodic()
         m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
         break; //end of ControlMode::DUTY_CYCLE
 
-    case ControlMode::OPEN_LOOP :
-        m_pGripperIO->SetFeederDutyCycle(m_feederOutput);
-        m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
-        break; //end of ControlMode::OPEN_LOOP
-
-    case ControlMode::VELOCITY :
+    case ControlMode::VELOCITY_PID :
         switch (m_systemState)
         {
         case SystemState::COLLECTING_EMPTY :
@@ -209,10 +204,10 @@ void GripperSubsystem::Periodic()
             m_outtakeOutput = outtakeConstants::RPM::SHY;
             break; //end of SystemState::FEEDING_FORWARD_SHY
 
-        case SystemState::PRESHOOT :
+        case SystemState::PRESCORE :
             m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::PRESHOOT;
-            break; //end of SystemState::PRESHOOT
+            m_outtakeOutput = outtakeConstants::RPM::PRESCORE;
+            break; //end of SystemState::PRESCORE
 
         case SystemState::REJECTING_BACKWARD :
             m_feederOutput = feederConstants::RPM::REJECTING_BACKWARD;
@@ -229,20 +224,20 @@ void GripperSubsystem::Periodic()
             m_outtakeOutput = outtakeConstants::RPM::SHIFTING;
             break; //end of SystemState::SHIFTING_FORWARD
 
-        case SystemState::HIGH_SHOOTING :
+        case SystemState::HIGH_SCORING :
             m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::HIGH_SHOOTING;
-            break; //end of SystemState::HIGH_SHOOTING
+            m_outtakeOutput = outtakeConstants::RPM::HIGH_SCORING;
+            break; //end of SystemState::HIGH_SCORING
 
-        case SystemState::MIDDLE_SHOOTING :
+        case SystemState::MIDDLE_SCORING :
             m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::MIDDLE_SHOOTING;
-            break; //end of SystemState::MIDDLE_SHOOTING
+            m_outtakeOutput = outtakeConstants::RPM::MIDDLE_SCORING;
+            break; //end of SystemState::MIDDLE_SCORING
         
-        case SystemState::LOW_SHOOTING :
+        case SystemState::LOW_SCORING :
             m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::LOW_SHOOTING;
-            break; //end of SystemState::LOW_SHOOTING
+            m_outtakeOutput = outtakeConstants::RPM::LOW_SCORING;
+            break; //end of SystemState::LOW_SCORING
 
         case SystemState::REST_EMPTY :
         case SystemState::REST_LOADED : 
@@ -260,6 +255,14 @@ void GripperSubsystem::Periodic()
         m_pGripperIO->SetFeederRPM(m_feederOutput);
         m_pGripperIO->SetOuttakeRPM(m_outtakeOutput);
         break; //end of ControlMode::Velocity
+
+    case ControlMode::MANUAL_DUTY_CYCLE :
+        m_feederOutput = (std::sin(m_feederOutput * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        m_outtakeOutput = (std::sin(m_outtakeOutput * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        m_pGripperIO->SetFeederDutyCycle(m_feederOutput);
+        m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
+        break; //end of ControlMode::MANUAL_DUTY_CYCLE
+
     default:
         DEBUG_ASSERT(false, "Gripper : wrong ControlMode chosen");
         m_feederOutput = 0.0; // protection
@@ -289,8 +292,8 @@ void GripperSubsystem::RunStateMachine()
     case WantedState::SCORE_LOW :
         if (m_systemState == SystemState::REST_LOADED)
         {
-            m_systemState = SystemState::PRESHOOT;
-            m_counter = gripperConstants::Counter::PRESHOOT;
+            m_systemState = SystemState::PRESCORE;
+            m_counter = gripperConstants::Counter::PRESCORE;
         }
         break; //end of WantedState::Score
 
@@ -378,7 +381,7 @@ void GripperSubsystem::RunStateMachine()
         }
         break;
     
-    case SystemState::PRESHOOT :
+    case SystemState::PRESCORE :
         if(m_counter!=0)
             m_counter--;
         else 
@@ -386,13 +389,13 @@ void GripperSubsystem::RunStateMachine()
             switch (m_currentWantedState)
             {
             case WantedState::SCORE_HIGH :
-                m_systemState = SystemState::HIGH_SHOOTING;
+                m_systemState = SystemState::HIGH_SCORING;
                 break;
             case WantedState::SCORE_MIDDLE :
-                m_systemState = SystemState::MIDDLE_SHOOTING;
+                m_systemState = SystemState::MIDDLE_SCORING;
                 break;
             case WantedState::SCORE_LOW :
-                m_systemState = SystemState::HIGH_SHOOTING;
+                m_systemState = SystemState::HIGH_SCORING;
                 break;
             default:
                 DEBUG_ASSERT(false, "Gripper : No shoot desired after Preshoot ???");
@@ -438,9 +441,9 @@ void GripperSubsystem::RunStateMachine()
         }
         break;
     
-    case SystemState::HIGH_SHOOTING :
-    case SystemState::MIDDLE_SHOOTING :
-    case SystemState::LOW_SHOOTING :
+    case SystemState::HIGH_SCORING :
+    case SystemState::MIDDLE_SCORING :
+    case SystemState::LOW_SCORING :
         if(m_counter!=0)
             m_counter--;
         else 

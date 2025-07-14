@@ -57,7 +57,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME
-    void SetOutputInOpenLoop(const double dutyCycle);
+    void SetManualAxis(const double value);
 
     double GetHeight() const { return inputs.heightPosition; } //COMMENTME
 
@@ -66,7 +66,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     WantedState m_wantedState = WantedState::STAND_BY;
     WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
     SystemState m_systemState = SystemState::IDLE;
-    ControlMode m_controlMode = elevatorConstants::DefaultMode;
+    ControlMode m_controlMode = elevatorConstants::MainControlMode;
     ElevatorIO *m_pElevatorIO;
     ElevatorIOInputs inputs;
 

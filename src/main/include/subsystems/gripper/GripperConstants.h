@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Constants.h"
+#include "lib/ControlMode.h"
 using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 
 #if (ROBOT_MODEL != (BABY_BRICE))
 namespace gripperConstants
 {   
-    constexpr ControlMode DefaultMode = ControlMode::DUTY_CYCLE;
+    constexpr ControlMode MainControlMode = ControlMode::DUTY_CYCLE;
+    constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_DUTY_CYCLE;
     namespace IRbreaker
     {
         constexpr int DOWN_ID = 13;
@@ -16,7 +18,7 @@ namespace gripperConstants
     }
     namespace Counter 
     {
-        constexpr int PRESHOOT = 10; //TUNEME
+        constexpr int PRESCORE = 10; //TUNEME
         constexpr int SHOOT = 20; //TUNEME
     }
     constexpr double OPEN_LOOP_REDUC = 2.0; //TUNEME
@@ -83,14 +85,14 @@ namespace outtakeConstants
         constexpr double FEEDING_FORWARD = 450.0; //TUNEME
         constexpr double FEEDING_BACKWARD = -375.0; //TUNEME
         constexpr double SHY = 75.0; //TUNEME
-        constexpr double PRESHOOT = -300.0; //TUNEME
+        constexpr double PRESCORE = -300.0; //TUNEME
         constexpr double REJECTING_BACKWARD = -450.0; //TUNEME
         constexpr double REJECTING_FORWARD = 450.0; //TUNEME
         constexpr double SHIFTING = 300.0; //TUNEME
         constexpr double REST = 0.0;
-        constexpr double HIGH_SHOOTING = 600.0; //TUNEME
-        constexpr double MIDDLE_SHOOTING = 645.0; //TUNEME
-        constexpr double LOW_SHOOTING = 150.0; //TUNEME
+        constexpr double HIGH_SCORING = 600.0; //TUNEME
+        constexpr double MIDDLE_SCORING = 645.0; //TUNEME
+        constexpr double LOW_SCORING = 150.0; //TUNEME
         constexpr double MAX = 600.0; //TUNEME  
         constexpr double MIN = -600.0; //TUNEME
     }
@@ -100,14 +102,14 @@ namespace outtakeConstants
         constexpr double FEEDING_FORWARD = 0.3; //TUNEME
         constexpr double FEEDING_BACKWARD = -0.25; //TUNEME
         constexpr double SHY = 0.05; //TUNEME
-        constexpr double PRESHOOT = -0.2; //TUNEME
+        constexpr double PRESCORE = -0.2; //TUNEME
         constexpr double REJECTING_BACKWARD = -0.3; //TUNEME
         constexpr double REJECTING_FORWARD = 0.3; //TUNEME
         constexpr double SHIFTING = 0.2; //TUNEME
         constexpr double REST = 0.0;
-        constexpr double HIGH_SHOOTING = 0.4; //TUNEME
-        constexpr double MIDDLE_SHOOTING = 0.43; //TUNEME
-        constexpr double LOW_SHOOTING = 0.08; //TUNEME
+        constexpr double HIGH_SCORING = 0.4; //TUNEME
+        constexpr double MIDDLE_SCORING = 0.43; //TUNEME
+        constexpr double LOW_SCORING = 0.08; //TUNEME
     }
     namespace VelocityPID
     {
@@ -122,7 +124,7 @@ namespace outtakeConstants
 #else
 namespace gripperConstants
 {   
-    constexpr ControlMode DefaultMode = ControlMode::DUTY_CYCLE;
+    constexpr ControlMode MainControlMode = ControlMode::DUTY_CYCLE;
     namespace IRbreaker
     {
         constexpr int DOWN_ID = 13;
@@ -132,7 +134,7 @@ namespace gripperConstants
     }
     namespace Counter 
     {
-        constexpr int PRESHOOT = 10; //TUNEME
+        constexpr int PRESCORE = 10; //TUNEME
         constexpr int SHOOT = 20; //TUNEME
     }
     constexpr double OPEN_LOOP_REDUC = 2.0; //TUNEME
@@ -199,14 +201,14 @@ namespace outtakeConstants
         constexpr double FEEDING_FORWARD = 450.0; //TUNEME
         constexpr double FEEDING_BACKWARD = -375.0; //TUNEME
         constexpr double SHY = 75.0; //TUNEME
-        constexpr double PRESHOOT = -300.0; //TUNEME
+        constexpr double PRESCORE = -300.0; //TUNEME
         constexpr double REJECTING_BACKWARD = -450.0; //TUNEME
         constexpr double REJECTING_FORWARD = 450.0; //TUNEME
         constexpr double SHIFTING = 300.0; //TUNEME
         constexpr double REST = 0.0;
-        constexpr double HIGH_SHOOTING = 600.0; //TUNEME
-        constexpr double MIDDLE_SHOOTING = 645.0; //TUNEME
-        constexpr double LOW_SHOOTING = 150.0; //TUNEME
+        constexpr double HIGH_SCORING = 600.0; //TUNEME
+        constexpr double MIDDLE_SCORING = 645.0; //TUNEME
+        constexpr double LOW_SCORING = 150.0; //TUNEME
         constexpr double MAX = 600.0; //TUNEME  
         constexpr double MIN = -600.0; //TUNEME
     }
@@ -216,14 +218,14 @@ namespace outtakeConstants
         constexpr double FEEDING_FORWARD = 0.3; //TUNEME
         constexpr double FEEDING_BACKWARD = -0.25; //TUNEME
         constexpr double SHY = 0.05; //TUNEME
-        constexpr double PRESHOOT = -0.2; //TUNEME
+        constexpr double PRESCORE = -0.2; //TUNEME
         constexpr double REJECTING_BACKWARD = -0.3; //TUNEME
         constexpr double REJECTING_FORWARD = 0.3; //TUNEME
         constexpr double SHIFTING = 0.2; //TUNEME
         constexpr double REST = 0.0;
-        constexpr double HIGH_SHOOTING = 0.4; //TUNEME
-        constexpr double MIDDLE_SHOOTING = 0.43; //TUNEME
-        constexpr double LOW_SHOOTING = 0.1; //TUNEME
+        constexpr double HIGH_SCORING = 0.4; //TUNEME
+        constexpr double MIDDLE_SCORING = 0.43; //TUNEME
+        constexpr double LOW_SCORING = 0.1; //TUNEME
     }
     namespace VelocityPID
     {

@@ -48,7 +48,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME
-    void SetOutputInOpenLoop(double dutyCycle); //TODO : rework all Output in Open Loop and Control Mode
+    void SetManualAxis(const double value);
     void Periodic() override;
 
     bool CanRumble = false; //COMMENTME
@@ -57,7 +57,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
     WantedState m_wantedState = WantedState::STAND_BY;
     WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
     SystemState m_systemState = SystemState::IDLE;
-    ControlMode m_controlMode = strafferConstants::DefaultMode;
+    ControlMode m_controlMode = strafferConstants::MainControlMode;
     StrafferIO *m_pStrafferIO;
     StrafferIOInputs inputs;
     Camera *m_pCamera;

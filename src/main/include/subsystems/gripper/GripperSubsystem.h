@@ -34,10 +34,10 @@ class GripperSubsystem : public frc2::SubsystemBase {
     FEEDING_FORWARD,
     FEEDING_FORWARD_SHY,
     FEEDING_BACKWARD,
-    PRESHOOT,
-    HIGH_SHOOTING,
-    MIDDLE_SHOOTING,
-    LOW_SHOOTING,
+    PRESCORE,
+    HIGH_SCORING,
+    MIDDLE_SCORING,
+    LOW_SCORING,
     REJECTING_BACKWARD,
     REJECTING_FORWARD,
     SHIFTING_FORWARD
@@ -50,8 +50,8 @@ class GripperSubsystem : public frc2::SubsystemBase {
   void ToggleControlMode();
 
   bool IsResting();
-  void SetOutputInOpenLoop(double dutyCycle);
-  void SetOutputInOpenLoop(double feederDutyCycle, double outtakeDutyCycle);
+  void SetManualAxis(const double value);
+  void SetManualAxis(const double feederValue, const double outtakeValue);
   void Periodic() override;
 
   bool CanRumble = false;
@@ -59,7 +59,7 @@ class GripperSubsystem : public frc2::SubsystemBase {
   WantedState m_wantedState = WantedState::STAND_BY;
   WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
   SystemState m_systemState = SystemState::IDLE;
-  ControlMode m_controlMode = gripperConstants::DefaultMode;
+  ControlMode m_controlMode = gripperConstants::MainControlMode;
   GripperIO *m_pGripperIO;
   GripperIOInputs inputs;
 

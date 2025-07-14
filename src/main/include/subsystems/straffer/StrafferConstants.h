@@ -1,12 +1,14 @@
 #pragma once
 #include "Constants.h"
+#include "lib/ControlMode.h"
 
 using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 
 #if (ROBOT_MODEL != (BABY_BRICE))
 namespace strafferConstants 
 {
-    constexpr ControlMode DefaultMode = ControlMode::POSITION_PID;
+    constexpr ControlMode MainControlMode = ControlMode::POSITION_PID;
+    constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_SETPOINT;
     namespace Motor
     {
         constexpr int ID = 8;
@@ -60,9 +62,10 @@ namespace strafferConstants
     } 
     namespace Settings
     {
-        constexpr double TIME_TO_REACH_FULL_SPEED = 0.2; // only for open-loop //TUNEME
+        constexpr double TIME_TO_REACH_FULL_SPEED = 0.2; // only for manual open-loop //TUNEME
         constexpr double LEFT_LIMIT = 0.025; //TUNEME
         constexpr double RIGHT_LIMIT = 0.37; //TUNEME
+        constexpr double MANUAL_SETPOINT_CHANGE_LIMIT = (RIGHT_LIMIT - LEFT_LIMIT) / (1.0/TIME_PER_CYCLE); //TUNEME
     } 
     namespace Seeking
     {
@@ -76,7 +79,7 @@ namespace strafferConstants
 #else //#elif (ROBOT_MODEL == (BABY_BRICE))
 namespace strafferConstants 
 {
-    constexpr ControlMode DefaultMode = ControlMode::POSITION_PID;
+    constexpr ControlMode MainControlMode = ControlMode::POSITION_PID;
     namespace Motor
     {
         constexpr int ID = 8;

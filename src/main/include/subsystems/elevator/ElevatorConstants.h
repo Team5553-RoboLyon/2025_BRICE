@@ -1,12 +1,14 @@
 #pragma once
 #include "Constants.h"
+#include "lib/ControlMode.h"
 
 using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 
 #if (ROBOT_MODEL != (BABY_BRICE))
 namespace elevatorConstants
 {
-    constexpr ControlMode DefaultMode = ControlMode::POSITION_PID;
+    constexpr ControlMode MainControlMode = ControlMode::POSITION_PID;
+    constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_SETPOINT;
     constexpr double OPEN_LOOP_REDUC = -2.0;
     namespace Motors
     {
@@ -76,15 +78,16 @@ namespace elevatorConstants
     }
     namespace Settings
     {
-        constexpr double TIME_TO_REACH_FULL_SPEED = 0.25; // only for open-loop //TUNEME
+        constexpr double TIME_TO_REACH_FULL_SPEED = 0.25; // only for manual open-loop //TUNEME
         constexpr double BOTTOM_LIMIT = 0.005; //TUNEME
         constexpr double TOP_LIMIT = 1.45; //TUNEME
+        constexpr double MANUAL_SETPOINT_CHANGE_LIMIT = (TOP_LIMIT - BOTTOM_LIMIT) / (2.5/TIME_PER_CYCLE); //TUNEME
     }
 }
 #else
 namespace elevatorConstants
 {
-    constexpr ControlMode DefaultMode = ControlMode::POSITION_PID;
+    constexpr ControlMode MainControlMode = ControlMode::POSITION_PID;
     constexpr double OPEN_LOOP_REDUC = -2.0;
     namespace Motors
     {

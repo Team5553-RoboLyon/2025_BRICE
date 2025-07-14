@@ -10,6 +10,7 @@ StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) :
 {
     m_strafferPIDController.SetTolerance(strafferConstants::PID::TOLERANCE);
     m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
+    m_strafferPIDController.SetInputLimits(true);
     m_strafferPIDController.SetInputLimits(strafferConstants::Settings::LEFT_LIMIT, strafferConstants::Settings::RIGHT_LIMIT);
 
 }
@@ -19,6 +20,7 @@ void StrafferSubsystem::SetControlMode(const ControlMode mode)
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
+    m_strafferPIDController.Reset(m_timestamp);
     m_output = strafferConstants::Speed::REST;
 }
 ControlMode StrafferSubsystem::GetControlMode()
@@ -29,14 +31,16 @@ void StrafferSubsystem::ToggleControlMode()
 {
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
-    m_output = 0.0;
+    m_output = strafferConstants::Speed::REST;
+    m_rateLimiter.Reset();
+    m_strafferPIDController.Reset(m_timestamp);
     switch (m_controlMode)
     {
-    case strafferConstants::DefaultMode :
-        m_controlMode = ControlMode::OPEN_LOOP;
+    case strafferConstants::MainControlMode :
+        m_controlMode = strafferConstants::EmergencyControlMode;
         break;
-    case ControlMode::OPEN_LOOP : 
-        m_controlMode = strafferConstants::DefaultMode;
+    case strafferConstants::EmergencyControlMode : 
+        m_controlMode = strafferConstants::MainControlMode;
         break;
     default:
         DEBUG_ASSERT(false,"Straffer : Toggle impossible with an unrecognized mode.");
@@ -59,17 +63,17 @@ StrafferSubsystem::SystemState StrafferSubsystem::GetSystemState()
 {
     return m_systemState;
 }
-void StrafferSubsystem::SetOutputInOpenLoop(double dutyCycle)
+void StrafferSubsystem::SetManualAxis(const double value)
 {
-    if(m_controlMode == ControlMode::OPEN_LOOP)
+    if(BYPASS_STATE_MACHINE(m_controlMode))
     {
-        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
-            , "Straffer Duty Cycle out of range");
-        m_output = m_rateLimiter.Update(std::sin(dutyCycle * (M_PI / 2.0)));
+        DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
+            , "Straffer Manual value out of range");
+        m_output = value;
     }
     else 
     {
-        DEBUG_ASSERT(false , "Straffer : Open Loop Output set while Closed Loop is used");
+        DEBUG_ASSERT(false , "Straffer : Manual value set while StateMachine is used");
     }
 }
 bool StrafferSubsystem::IsResting()
@@ -154,8 +158,15 @@ void StrafferSubsystem::Periodic()
         case ControlMode::PROFILED_PID : 
             //TODO : later
             break;
-        case ControlMode::OPEN_LOOP :
-            //look at void SetOutputInOpenLoop(const double dutyCycle)
+        case ControlMode::MANUAL_DUTY_CYCLE :
+            m_output = m_rateLimiter.Update(std::sin(m_output * (M_PI / 2.0)));
+            break;
+        case ControlMode::MANUAL_SETPOINT :
+            //adapt the manual value to changing setpoint
+            m_output = m_strafferPIDController.GetSetpoint() + m_output * strafferConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+            m_output = m_strafferPIDController.CalculateWithRealTime(m_output,
+                                                                        inputs.widthPosition,
+                                                                        m_timestamp);
             break;
         default:
             DEBUG_ASSERT(false , "Straffer : wrong ControlMode chosen");

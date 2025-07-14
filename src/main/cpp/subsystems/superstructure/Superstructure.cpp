@@ -122,7 +122,7 @@ std::function<bool()> Superstructure::HasCoral() const
             case GripperSubsystem::SystemState::FEEDING_BACKWARD:
             case GripperSubsystem::SystemState::FEEDING_FORWARD:
             case GripperSubsystem::SystemState::FEEDING_FORWARD_SHY:
-            case GripperSubsystem::SystemState::PRESHOOT:
+            case GripperSubsystem::SystemState::PRESCORE:
             case GripperSubsystem::SystemState::SHIFTING_FORWARD:
                 return true;
             default:
@@ -270,17 +270,17 @@ void Superstructure::Periodic()
         if(!ALLOWS_STATE_MACHINE(m_pGripperSubsystem->GetControlMode())) //TODO : add Define Manual
         {
             double gripperOutput = m_fxGripperAxis();
-            m_pGripperSubsystem->SetOutputInOpenLoop(gripperOutput);
+            m_pGripperSubsystem->SetManualAxis(gripperOutput);
         }
         if(!ALLOWS_STATE_MACHINE(m_pElevatorSubsystem->GetControlMode())) //TODO : add Define Manual
         {
             double elevatorOutput = m_fxElevatorAxis();
-            m_pElevatorSubsystem->SetOutputInOpenLoop(elevatorOutput);
+            m_pElevatorSubsystem->SetManualAxis(elevatorOutput);
         }
         if(!ALLOWS_STATE_MACHINE(m_pStrafferSubsystem->GetControlMode())) //TODO : add Define Manual
         {
             double strafferOutput = m_fxStrafferAxis();
-            m_pStrafferSubsystem->SetOutputInOpenLoop(strafferOutput);
+            m_pStrafferSubsystem->SetManualAxis(strafferOutput);
         }
     }
 }

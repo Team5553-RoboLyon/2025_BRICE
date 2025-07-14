@@ -29,21 +29,6 @@
 constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
 
-
-
-enum class ControlMode {
-    PROFILED_PID, //Motion profiling + PID sur l'output
-    MOTION_PROFILING, 
-    POSITION_PID, 
-    VELOCITY, // RPM ou RPS
-    VOLTAGE, // volts (-12V à 12V)
-    DUTY_CYCLE, // percentage (-1 to 1)
-    OPEN_LOOP // bypass the StateMachine
-};
-#define ALLOWS_STATE_MACHINE(mode) ((mode) != (ControlMode::OPEN_LOOP))
-
-
-
 namespace ControlPanelConstants {
     namespace Joystick{
         constexpr int FORWARD_ID = 0;

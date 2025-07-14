@@ -20,7 +20,7 @@ RobotContainer::RobotContainer()
     { return m_joystickRotation.GetZ(); },
     &m_drivetrain, &m_elevator));
 
-    m_superstructure.ConfigureManualAxis([this] { return -m_controllerCopilot.GetLeftY(); },
+    m_superstructure.ConfigureManualAxis([this] { return m_controllerCopilot.GetLeftY(); },
                                          [this] { return m_controllerCopilot.GetRightX(); },
                                          [this] { return (-m_controllerCopilot.GetL2Axis() + m_controllerCopilot.GetR2Axis()); });
 }

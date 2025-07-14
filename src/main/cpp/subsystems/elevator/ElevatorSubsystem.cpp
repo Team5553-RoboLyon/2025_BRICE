@@ -8,8 +8,9 @@ ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) :
                                                     m_pElevatorIO(pIO)
 {
     m_elevatorPIDController.SetTolerance(elevatorConstants::PID::TOLERANCE);
-    m_elevatorPIDController.Reset(elevatorConstants::Setpoint::HOME);
+    m_elevatorPIDController.Reset(m_timestamp);
     m_elevatorPIDController.SetOutputLimits(elevatorConstants::Speed::MIN, elevatorConstants::Speed::MAX);
+    m_elevatorPIDController.SetInputLimits(true);
     m_elevatorPIDController.SetInputLimits( elevatorConstants::Settings::BOTTOM_LIMIT, 
                                             elevatorConstants::Settings::TOP_LIMIT);
 }
@@ -38,6 +39,7 @@ void ElevatorSubsystem::SetControlMode(const ControlMode mode)
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
+    m_elevatorPIDController.Reset(m_timestamp);
     m_output = elevatorConstants::Speed::REST;
 }
 
@@ -50,14 +52,16 @@ void ElevatorSubsystem::ToggleControlMode()
 {
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
-    m_output = 0.0;
+    m_rateLimiter.Reset();
+    m_elevatorPIDController.Reset(m_timestamp);
+    m_output = elevatorConstants::Speed::REST;
     switch (m_controlMode)
     {
-    case elevatorConstants::DefaultMode :
-        m_controlMode = ControlMode::OPEN_LOOP;
+    case elevatorConstants::MainControlMode :
+        m_controlMode = elevatorConstants::EmergencyControlMode;
         break;
-    case ControlMode::OPEN_LOOP : 
-        m_controlMode = elevatorConstants::DefaultMode;
+    case elevatorConstants::EmergencyControlMode : 
+        m_controlMode = elevatorConstants::MainControlMode;
         break;
     default:
         DEBUG_ASSERT(false,"Elevator : Toggle impossible with an unrecognized mode.");
@@ -77,13 +81,13 @@ bool ElevatorSubsystem::IsResting()
             (m_systemState == SystemState::AT_VISION));
 }
 
-void ElevatorSubsystem::SetOutputInOpenLoop(const double dutyCycle)
+void ElevatorSubsystem::SetManualAxis(const double value)
 {
-    if(m_controlMode == ControlMode::OPEN_LOOP)
+    if(BYPASS_STATE_MACHINE(m_controlMode))
     {
-        DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0) 
+        DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
             , "Elevator Duty Cycle out of range");
-        m_output = m_rateLimiter.Update((std::sin(dutyCycle * (M_PI / 2.0)) / elevatorConstants::OPEN_LOOP_REDUC) );
+        m_output = value;
     }
     else 
     {
@@ -176,10 +180,15 @@ void ElevatorSubsystem::Periodic()
                 break;
             }
             break; //end of ControlMode::POSITION_PID
-        case ControlMode::OPEN_LOOP :
-            //look at void SetOutputInOpenLoop(const double dutyCycle)
-            break; //end of ControlMode::OPEN_LOOP
-
+        case ControlMode::MANUAL_DUTY_CYCLE :
+            m_output = m_rateLimiter.Update((std::sin(m_output * (M_PI / 2.0)) / elevatorConstants::OPEN_LOOP_REDUC) );
+            break; //end of ControlMode::MANUAL_DUTY_CYCLE
+        case ControlMode::MANUAL_SETPOINT :
+            m_output = m_elevatorPIDController.GetSetpoint() + m_output * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+            m_output = m_elevatorPIDController.CalculateWithRealTime(m_output,
+                                                                        inputs.heightPosition,
+                                                                        m_timestamp);
+            break; //end of ControlMode::MANUAL_DUTY_CYCLE 
         case ControlMode::PROFILED_PID :
         case ControlMode::MOTION_PROFILING :
             //TODO later
