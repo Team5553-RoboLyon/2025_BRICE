@@ -28,15 +28,6 @@ void Robot::RobotPeriodic() {
   }
 }
 
-void Robot::Leave(double target) {
-  if((m_container.m_drivetrain.DriveAuto() - initialPosition) > target)
-  {
-    m_container.m_drivetrain.SetPower(0.0);
-  }
-  else {
-      m_container.m_drivetrain.SetPower(0.3);
-  }
-}
 // void Robot::CenterToL4() {
 //   m_container.m_camera.Update();
 //   switch (m_state)
@@ -95,7 +86,7 @@ void Robot::DisabledExit() {
 }
 
 void Robot::AutonomousInit() {
-  m_container.m_drivetrain.isAuto = true;
+  m_container.m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::AUTO_PATH_FOLLOWER);
   m_autonomousCommand = m_container.GetAutonomousCommand();
   if (m_autonomousCommand) {
     m_autonomousCommand->Schedule();
@@ -103,15 +94,13 @@ void Robot::AutonomousInit() {
 }
 
 void Robot::AutonomousPeriodic() {
-  // Leave(3.0);
-  // CenterToL4();
 }
 
 void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
-  m_container.m_drivetrain.isAuto = false;
+  m_container.m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::ARCADE_DRIVE);
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }

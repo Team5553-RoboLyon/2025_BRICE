@@ -10,7 +10,7 @@ Superstructure::Superstructure(StrafferSubsystem *pStrafferSubsystem,
       m_fxElevatorAxis([]() { return 0.0; }),
       m_fxGripperAxis([]() { return 0.0; }),
       m_fxStrafferAxis([]() { return 0.0; }),
-      m_fxAxisAreActive(false)
+      m_axisAreActive(false)
 { 
     UpdateSuperControlMode();
 };
@@ -27,7 +27,7 @@ Superstructure::Superstructure(StrafferSubsystem *pStrafferSubsystem,
         m_fxElevatorAxis(fxElevatorAxis),
         m_fxStrafferAxis(fxStrafferAxis),
         m_fxGripperAxis(fxGripperAxis),
-        m_fxAxisAreActive(true)
+        m_axisAreActive(true)
 { 
     UpdateSuperControlMode();
 };
@@ -89,7 +89,7 @@ void Superstructure::ConfigureManualAxis(const std::function<double()> fxElevato
     m_fxElevatorAxis = fxElevatorAxis;
     m_fxGripperAxis = fxGripperAxis;
     m_fxStrafferAxis = fxStrafferAxis;
-    m_fxAxisAreActive = true;
+    m_axisAreActive = true;
 }
 
 void Superstructure::ToggleElevatorControlMode()
@@ -266,7 +266,7 @@ void Superstructure::Periodic()
     }
     else 
     {
-        DEBUG_ASSERT(m_fxAxisAreActive, "SuperStructure : Manual Fonctions aren't assigned");
+        DEBUG_ASSERT(m_axisAreActive, "SuperStructure : Manual Fonctions aren't assigned");
         if(!ALLOWS_STATE_MACHINE(m_pGripperSubsystem->GetControlMode())) //TODO : add Define Manual
         {
             double gripperOutput = m_fxGripperAxis();

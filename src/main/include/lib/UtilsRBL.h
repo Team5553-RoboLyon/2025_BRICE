@@ -30,6 +30,7 @@
 #define NABS(a) (((a) < 0) ? -(a) : (a))
 #define NMAX(a, b) (((a) > (b)) ? (a) : (b))
 #define NMIN(a, b) (((a) < (b)) ? (a) : (b))
+#define NDEADBAND(a, t) (((a) > -(t) && (a) < (t)) ? 0 : (a))
 // #define NROUND(fval)	( ( (fval) >= 0.0 ) ? ((Ns32)((fval) + 0.5)) : ((Ns32)((fval) - 0.5)) )
 #define NSIGN(a) (((a) < 0) ? -1 : 1)
 #define NCLAMP(mn, a, mx) (((a) < (mn)) ? (mn) : ((a) > (mx)) ? (mx) \

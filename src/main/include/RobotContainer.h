@@ -10,12 +10,13 @@
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "subsystems/elevator/ElevatorSubsystem.h"
 #include "subsystems/gripper/GripperSubsystem.h"
-#include "subsystems/drivetrain/Drivetrain.h"
+#include "subsystems/drivetrain/DrivetrainSubsystem.h"
 #include "subsystems/vision/Camera.h"
 
 #include "subsystems/elevator/ElevatorIOSpark.h"
 #include "subsystems/straffer/StrafferIOSpark.h"
 #include "subsystems/gripper/GripperIOSpark.h"
+#include "subsystems/drivetrain/DrivetrainIOFlex.h"
 
 #include "subsystems/operator/Operator.h"
 
@@ -25,8 +26,8 @@ class RobotContainer {
 
   frc2::CommandPtr GetAutonomousCommand();
 
-    Drivetrain m_drivetrain;
     Camera m_camera;
+    DrivetrainSubsystem m_drivetrain{new DrivetrainIOFlex()};
     StrafferSubsystem m_straffer{new StrafferIOSpark(), &m_camera};
     ElevatorSubsystem m_elevator{new ElevatorIOSpark()};
     GripperSubsystem m_gripper{new GripperIOSpark()};
@@ -38,8 +39,8 @@ class RobotContainer {
     Operator m_controllerCopilot{ControlPanelConstants::Joystick::COPILOT_CONTROLLER_ID};
 
  private:
-    frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, ControlPanelConstants::Button::SLOW_DRIVE_BUTTON};
-    frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, ControlPanelConstants::Button::REVERSED_DRIVE_BUTTON};
+    frc2::JoystickButton m_SlowDriveButton{&m_joystickRotation, Button::SLOW_DRIVE_BUTTON};
+    frc2::JoystickButton m_ReversedDriveButton{&m_joystickForward, Button::REVERSED_DRIVE_BUTTON};
 
   void ConfigureBindings();
 };

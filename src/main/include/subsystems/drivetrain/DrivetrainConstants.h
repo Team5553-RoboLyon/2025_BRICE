@@ -1,6 +1,7 @@
 #pragma once
 #include "Constants.h"
 
+//TODO : rewrite constants in a proper way
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 
 using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
@@ -98,3 +99,20 @@ namespace driveConstants {
 }
 
 #endif
+
+
+
+    namespace Button {
+        // FORWARD Joystick
+        constexpr int REVERSED_DRIVE_BUTTON = 1;
+        // ROTATION Joystick
+        constexpr int SLOW_DRIVE_BUTTON = 1;
+    }
+    namespace Settings{
+        constexpr double SLOW_RATE = 2.0;
+        constexpr double TIME_TO_REACH_FULL_FORWARD = 0.8;
+        constexpr double TIME_TO_REACH_FULL_ROTATION = 0.5;
+        constexpr double DEADBAND= 0.05;
+        constexpr double MIN_MOVING_V = 0.07;
+        constexpr double MIN_MOVING_W = 0.25;
+    }

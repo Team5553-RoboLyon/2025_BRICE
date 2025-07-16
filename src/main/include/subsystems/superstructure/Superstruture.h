@@ -106,7 +106,7 @@ class Superstructure : public frc2::SubsystemBase {
     std::function<double()> m_fxElevatorAxis;
     std::function<double()> m_fxStrafferAxis;
     std::function<double()> m_fxGripperAxis;
-    bool m_fxAxisAreActive{false};
+    bool m_axisAreActive;
 
     bool m_isInitialized{false};
 

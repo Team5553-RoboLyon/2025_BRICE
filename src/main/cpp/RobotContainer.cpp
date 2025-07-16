@@ -9,25 +9,23 @@
 #include <frc2/command/Commands.h>
 
 #include "commands/SetWantedSuperStateCmd.h"
-#include "commands/Drive.h"
 
 RobotContainer::RobotContainer()
 {
     ConfigureBindings();
-     m_drivetrain.SetDefaultCommand(Drive( [this]
-    { return m_joystickForward.GetY(); },
-                                      [this]
-    { return m_joystickRotation.GetZ(); },
-    &m_drivetrain, &m_elevator));
 
     m_superstructure.ConfigureManualAxis([this] { return m_controllerCopilot.GetLeftY(); },
                                          [this] { return m_controllerCopilot.GetRightX(); },
                                          [this] { return (-m_controllerCopilot.GetL2Axis() + m_controllerCopilot.GetR2Axis()); });
+
+    m_drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-m_joystickForward.GetY(), Settings::DEADBAND); },
+                                      [this] { return NDEADBAND(m_joystickRotation.GetZ(), Settings::DEADBAND); },
+                                      [this] { return m_SlowDriveButton.Get(); },
+                                      [this] { return m_elevator.GetHeight(); });
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_ReversedDriveButton.ToggleOnTrue(frc2::InstantCommand([this] { m_drivetrain.ReverseDrive(); }).ToPtr());
-  m_SlowDriveButton.OnChange(frc2::InstantCommand([this] {m_drivetrain.slower = !m_drivetrain.slower;}).ToPtr());
+  m_ReversedDriveButton.OnTrue(frc2::InstantCommand([this] { m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::REVERSE_DRIVE);}).ToPtr());
 
 
   //SUPERSTRUCTURE CONTROLLER BINDINGS
