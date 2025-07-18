@@ -267,17 +267,17 @@ void Superstructure::Periodic()
     else 
     {
         DEBUG_ASSERT(m_axisAreActive, "SuperStructure : Manual Fonctions aren't assigned");
-        if(!ALLOWS_STATE_MACHINE(m_pGripperSubsystem->GetControlMode())) //TODO : add Define Manual
+        if(BYPASS_STATE_MACHINE(m_pGripperSubsystem->GetControlMode()))
         {
             double gripperOutput = m_fxGripperAxis();
             m_pGripperSubsystem->SetManualAxis(gripperOutput);
         }
-        if(!ALLOWS_STATE_MACHINE(m_pElevatorSubsystem->GetControlMode())) //TODO : add Define Manual
+        if(BYPASS_STATE_MACHINE(m_pElevatorSubsystem->GetControlMode()))
         {
             double elevatorOutput = m_fxElevatorAxis();
             m_pElevatorSubsystem->SetManualAxis(elevatorOutput);
         }
-        if(!ALLOWS_STATE_MACHINE(m_pStrafferSubsystem->GetControlMode())) //TODO : add Define Manual
+        if(BYPASS_STATE_MACHINE(m_pStrafferSubsystem->GetControlMode()))
         {
             double strafferOutput = m_fxStrafferAxis();
             m_pStrafferSubsystem->SetManualAxis(strafferOutput);

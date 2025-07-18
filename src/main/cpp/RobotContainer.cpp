@@ -18,10 +18,10 @@ RobotContainer::RobotContainer()
                                          [this] { return m_controllerCopilot.GetRightX(); },
                                          [this] { return (-m_controllerCopilot.GetL2Axis() + m_controllerCopilot.GetR2Axis()); });
 
-    m_drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-m_joystickForward.GetY(), Settings::DEADBAND); },
-                                      [this] { return NDEADBAND(m_joystickRotation.GetZ(), Settings::DEADBAND); },
+    m_drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-m_joystickForward.GetY(), driveConstants::Settings::DEADBAND); },
+                                      [this] { return NDEADBAND(m_joystickRotation.GetZ(), driveConstants::Settings::DEADBAND); },
                                       [this] { return m_SlowDriveButton.Get(); },
-                                      [this] { return m_elevator.GetHeight(); });
+                                      [this] { return NORMALIZE_HEIGHT(m_elevator.GetHeight()); });
 }
 
 void RobotContainer::ConfigureBindings() {

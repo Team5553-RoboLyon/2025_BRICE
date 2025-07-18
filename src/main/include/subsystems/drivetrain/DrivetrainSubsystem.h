@@ -79,8 +79,8 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
 
   //ARCADE
   double m_rotationSigma{0.0}; // Weight for rotation in arcade drive
-  RateLimiter m_forwardLimitedAxis{Settings::TIME_TO_REACH_FULL_FORWARD};
-  RateLimiter m_rotationLimitedAxis{Settings::TIME_TO_REACH_FULL_ROTATION};
+  RateLimiter m_forwardLimitedAxis{driveConstants::Settings::TIME_TO_REACH_FULL_FORWARD};
+  RateLimiter m_rotationLimitedAxis{driveConstants::Settings::TIME_TO_REACH_FULL_ROTATION};
 
   //CURVE //TODO
 

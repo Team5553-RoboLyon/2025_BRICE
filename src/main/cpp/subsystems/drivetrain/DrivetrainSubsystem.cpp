@@ -68,15 +68,15 @@ void DrivetrainSubsystem::Periodic()
     m_backLeftMotorDisconnected.Set(!inputs.isBackLeftMotorConnected);
     m_backRightMotorDisconnected.Set(!inputs.isBackRightMotorConnected);
 
-    m_frontLeftMotorHot.Set(inputs.frontLeftMotorTemperature > 60.0); //TODO : add const
-    m_frontRightMotorHot.Set(inputs.frontRightMotorTemperature > 60.0);
-    m_backLeftMotorHot.Set(inputs.backLeftMotorTemperature > 60.0);
-    m_backRightMotorHot.Set(inputs.backRightMotorTemperature > 60.0);
+    m_frontLeftMotorHot.Set(inputs.frontLeftMotorTemperature > driveConstants::LeftGearbox::Motor::HOT_THRESHOLD);
+    m_frontRightMotorHot.Set(inputs.frontRightMotorTemperature > driveConstants::RightGearbox::Motor::HOT_THRESHOLD);
+    m_backLeftMotorHot.Set(inputs.backLeftMotorTemperature > driveConstants::LeftGearbox::Motor::HOT_THRESHOLD);
+    m_backRightMotorHot.Set(inputs.backRightMotorTemperature > driveConstants::RightGearbox::Motor::HOT_THRESHOLD);
 
-    m_frontLeftMotorOverheating.Set(inputs.frontLeftMotorTemperature > 75.0);
-    m_frontRightMotorOverheating.Set(inputs.frontRightMotorTemperature > 75.0);
-    m_backLeftMotorOverheating.Set(inputs.backLeftMotorTemperature > 75.0);
-    m_backRightMotorOverheating.Set(inputs.backRightMotorTemperature > 75.0);
+    m_frontLeftMotorOverheating.Set(inputs.frontLeftMotorTemperature > driveConstants::LeftGearbox::Motor::OVERHEATING_THRESHOLD);
+    m_frontRightMotorOverheating.Set(inputs.frontRightMotorTemperature > driveConstants::RightGearbox::Motor::OVERHEATING_THRESHOLD);
+    m_backLeftMotorOverheating.Set(inputs.backLeftMotorTemperature > driveConstants::LeftGearbox::Motor::OVERHEATING_THRESHOLD);
+    m_backRightMotorOverheating.Set(inputs.backRightMotorTemperature > driveConstants::RightGearbox::Motor::OVERHEATING_THRESHOLD);
 
 
     DEBUG_ASSERT(m_axisAreActive, "DrivetrainSubsystem : Manual Functions aren't assigned");
@@ -84,15 +84,15 @@ void DrivetrainSubsystem::Periodic()
     double m_rotationAxis = NCLAMP(-1.0, m_fxRotationAxis(), 1.0);
 
     if (m_fxSlowDriveButton()) {
-        m_forwardAxis /= Settings::SLOW_RATE;
-        m_rotationAxis /= Settings::SLOW_RATE;
+        m_forwardAxis /= driveConstants::Settings::SLOW_RATE;
+        m_rotationAxis /= driveConstants::Settings::SLOW_RATE;
     }
 
     //Protect from falling
     //TODO : rework this with a proper way and NavX
     double h = (1.0 - m_fxHeightFactor());
-    double minMovingV = m_forwardAxis * Settings::MIN_MOVING_V;
-    double minMovingW = m_rotationAxis * Settings::MIN_MOVING_W;
+    double minMovingFwd = m_forwardAxis * driveConstants::Settings::MIN_MOVING_FORWARD;
+    double minTurning = m_rotationAxis * driveConstants::Settings::MIN_TURNING;
     if(m_forwardAxis < 0.0)
     {
         m_forwardAxis = NMAX(m_forwardAxis, -h*h);
@@ -110,8 +110,8 @@ void DrivetrainSubsystem::Periodic()
     {
         m_rotationAxis = NMIN(m_rotationAxis, h);
     }
-    m_forwardAxis += minMovingV;
-    m_rotationAxis += minMovingW;
+    m_forwardAxis += minMovingFwd;
+    m_rotationAxis += minTurning;
 
     switch (m_systemDrive)
     {
@@ -124,6 +124,7 @@ void DrivetrainSubsystem::Periodic()
         break;
     
     case SystemDrive::AUTO_PATH_FOLLOWER:
+        DEBUG_ASSERT(false, "work in progress..");
         m_output = {0.0, 0.0}; //TODO: Implement auto path follower
         break;
     default:
