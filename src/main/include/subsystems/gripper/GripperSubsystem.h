@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "GripperConstants.h"
 #include "lib/Alert.h"
+#include "GripperIOLogger.h"
 
 class GripperSubsystem : public frc2::SubsystemBase {
  public:
@@ -62,6 +63,7 @@ class GripperSubsystem : public frc2::SubsystemBase {
   ControlMode m_controlMode = gripperConstants::MainControlMode;
   GripperIO *m_pGripperIO;
   GripperIOInputs inputs;
+  GripperIOLogger m_logger{frc::DataLogManager::GetLog(), "/Gripper"};
 
   int m_counter{0};
   double m_feederOutput{0.0};

@@ -65,21 +65,8 @@ void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
     inputs.IRBreakerDown = m_IRBreakerDown.Get() == gripperConstants::IRbreaker::IS_TRIGGERED;
     inputs.IRBreakerUp2 = m_IRBreakerUp2.Get() == gripperConstants::IRbreaker::IS_TRIGGERED;
 
-
-    //only while waiting for AdScope (very bad performance)
     frc::SmartDashboard::PutBoolean("O.Connection", inputs.isOuttakeMotorConnected);
-    frc::SmartDashboard::PutNumber("O.Voltage", inputs.outtakeAppliedVoltage);
-    frc::SmartDashboard::PutNumber("O.BusVolt", inputs.outtakeBusVoltage);
-    frc::SmartDashboard::PutNumber("O.Current", inputs.outtakeCurrent);
-    frc::SmartDashboard::PutNumber("O.Temperature", inputs.outtakeTemperature);
-    frc::SmartDashboard::PutNumber("O.Velocity", inputs.outtakeRPM);
-
     frc::SmartDashboard::PutBoolean("F.Connection", inputs.isFeederMotorConnected);
-    frc::SmartDashboard::PutNumber("F.Voltage", inputs.feederAppliedVoltage);
-    frc::SmartDashboard::PutNumber("F.BusVolt", inputs.feederBusVoltage);
-    frc::SmartDashboard::PutNumber("F.Current", inputs.feederCurrent);
-    frc::SmartDashboard::PutNumber("F.Temperature", inputs.feederTemperature);
-    frc::SmartDashboard::PutNumber("F.Velocity", inputs.feederRPM);
 
     frc::SmartDashboard::PutBoolean("G.Up IRbreaker", inputs.IRBreakerUp);
     frc::SmartDashboard::PutBoolean("G.Up2 IRbreaker", inputs.IRBreakerUp2);

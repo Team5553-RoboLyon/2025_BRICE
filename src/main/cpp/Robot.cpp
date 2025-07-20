@@ -6,8 +6,17 @@
 
 #include <frc2/command/CommandScheduler.h>
 #include <iostream>
+#include <frc/DataLogManager.h>
+#include <frc/DriverStation.h>
+#include <frc/RobotBase.h>
 
 Robot::Robot() {
+}
+
+void Robot::RobotInit()
+{
+    frc::DataLogManager::Start();
+    frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
 }
 
 void Robot::RobotPeriodic() {

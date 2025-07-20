@@ -93,6 +93,7 @@ void StrafferSubsystem::Periodic()
     m_currentWantedState = m_wantedState;
 
     m_pStrafferIO->UpdateInputs(inputs);
+    m_logger.Log(inputs);
     m_motorDisconnected.Set(!inputs.isMotorConnected);
     m_motorOverheating.Set(inputs.temperature > strafferConstants::Motor::OVERHEATING_THRESHOLD);
     m_motorHot.Set(inputs.temperature > strafferConstants::Motor::HOT_THRESHOLD);

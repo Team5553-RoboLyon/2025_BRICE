@@ -62,6 +62,7 @@ void DrivetrainSubsystem::ConfigureManualAxis(const std::function<double()> fxFo
 void DrivetrainSubsystem::Periodic()
 {
     m_pTankDriveIO->UpdateInputs(inputs);
+    m_logger.Log(inputs);
 
     m_frontLeftMotorDisconnected.Set(!inputs.isFrontLeftMotorConnected);
     m_frontRightMotorDisconnected.Set(!inputs.isFrontRightMotorConnected);

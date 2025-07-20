@@ -2,6 +2,7 @@
 //TODO : change implement Cam with a proper way
 #include <frc2/command/SubsystemBase.h>
 #include "StrafferIO.h"
+#include "StrafferIOLogger.h"
 #include "StrafferConstants.h"
 #include "lib/Alert.h"
 #include "lib/PidRBL.h"
@@ -60,6 +61,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
     ControlMode m_controlMode = strafferConstants::MainControlMode;
     StrafferIO *m_pStrafferIO;
     StrafferIOInputs inputs;
+    StrafferIOLogger m_logger{frc::DataLogManager::GetLog(), "/Straffer"};
     Camera *m_pCamera;
 
     int m_counter{0};

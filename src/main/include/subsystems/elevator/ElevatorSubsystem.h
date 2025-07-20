@@ -7,6 +7,7 @@
 #include <frc2/command/SubsystemBase.h>
 
 #include "ElevatorIO.h"
+#include "ElevatorIOLogger.h"
 #include "Constants.h"
 #include "ElevatorConstants.h"
 #include "lib/pidRBL.h"
@@ -69,6 +70,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     ControlMode m_controlMode = elevatorConstants::MainControlMode;
     ElevatorIO *m_pElevatorIO;
     ElevatorIOInputs inputs;
+    ElevatorIOLogger m_logger{frc::DataLogManager::GetLog(), "/Elevator"};
 
     double m_output{0.0};
     double m_timestamp{0.0};

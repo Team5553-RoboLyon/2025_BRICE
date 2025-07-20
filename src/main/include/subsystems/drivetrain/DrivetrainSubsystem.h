@@ -8,6 +8,7 @@
 
 #include <functional>
 #include "DrivetrainIO.h"
+#include "DrivetrainIOLogger.h"
 #include "lib/RateLimiter.h"
 #include "DrivetrainConstants.h"
 #include "lib/Alert.h"
@@ -50,6 +51,7 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
  private:
   DrivetrainIO *m_pTankDriveIO;
   DrivetrainIOInputs inputs;
+  DrivetrainIOLogger m_logger{frc::DataLogManager::GetLog(), "/Drivetrain"};
 
   WantedDrive m_wantedDrive = WantedDrive::STAND_BY;
   SystemDrive m_systemDrive = SystemDrive::ARCADE_DRIVE;

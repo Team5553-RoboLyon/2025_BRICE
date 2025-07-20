@@ -33,12 +33,7 @@ void StrafferIOSpark::UpdateInputs(StrafferIOInputs& inputs)
     inputs.limitSwitchRight = m_limitSwitchRight.Get() == strafferConstants::Sensor::LimitSwitch::IS_TRIGGERED;
     inputs.widthPosition = m_encoder.GetDistance() + m_H2Offset; //COMMENTME
 
-    //only while waiting for AdScope (very bad performance)
     frc::SmartDashboard::PutBoolean("S.Connection", inputs.isMotorConnected);
-    frc::SmartDashboard::PutNumber("S.Voltage", inputs.appliedVoltage);
-    frc::SmartDashboard::PutNumber("S.BusVolt", inputs.busVoltage);
-    frc::SmartDashboard::PutNumber("S.Current", inputs.current);
-    frc::SmartDashboard::PutNumber("S.Temperature", inputs.temperature);
     frc::SmartDashboard::PutBoolean("S.Left LimitSwitch", inputs.limitSwitchLeft);
     frc::SmartDashboard::PutBoolean("S.Right LimitSwitch", inputs.limitSwitchRight);
     frc::SmartDashboard::PutNumber("S.Width Position", inputs.widthPosition);

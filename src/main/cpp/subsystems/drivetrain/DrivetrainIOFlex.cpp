@@ -78,36 +78,10 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
     inputs.rightDistance = m_encoderRight.GetDistance();
     inputs.rightVelocity = m_encoderRight.GetRate();
 
-
-    //only while waiting for AdScope (very bad performance)
     frc::SmartDashboard::PutBoolean("TDlf.Connection", inputs.isFrontLeftMotorConnected);
-    // frc::SmartDashboard::PutNumber("TDlf.Voltage", inputs.frontLeftMotorAppliedVoltage);
-    // frc::SmartDashboard::PutNumber("TDlf.BusVolt", inputs.frontLeftMotorBusVoltage);
-    // frc::SmartDashboard::PutNumber("TDlf.Current", inputs.frontLeftMotorCurrent);
-    // frc::SmartDashboard::PutNumber("TDlf.Temperature", inputs.frontLeftMotorTemperature);
-
     frc::SmartDashboard::PutBoolean("TDrb.Connection", inputs.isBackRightMotorConnected);
-    // frc::SmartDashboard::PutNumber("TDrb.Voltage", inputs.backRightMotorAppliedVoltage);
-    // frc::SmartDashboard::PutNumber("TDrb.BusVolt", inputs.backRightMotorBusVoltage);
-    // frc::SmartDashboard::PutNumber("TDrb.Current", inputs.backRightMotorCurrent);
-    // frc::SmartDashboard::PutNumber("TDrb.Temperature", inputs.backRightMotorTemperature);
-
     frc::SmartDashboard::PutBoolean("TDrf.Connection", inputs.isFrontRightMotorConnected);
-    // frc::SmartDashboard::PutNumber("TDrf.Voltage", inputs.frontRightMotorAppliedVoltage);
-    // frc::SmartDashboard::PutNumber("TDrf.BusVolt", inputs.frontRightMotorBusVoltage);
-    // frc::SmartDashboard::PutNumber("TDrf.Current", inputs.frontRightMotorCurrent);
-    // frc::SmartDashboard::PutNumber("TDrf.Temperature", inputs.frontRightMotorTemperature);
-
     frc::SmartDashboard::PutBoolean("TDlb.Connection", inputs.isBackLeftMotorConnected);
-    // frc::SmartDashboard::PutNumber("TDlb.Voltage", inputs.backLeftMotorAppliedVoltage);
-    // frc::SmartDashboard::PutNumber("TDlb.BusVolt", inputs.backLeftMotorBusVoltage);
-    // frc::SmartDashboard::PutNumber("TDlb.Current", inputs.backLeftMotorCurrent);
-    // frc::SmartDashboard::PutNumber("TDlb.Temperature", inputs.backLeftMotorTemperature);
-
-    frc::SmartDashboard::PutNumber("TD.LeftDistance", inputs.leftDistance);
-    frc::SmartDashboard::PutNumber("TD.LeftVelocity", inputs.leftVelocity);
-    frc::SmartDashboard::PutNumber("TD.RightDistance", inputs.rightDistance);
-    frc::SmartDashboard::PutNumber("TD.RightVelocity", inputs.rightVelocity);
 }
 
 void DrivetrainIOFlex::SetVoltage(double leftSideVoltage, double rightSideVoltage)

@@ -89,6 +89,8 @@ void GripperSubsystem::Periodic()
     m_currentWantedState = m_wantedState;
 
     m_pGripperIO->UpdateInputs(inputs);
+    m_logger.Log(inputs);
+    
     m_feederMotorDisconnected.Set(!inputs.isFeederMotorConnected);
     m_outtakeMotorDisconnected.Set(!inputs.isOuttakeMotorConnected);
     m_feederOverheating.Set(inputs.feederTemperature > feederConstants::Motor::OVERHEATING_THRESHOLD); 

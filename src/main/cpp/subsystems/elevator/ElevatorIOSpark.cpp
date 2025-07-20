@@ -52,18 +52,8 @@ void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs)
 
     inputs.heightPosition = m_encoder.GetDistance();
 
-    //only while waiting for AdScope (very bad performance)
     frc::SmartDashboard::PutBoolean("El.Connection", inputs.isLeftMotorConnected);
-    frc::SmartDashboard::PutNumber("El.Voltage", inputs.leftMotorAppliedVoltage);
-    frc::SmartDashboard::PutNumber("El.BusVolt", inputs.leftMotorBusVoltage);
-    frc::SmartDashboard::PutNumber("El.Current", inputs.leftMotorCurrent);
-    frc::SmartDashboard::PutNumber("El.Temperature", inputs.leftMotorTemperature);
-
     frc::SmartDashboard::PutBoolean("Er.Connection", inputs.isRightMotorConnected);
-    frc::SmartDashboard::PutNumber("Er.Voltage", inputs.rightMotorAppliedVoltage);
-    frc::SmartDashboard::PutNumber("Er.BusVolt", inputs.rightMotorBusVoltage);
-    frc::SmartDashboard::PutNumber("Er.Current", inputs.rightMotorCurrent);
-    frc::SmartDashboard::PutNumber("Er.Temperature", inputs.rightMotorTemperature);
 
     frc::SmartDashboard::PutBoolean("E.LimitSwitch", inputs.limitSwitchBottom);
     frc::SmartDashboard::PutBoolean("E.LimitSwitch2", inputs.limitSwitchBottom2);

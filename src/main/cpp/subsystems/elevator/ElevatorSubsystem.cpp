@@ -102,6 +102,8 @@ void ElevatorSubsystem::Periodic()
     m_timestamp = frc::Timer::GetFPGATimestamp().value();
 
     m_pElevatorIO->UpdateInputs(inputs);
+    m_logger.Log(inputs);
+    
     m_leftMotorDisconnected.Set(!inputs.isLeftMotorConnected);
     m_rightMotorDisconnected.Set(!inputs.isRightMotorConnected);
     m_leftMotorHot.Set(inputs.leftMotorTemperature > elevatorConstants::Motors::Left::HOT_THRESHOLD);
