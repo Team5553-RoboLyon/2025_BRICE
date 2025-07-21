@@ -120,11 +120,15 @@ void GripperIOSpark::SetOuttakeDutyCycle(const double dutyCycle)
 void GripperIOSpark::SetFeederRPM(const double RPM)
 {
     m_timestamp = frc::Timer::GetFPGATimestamp().value();
-    m_feederMotor.Set(m_feederVelocityPID.CalculateWithRealTime(RPM, m_feederVelocity, m_timestamp));
+    m_feederVelocityPID.SetFeedforward(NSIGN(RPM - m_feederVelocity) * 
+                                        feederConstants::VelocityPID::KS);
+    m_feederMotor.SetVoltage(units::volt_t(m_feederVelocityPID.CalculateWithRealTime(RPM, m_feederVelocity, m_timestamp)));
 }
 
 void GripperIOSpark::SetOuttakeRPM(const double RPM)
 {
     m_timestamp = frc::Timer::GetFPGATimestamp().value();
-    m_outtakeMotor.Set(m_outtakeVelocityPID.CalculateWithRealTime(RPM, m_outtakeVelocity, m_timestamp));
+    m_outtakeVelocityPID.SetFeedforward(NSIGN(RPM - m_outtakeVelocity) * 
+                                        outtakeConstants::VelocityPID::KS);
+    m_outtakeMotor.SetVoltage(units::volt_t(m_outtakeVelocityPID.CalculateWithRealTime(RPM, m_outtakeVelocity, m_timestamp)));
 }

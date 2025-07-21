@@ -8,7 +8,21 @@ StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) :
                                                     m_pStrafferIO(pIo),
                                                     m_pCamera(pCamera)
 {
-    m_strafferPIDController.SetTolerance(strafferConstants::PID::TOLERANCE);
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
+    }
+    m_strafferPIDController.Reset(m_timestamp);
     m_strafferPIDController.SetOutputLimits(strafferConstants::Speed::MIN, strafferConstants::Speed::MAX);
     m_strafferPIDController.SetInputLimits(true);
     m_strafferPIDController.SetInputLimits(strafferConstants::Settings::LEFT_LIMIT, strafferConstants::Settings::RIGHT_LIMIT);
@@ -21,6 +35,20 @@ void StrafferSubsystem::SetControlMode(const ControlMode mode)
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
     m_strafferPIDController.Reset(m_timestamp);
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
+    }
     m_output = strafferConstants::Speed::REST;
 }
 ControlMode StrafferSubsystem::GetControlMode()
@@ -45,6 +73,21 @@ void StrafferSubsystem::ToggleControlMode()
     default:
         DEBUG_ASSERT(false,"Straffer : Toggle impossible with an unrecognized mode.");
         break;
+    }
+
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_strafferPIDController.SetGains(strafferConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                strafferConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_strafferPIDController.SetTolerance(strafferConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
     }
 }
 void StrafferSubsystem::SetWantedState(const WantedState wantedState)
@@ -114,7 +157,7 @@ void StrafferSubsystem::Periodic()
 
         switch (m_controlMode) //actualise motion
         {
-        case ControlMode::POSITION_PID :
+        case ControlMode::POSITION_DUTYCYCLE_PID :
             switch (m_systemState)
             {
             case SystemState::AT_STATION :
@@ -128,22 +171,34 @@ void StrafferSubsystem::Periodic()
                 break;
             case SystemState::STRAFFING_TO_LEFT_REEF :
             case SystemState::STRAFFING_TO_RIGHT_REEF :
+                m_strafferPIDController.SetFeedforward(
+                NSIGN(m_selectedReefWidthPosition - inputs.widthPosition) * 
+                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KS);
                 m_output = m_strafferPIDController.CalculateWithRealTime(m_selectedReefWidthPosition,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);
                 
                 break;
             case SystemState::STRAFFING_TO_LEFT_SIDE :
+                m_strafferPIDController.SetFeedforward(
+                NSIGN(strafferConstants::Setpoint::LEFT_SIDE - inputs.widthPosition) * 
+                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KS);
                 m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::LEFT_SIDE,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);
                 break;
             case SystemState::STRAFFING_TO_RIGHT_SIDE :
+                m_strafferPIDController.SetFeedforward(
+                NSIGN(strafferConstants::Setpoint::RIGHT_SIDE - inputs.widthPosition) * 
+                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KS);
                 m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::RIGHT_SIDE,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);
                 break;
             case SystemState::STRAFFING_TO_STATION :
+                m_strafferPIDController.SetFeedforward(
+                NSIGN(strafferConstants::Setpoint::CENTER - inputs.widthPosition) * 
+                strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KS);
                 m_output = m_strafferPIDController.CalculateWithRealTime(strafferConstants::Setpoint::CENTER,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);
@@ -165,6 +220,9 @@ void StrafferSubsystem::Periodic()
         case ControlMode::MANUAL_SETPOINT :
             //adapt the manual value to changing setpoint
             m_output = m_strafferPIDController.GetSetpoint() + m_output * strafferConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+            
+            m_strafferPIDController.SetFeedforward(NSIGN(m_output - inputs.widthPosition) * 
+                                    strafferConstants::Gains::MANUAL_SETPOINT_PID::KS);
             m_output = m_strafferPIDController.CalculateWithRealTime(m_output,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);

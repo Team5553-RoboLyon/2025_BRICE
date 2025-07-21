@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : PidRBL.h (v3.2)
+ * File        : PidRBL.h (v3.3)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Advanced PID controller class implementing 
  *               Proportional-Integral-Derivative control with optional 
@@ -22,11 +22,33 @@
 
 class PidRBL {
 public :
+  PidRBL();
   PidRBL(const double kp, const double ki, const double kd);
-  PidRBL(double kp, double ki, double kd, double kf);
+  PidRBL(double kp, double ki, double kd, double ff);
 
 
-  void SetGains(const double kp, const double ki, const double kd, const double kf = 0.0);
+  /**
+   * @brief Sets the PIDF (Proportional, Integral, Derivative, Feedforward) gains for the controller.
+   * 
+   * @note This function calls Reset() internally to clear the previous state of the controller.
+   * 
+   * @param kp The proportional gain, which determines the reaction to the current error.
+   * @param ki The integral gain, which determines the reaction based on the accumulation of past errors.
+   * @param kd The derivative gain, which determines the reaction based on the rate of change of the error.
+   * @param ff The feedforward term, which provides a baseline output independent of the error (default is 0.0).
+   */
+  void SetGains(const double kp, const double ki, const double kd, const double ff = 0.0);
+  /**
+   * @brief Sets the feedforward gain for the PID controller.
+   * 
+   * @warning This function must be called before Calculate() to ensure that the 
+   *          feedforward gain is applied correctly.
+   * 
+   * @param kf The feedforward term value to be set. This value is used to 
+   *        directly scale the input to the controller, providing a baseline 
+   *        output that is independent of the error.
+   */
+  void SetFeedforward(const double ff);
   /**
    * @brief Sets the desired setpoint for the PID controller, clamping it within the allowed input range.
    * 
@@ -76,7 +98,7 @@ public :
   double GetKP() const;
   double GetKI() const;
   double GetKD() const;
-  double GetKF() const;
+  double GetFF() const;
   double GetError() const;
   double GetSetpoint() const;
   /**
@@ -152,7 +174,7 @@ private:
   double m_kp;  // factor for Proportional gain
   double m_ki;  // factor for Integral gain
   double m_kd;  // factor for Derivative gain
-  double m_kf;  // factor for Feedforward gain
+  double m_feedforward;  // Feedforward term
 
   double m_outputMin{-1.0};   // Min output value
   double m_outputMax{1.0};    // Max output value

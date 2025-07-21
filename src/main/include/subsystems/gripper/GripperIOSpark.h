@@ -22,13 +22,13 @@ class GripperIOSpark final : public GripperIO
         feederConstants::VelocityPID::KP, 
         feederConstants::VelocityPID::KI,
         feederConstants::VelocityPID::KD,
-        feederConstants::VelocityPID::KFF
+        feederConstants::VelocityPID::KS
     };
     PidRBL m_outtakeVelocityPID{
         outtakeConstants::VelocityPID::KP,
         outtakeConstants::VelocityPID::KI,
         outtakeConstants::VelocityPID::KD,
-        outtakeConstants::VelocityPID::KFF
+        outtakeConstants::VelocityPID::KS
     };
 
     double m_feederVelocity{0.0};

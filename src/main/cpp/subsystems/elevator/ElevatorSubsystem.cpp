@@ -7,7 +7,21 @@
 ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) : 
                                                     m_pElevatorIO(pIO)
 {
-    m_elevatorPIDController.SetTolerance(elevatorConstants::PID::TOLERANCE);
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
+    }
+
     m_elevatorPIDController.Reset(m_timestamp);
     m_elevatorPIDController.SetOutputLimits(elevatorConstants::Speed::MIN, elevatorConstants::Speed::MAX);
     m_elevatorPIDController.SetInputLimits(true);
@@ -39,6 +53,21 @@ void ElevatorSubsystem::SetControlMode(const ControlMode mode)
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
+
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
+    }
     m_elevatorPIDController.Reset(m_timestamp);
     m_output = elevatorConstants::Speed::REST;
 }
@@ -53,7 +82,6 @@ void ElevatorSubsystem::ToggleControlMode()
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
-    m_elevatorPIDController.Reset(m_timestamp);
     m_output = elevatorConstants::Speed::REST;
     switch (m_controlMode)
     {
@@ -67,11 +95,27 @@ void ElevatorSubsystem::ToggleControlMode()
         DEBUG_ASSERT(false,"Elevator : Toggle impossible with an unrecognized mode.");
         break;
     }
+
+    if(m_controlMode == ControlMode::POSITION_DUTYCYCLE_PID)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KP, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KI, 
+                                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
+    }
+    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    {
+        m_elevatorPIDController.SetGains(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KP, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KI, 
+                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KD);
+        m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
+    }
+    m_elevatorPIDController.Reset(m_timestamp);
 }
 
 bool ElevatorSubsystem::IsResting()
 {  
-    DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode), "Straffer : IsResting() is used while Open Loop");
+    DEBUG_ASSERT(ALLOWS_STATE_MACHINE(m_controlMode), "Elevator : IsResting() is used while Open Loop");
     return ((m_systemState == SystemState::AT_HOME) ||
             (m_systemState == SystemState::AT_L1) ||
             (m_systemState == SystemState::AT_L2) ||
@@ -106,10 +150,10 @@ void ElevatorSubsystem::Periodic()
     
     m_leftMotorDisconnected.Set(!inputs.isLeftMotorConnected);
     m_rightMotorDisconnected.Set(!inputs.isRightMotorConnected);
-    m_leftMotorHot.Set(inputs.leftMotorTemperature > elevatorConstants::Motors::Left::HOT_THRESHOLD);
-    m_rightMotorHot.Set(inputs.rightMotorTemperature > elevatorConstants::Motors::Right::HOT_THRESHOLD);
-    m_leftMotorOverheating.Set(inputs.leftMotorTemperature > elevatorConstants::Motors::Left::OVERHEATING_THRESHOLD);
-    m_rightMotorOverheating.Set(inputs.rightMotorTemperature > elevatorConstants::Motors::Right::OVERHEATING_THRESHOLD);
+    m_leftMotorHot.Set(inputs.leftMotorTemperature > elevatorConstants::Motors::HOT_THRESHOLD);
+    m_rightMotorHot.Set(inputs.rightMotorTemperature > elevatorConstants::Motors::HOT_THRESHOLD);
+    m_leftMotorOverheating.Set(inputs.leftMotorTemperature > elevatorConstants::Motors::OVERHEATING_THRESHOLD);
+    m_rightMotorOverheating.Set(inputs.rightMotorTemperature > elevatorConstants::Motors::OVERHEATING_THRESHOLD);
 
     if(!m_isInitialized)
     {
@@ -127,48 +171,69 @@ void ElevatorSubsystem::Periodic()
 
         switch (m_controlMode) //actualise motion
         {
-        case ControlMode::POSITION_PID :
+        case ControlMode::POSITION_DUTYCYCLE_PID :
             switch (m_systemState)
             {
             //HACK : same behaviour for steady and transition state to ensure PID stability
             case SystemState::MOVING_TO_HOME :
             case SystemState::AT_HOME :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::HOME - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::HOME,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_HOME
             case SystemState::MOVING_TO_STATION :
             case SystemState::AT_STATION :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::CORAL_STATION - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::CORAL_STATION,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_STATION
             case SystemState::MOVING_TO_VISION : 
             case SystemState::AT_VISION :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::VISION - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::VISION,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_VISION           
             case SystemState::MOVING_TO_L1 :
             case SystemState::AT_L1 :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::L1 - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L1,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L1
             case SystemState::MOVING_TO_L2 :
             case SystemState::AT_L2 :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::L2 - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L2,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L2
             case SystemState::MOVING_TO_L3 :
             case SystemState::AT_L3 :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::L3 - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L3,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L3
             case SystemState::MOVING_TO_L4 :
             case SystemState::AT_L4 :
+                m_elevatorPIDController.SetFeedforward(
+                NSIGN(elevatorConstants::Setpoint::L4 - inputs.heightPosition) * 
+                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L4,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
@@ -183,10 +248,13 @@ void ElevatorSubsystem::Periodic()
             }
             break; //end of ControlMode::POSITION_PID
         case ControlMode::MANUAL_DUTY_CYCLE :
-            m_output = m_rateLimiter.Update((std::sin(m_output * (M_PI / 2.0)) / elevatorConstants::OPEN_LOOP_REDUC) );
+            m_output = m_rateLimiter.Update((std::sin(m_output * (M_PI / 2.0)) / elevatorConstants::Settings::OPEN_LOOP_REDUC) );
             break; //end of ControlMode::MANUAL_DUTY_CYCLE
         case ControlMode::MANUAL_SETPOINT :
             m_output = m_elevatorPIDController.GetSetpoint() + m_output * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+
+            m_elevatorPIDController.SetFeedforward(NSIGN(m_output - inputs.heightPosition) * 
+                                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KG);
             m_output = m_elevatorPIDController.CalculateWithRealTime(m_output,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);

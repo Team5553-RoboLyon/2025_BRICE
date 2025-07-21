@@ -77,10 +77,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     bool m_isInitialized = false;
     bool m_isEncoderAlreadyReset = false;
 
-    PidRBL m_elevatorPIDController{elevatorConstants::PID::KP, 
-                                  elevatorConstants::PID::KI, 
-                                  elevatorConstants::PID::KD,
-                                  elevatorConstants::PID::KFF};
+    PidRBL m_elevatorPIDController;
     RateLimiter m_rateLimiter{elevatorConstants::Settings::TIME_TO_REACH_FULL_SPEED};
 
     Alert m_leftMotorDisconnected{"Elevator Left Motor: Disconnected", Alert::AlertType::ERROR};

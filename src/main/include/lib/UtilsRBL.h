@@ -32,7 +32,7 @@
 #define NMIN(a, b) (((a) < (b)) ? (a) : (b))
 #define NDEADBAND(a, t) (((a) > -(t) && (a) < (t)) ? 0 : (a))
 // #define NROUND(fval)	( ( (fval) >= 0.0 ) ? ((Ns32)((fval) + 0.5)) : ((Ns32)((fval) - 0.5)) )
-#define NSIGN(a) (((a) < 0) ? -1 : 1)
+#define NSIGN(a) (((a) > 0) - ((a) < 0)) // Returns 1 if a > 0, -1 if a < 0, and 0 if a == 0
 #define NCLAMP(mn, a, mx) (((a) < (mn)) ? (mn) : ((a) > (mx)) ? (mx) \
                                                               : (a))
 #define NLERP(a, b, t) (a + (b - a) * t)

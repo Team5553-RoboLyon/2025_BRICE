@@ -5,18 +5,18 @@
 ElevatorIOSpark::ElevatorIOSpark()
 {
     // Set the left motor configs
-    m_leftMotorConfig.SetIdleMode(elevatorConstants::Motors::Left::IDLE_MODE)
-        .Inverted(elevatorConstants::Motors::Left::INVERTED)
-        .SmartCurrentLimit(elevatorConstants::Motors::Left::CURRENT_LIMIT)
-        .ClosedLoopRampRate(elevatorConstants::Motors::Left::RAMP_RATE)
-        .VoltageCompensation(elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION);
+    m_leftMotorConfig.SetIdleMode(elevatorConstants::Motors::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::INVERTED_LEFT)
+        .SmartCurrentLimit(elevatorConstants::Motors::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::VOLTAGE_COMPENSATION);
 
     // Set the right motor configs
-    m_rightMotorConfig.SetIdleMode(elevatorConstants::Motors::Right::IDLE_MODE)
-        .Inverted(elevatorConstants::Motors::Right::INVERTED)
-        .SmartCurrentLimit(elevatorConstants::Motors::Right::CURRENT_LIMIT)
-        .ClosedLoopRampRate(elevatorConstants::Motors::Right::RAMP_RATE)
-        .VoltageCompensation(elevatorConstants::Motors::Right::VOLTAGE_COMPENSATION);
+    m_rightMotorConfig.SetIdleMode(elevatorConstants::Motors::IDLE_MODE)
+        .Inverted(elevatorConstants::Motors::INVERTED_RIGHT)
+        .SmartCurrentLimit(elevatorConstants::Motors::CURRENT_LIMIT)
+        .ClosedLoopRampRate(elevatorConstants::Motors::RAMP_RATE)
+        .VoltageCompensation(elevatorConstants::Motors::VOLTAGE_COMPENSATION);
 
     // Apply the configs to the motors
     m_leftMotor.Configure(  m_leftMotorConfig, 
@@ -38,8 +38,8 @@ void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs)
     inputs.isLeftMotorConnected = (m_leftMotor.GetBusVoltage() !=0.0) && !m_leftMotor.GetFaults().can;
     inputs.isRightMotorConnected = (m_rightMotor.GetBusVoltage() !=0.0) && !m_rightMotor.GetFaults().can;
 
-    inputs.leftMotorAppliedVoltage = m_leftMotor.GetAppliedOutput() * elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION;
-    inputs.rightMotorAppliedVoltage = m_rightMotor.GetAppliedOutput() * elevatorConstants::Motors::Right::VOLTAGE_COMPENSATION;
+    inputs.leftMotorAppliedVoltage = m_leftMotor.GetAppliedOutput() * elevatorConstants::Motors::VOLTAGE_COMPENSATION;
+    inputs.rightMotorAppliedVoltage = m_rightMotor.GetAppliedOutput() * elevatorConstants::Motors::VOLTAGE_COMPENSATION;
     inputs.leftMotorBusVoltage = m_leftMotor.GetBusVoltage();
     inputs.rightMotorBusVoltage = m_rightMotor.GetBusVoltage();
     inputs.leftMotorCurrent = m_leftMotor.GetOutputCurrent();
@@ -62,8 +62,8 @@ void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs)
 
 void ElevatorIOSpark::SetVoltage(double voltage)
 {
-    DEBUG_ASSERT((voltage <= elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
-        && (voltage >= -elevatorConstants::Motors::Left::VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((voltage <= elevatorConstants::Motors::VOLTAGE_COMPENSATION) 
+        && (voltage >= -elevatorConstants::Motors::VOLTAGE_COMPENSATION) 
         ,"Elevator Voltage out of range");
     
     m_leftMotor.SetVoltage(units::volt_t(voltage));

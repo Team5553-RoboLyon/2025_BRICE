@@ -7,8 +7,9 @@ using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 #if (ROBOT_MODEL != (BABY_BRICE))
 namespace strafferConstants 
 {
-    constexpr ControlMode MainControlMode = ControlMode::POSITION_PID;
+    constexpr ControlMode MainControlMode = ControlMode::POSITION_DUTYCYCLE_PID;
     constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_SETPOINT;
+
     namespace Motor
     {
         constexpr int ID = 8;
@@ -20,6 +21,7 @@ namespace strafferConstants
         constexpr int HOT_THRESHOLD = 55; //TUNEME
         constexpr int OVERHEATING_THRESHOLD = 70; //TUNEME
     }
+
     namespace Sensor 
     {
         namespace LimitSwitch
@@ -38,6 +40,7 @@ namespace strafferConstants
             constexpr double DISTANCE_PER_PULSE = CIRCUMFERENCE / REDUCTION / ENCODER_TICKS_PER_REVOLUTION_K2X;
         }
     }
+
     namespace Speed 
     {
         constexpr double REST = 0.0;
@@ -45,14 +48,27 @@ namespace strafferConstants
         constexpr double MAX = 1.0;
         constexpr double CALIBRATION = -0.25; //TUNEME
     }
-    namespace PID
+
+    namespace Gains
     {
-        constexpr double KP = 6.5; //TUNEME
-        constexpr double KI = 0.000; //TUNEME
-        constexpr double KD = 0.4; //TUNEME
-        constexpr double KFF = 0.0; //TUNEME
-        constexpr double TOLERANCE = 0.005; //TUNEME
+        namespace POSITION_DUTYCYCLE_PID
+        {
+            constexpr double KP = 6.5; //TUNEME
+            constexpr double KI = 0.000; //TUNEME
+            constexpr double KD = 0.4; //TUNEME
+            constexpr double KS = 0.0; //TUNEME
+            constexpr double TOLERANCE = 0.005; //TUNEME
+        }
+        namespace MANUAL_SETPOINT_PID
+        {
+            constexpr double KP = 4.5; //TUNEME
+            constexpr double KI = 0.000; //TUNEME
+            constexpr double KD = 0.2; //TUNEME
+            constexpr double KS = 0.0; //TUNEME
+            constexpr double TOLERANCE = 0.005; //TUNEME
+        }
     }
+
     namespace Setpoint 
     {
         constexpr double LEFT_SIDE = 0.05; //TUNEME
@@ -60,6 +76,7 @@ namespace strafferConstants
         constexpr double CENTER = 0.1975; //TUNEME
         constexpr double TOLERANCE = 0.005; //TUNEME
     } 
+
     namespace Settings
     {
         constexpr double TIME_TO_REACH_FULL_SPEED = 0.2; // only for manual open-loop //TUNEME
@@ -67,6 +84,7 @@ namespace strafferConstants
         constexpr double RIGHT_LIMIT = 0.37; //TUNEME
         constexpr double MANUAL_SETPOINT_CHANGE_LIMIT = (RIGHT_LIMIT - LEFT_LIMIT) / (1.0/TIME_PER_CYCLE); //TUNEME
     } 
+
     namespace Seeking
     {
         constexpr int COUNTER = 10; //TUNEME

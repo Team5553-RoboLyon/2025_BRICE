@@ -1,25 +1,37 @@
 #include "lib/pidRBL.h"
 
 #include "lib/UtilsRBL.h"
+PidRBL::PidRBL() 
+            :   m_kp(0.0),  
+                m_ki(0.0), 
+                m_kd(0.0), 
+                m_feedforward {0.0}
+{}
 PidRBL::PidRBL(const double kp, const double ki, const double kd) 
                 :   m_kp(kp),  
                     m_ki(ki), 
                     m_kd(kd), 
-                    m_kf {0.0} // Default feedforward gain is 0.0
+                    m_feedforward {0.0} // Default feedforward term is 0.0
 {}
-PidRBL::PidRBL(const double kp, const double ki, const double kd, const double kf)
+PidRBL::PidRBL(const double kp, const double ki, const double kd, const double ff)
                 :   m_kp(kp),  
                     m_ki(ki), 
                     m_kd(kd), 
-                    m_kf {kf}
+                    m_feedforward {ff}
 {}
 
-void PidRBL::SetGains(const double kp, const double ki, const double kd, const double kf)
+void PidRBL::SetGains(const double kp, const double ki, const double kd, const double ff)
 {
     m_kp = kp;
     m_ki = ki;
     m_kd = kd;
-    m_kf = kf;
+    m_feedforward = ff;
+    Reset();
+}
+
+void PidRBL::SetFeedforward(const double ff)
+{
+    m_feedforward = ff;
 }
 
 void PidRBL::SetSetpoint(const double setpoint)
@@ -81,9 +93,9 @@ double PidRBL::GetKD() const
     return m_kd;
 }
 
-double PidRBL::GetKF() const
+double PidRBL::GetFF() const
 {
-    return m_kf;
+    return m_feedforward;
 }
 
 double PidRBL::GetError() const
@@ -102,7 +114,7 @@ std::string PidRBL::GetState() const
     state += "Kp: " + std::to_string(m_kp) + "\n";
     state += "Ki: " + std::to_string(m_ki) + "\n";
     state += "Kd: " + std::to_string(m_kd) + "\n";
-    state += "Kf: " + std::to_string(m_kf) + "\n";
+    state += "FF: " + std::to_string(m_feedforward) + "\n";
     state += "Setpoint: " + std::to_string(m_setpoint) + "\n";
     state += "Input Min: " + std::to_string(m_inputMin) + "\n";
     state += "Input Max: " + std::to_string(m_inputMax) + "\n";
@@ -157,14 +169,14 @@ double PidRBL::CalculateWithRealTime(const double measurement, const double time
         m_output =  m_kp * m_currentError + 
                     m_ki * m_integrative + 
                     m_kd * ((m_currentError - m_previousError) / m_dt) + 
-                    m_kf * m_setpoint;
+                    m_feedforward;
     } 
     else
     {
         // Near target: skip proportional term to reduce overshoot
         m_output = m_ki * m_integrative + 
                     m_kd * ((m_currentError - m_previousError) / m_dt) + 
-                    m_kf * m_setpoint;
+                    m_feedforward;
     }
     m_previousError = m_currentError;                    
 

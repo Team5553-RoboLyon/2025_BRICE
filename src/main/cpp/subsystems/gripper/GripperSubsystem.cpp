@@ -183,7 +183,7 @@ void GripperSubsystem::Periodic()
         m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
         break; //end of ControlMode::DUTY_CYCLE
 
-    case ControlMode::VELOCITY_PID :
+    case ControlMode::VELOCITY_VOLTAGE_PID :
         switch (m_systemState)
         {
         case SystemState::COLLECTING_EMPTY :

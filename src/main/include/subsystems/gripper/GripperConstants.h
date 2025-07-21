@@ -57,12 +57,12 @@ namespace feederConstants
     }
     namespace VelocityPID
     {
-        constexpr double KP = 0.5; //TUNEME
+        constexpr double KP = 5.0; //TUNEME
         constexpr double KI = 0.0; //TUNEME
         constexpr double KD = 0.0; //TUNEME
-        constexpr double KFF = 0.0; //TUNEME
-        constexpr double MAX = 1.0;
-        constexpr double MIN = -1.0;
+        constexpr double KS = 0.0; //TUNEME
+        constexpr double MAX = Motor::VOLTAGE_COMPENSATION;
+        constexpr double MIN = -Motor::VOLTAGE_COMPENSATION;
     }
 }
 namespace outtakeConstants
@@ -113,12 +113,12 @@ namespace outtakeConstants
     }
     namespace VelocityPID
     {
-        constexpr double KP = 0.5; //TUNEME
+        constexpr double KP = 5.0; //TUNEME
         constexpr double KI = 0.0; //TUNEME
         constexpr double KD = 0.0; //TUNEME
-        constexpr double KFF = 0.0; //TUNEME
-        constexpr double MAX = 1.0;
-        constexpr double MIN = -1.0;
+        constexpr double KS = 0.0; //TUNEME
+        constexpr double MAX = Motor::VOLTAGE_COMPENSATION;
+        constexpr double MIN = -Motor::VOLTAGE_COMPENSATION;
     }
 }
 #else
