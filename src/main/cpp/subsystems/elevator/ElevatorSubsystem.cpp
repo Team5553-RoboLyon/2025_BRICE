@@ -1,7 +1,7 @@
 #include "subsystems/elevator/ElevatorSubsystem.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
-#include <frc/Timer.h>
+#include "lib/TimerRBL.h"
 #include "lib/DebugUtils.h"
 
 ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) : 
@@ -143,7 +143,7 @@ void ElevatorSubsystem::SetManualAxis(const double value)
 void ElevatorSubsystem::Periodic()
 {
     m_currentWantedState = m_wantedState;
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
 
     m_pElevatorIO->UpdateInputs(inputs);
     m_logger.Log(inputs);

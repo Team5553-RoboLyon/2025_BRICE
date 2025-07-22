@@ -2,7 +2,7 @@
 
 #include "lib/DebugUtils.h"
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <frc/Timer.h>
+#include "lib/TimerRBL.h"
 
 GripperIOSpark::GripperIOSpark()
 {
@@ -80,7 +80,7 @@ void GripperIOSpark::SetFeederVoltage(const double voltage)
     ,"Feeder Voltage out of range");
     m_feederMotor.SetVoltage(units::volt_t(voltage));
 
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.Reset(m_timestamp);
     m_feederVelocityPID.Reset(m_timestamp);
 }
@@ -92,7 +92,7 @@ void GripperIOSpark::SetOuttakeVoltage(const double voltage)
     ,"Outtake Voltage out of range");
     m_outtakeMotor.SetVoltage(units::volt_t(voltage));
 
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.Reset(m_timestamp);
     m_feederVelocityPID.Reset(m_timestamp);
 }
@@ -102,7 +102,7 @@ void GripperIOSpark::SetFeederDutyCycle(const double dutyCycle)
     DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0),"Feeder Duty Cycle out of range");
     m_feederMotor.Set(dutyCycle);
 
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.Reset(m_timestamp);
     m_feederVelocityPID.Reset(m_timestamp);
 }
@@ -112,14 +112,14 @@ void GripperIOSpark::SetOuttakeDutyCycle(const double dutyCycle)
     DEBUG_ASSERT((dutyCycle <= 1.0) && (dutyCycle >= -1.0),"Outtake Duty Cycle out of range");
     m_outtakeMotor.Set(dutyCycle);
 
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.Reset(m_timestamp);
     m_feederVelocityPID.Reset(m_timestamp);
 }
 
 void GripperIOSpark::SetFeederRPM(const double RPM)
 {
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_feederVelocityPID.SetFeedforward(NSIGN(RPM - m_feederVelocity) * 
                                         feederConstants::VelocityPID::KS);
     m_feederMotor.SetVoltage(units::volt_t(m_feederVelocityPID.CalculateWithRealTime(RPM, m_feederVelocity, m_timestamp)));
@@ -127,7 +127,7 @@ void GripperIOSpark::SetFeederRPM(const double RPM)
 
 void GripperIOSpark::SetOuttakeRPM(const double RPM)
 {
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.SetFeedforward(NSIGN(RPM - m_outtakeVelocity) * 
                                         outtakeConstants::VelocityPID::KS);
     m_outtakeMotor.SetVoltage(units::volt_t(m_outtakeVelocityPID.CalculateWithRealTime(RPM, m_outtakeVelocity, m_timestamp)));

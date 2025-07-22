@@ -1,6 +1,6 @@
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "frc/smartdashboard/SmartDashboard.h"
-#include <frc/Timer.h>
+#include "lib/TimerRBL.h"
 #include "lib/DebugUtils.h"
 
 //FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG 
@@ -132,7 +132,7 @@ bool StrafferSubsystem::IsResting()
 // This method will be called once per scheduler run
 void StrafferSubsystem::Periodic() 
 {
-    m_timestamp = frc::Timer::GetFPGATimestamp().value();
+    m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_currentWantedState = m_wantedState;
 
     m_pStrafferIO->UpdateInputs(inputs);
