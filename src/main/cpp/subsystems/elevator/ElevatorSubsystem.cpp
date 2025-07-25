@@ -177,63 +177,49 @@ void ElevatorSubsystem::Periodic()
             //HACK : same behaviour for steady and transition state to ensure PID stability
             case SystemState::MOVING_TO_HOME :
             case SystemState::AT_HOME :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::HOME - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::HOME,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_HOME
             case SystemState::MOVING_TO_STATION :
             case SystemState::AT_STATION :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::CORAL_STATION - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::CORAL_STATION,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_STATION
             case SystemState::MOVING_TO_VISION : 
             case SystemState::AT_VISION :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::VISION - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::VISION,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_VISION           
             case SystemState::MOVING_TO_L1 :
             case SystemState::AT_L1 :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::L1 - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L1,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L1
             case SystemState::MOVING_TO_L2 :
             case SystemState::AT_L2 :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::L2 - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L2,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L2
             case SystemState::MOVING_TO_L3 :
             case SystemState::AT_L3 :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::L3 - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L3,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
                 break; //end of SystemState::MOVING_TO_L3
             case SystemState::MOVING_TO_L4 :
             case SystemState::AT_L4 :
-                m_elevatorPIDController.SetFeedforward(
-                NSIGN(elevatorConstants::Setpoint::L4 - inputs.heightPosition) * 
-                elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
+                m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KG);
                 m_output = m_elevatorPIDController.CalculateWithRealTime(elevatorConstants::Setpoint::L4,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
@@ -253,8 +239,7 @@ void ElevatorSubsystem::Periodic()
         case ControlMode::MANUAL_SETPOINT :
             m_output = m_elevatorPIDController.GetSetpoint() + m_output * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
 
-            m_elevatorPIDController.SetFeedforward(NSIGN(m_output - inputs.heightPosition) * 
-                                                elevatorConstants::Gains::MANUAL_SETPOINT_PID::KG);
+            m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KG);
             m_output = m_elevatorPIDController.CalculateWithRealTime(m_output,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
