@@ -1,6 +1,7 @@
 #pragma once
 #include "Constants.h"
 #include "lib/ControlMode.h"
+#include "lib/DebugUtils.h"
 
 using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 

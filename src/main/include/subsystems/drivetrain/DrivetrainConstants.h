@@ -1,5 +1,6 @@
 #pragma once
 #include "Constants.h"
+#include "lib/DebugUtils.h"
 
 #define NORMALIZE_HEIGHT(height) ((height) / (elevatorConstants::Settings::TOP_LIMIT))
 

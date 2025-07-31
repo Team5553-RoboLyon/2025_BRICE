@@ -1,7 +1,7 @@
 #pragma once
 #include "rev/SparkMax.h"
 #include "lib/UtilsRBL.h"
-#include "lib/DebugUtils.h"
+#include "frc/DriverStation.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -26,8 +26,13 @@
 #define DEBUG_MODE
 #endif
 
+
 constexpr double ENCODER_TICKS_PER_REVOLUTION_K2X = 2048.0;
 constexpr double TIME_PER_CYCLE = 0.02; // 20ms
+
+
+#define IS_RED_ALLIANCE(alliance) ((alliance) == (frc::DriverStation::Alliance::kRed))
+#define IS_BLUE_ALLIANCE(alliance) ((alliance) == (frc::DriverStation::Alliance::kBlue))
 
 namespace ControlPanelConstants {
     namespace Joystick{
