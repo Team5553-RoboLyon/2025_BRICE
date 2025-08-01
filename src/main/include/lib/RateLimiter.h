@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : RateLimiter.h (v2.0)
+ * File        : RateLimiter.h (v2.1)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Rate Limiter class for controlling the rate of change of a value.
  *               Appropriate for applications where smooth transitions are required,
@@ -15,6 +15,7 @@
 #pragma once
 
 #include <string>
+#include "lib/UtilsRBL.h"
 
 class RateLimiter
 {
@@ -51,7 +52,7 @@ public:
    * 
    * @param timeToReachMaxUp The time (in seconds) required to reach the maximum value when increasing.
    *                         Must be greater than 0.0.
-   * @param timeToReachMaxDown The time (in seconds) required to reach the maximum value when decreasing. 
+   * @param timeToReachMaxDown The time (in seconds) required to reach the maximum value when stopping. 
    *                           Must be greater than 0.0.
    * 
    * @note If either of the input parameters is less than or equal to 0.0, the rate limits will default to 0.0,
@@ -114,8 +115,8 @@ public:
 
 private:
   double m_dt{0.02}; // Default to 20ms in FRC, can be set by SetDeltaTime
-  double m_rateLimitUp; // Rate limit for increasing speed
-  double m_rateLimitDown; // Rate limit for decreasing speed
+  double m_increasingRateLimit; // Rate limit for increasing speed
+  double m_brakingRateLimit; // Rate limit for deceleration when braking
   double m_currentSpeed; // Current speed of the rate limiter
   double m_targetSpeed; // Target speed to reach
 };
