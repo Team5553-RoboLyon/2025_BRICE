@@ -15,8 +15,9 @@ Robot::Robot() {
 
 void Robot::RobotInit()
 {
-    frc::DataLogManager::Start();
-    frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
+  frc::DataLogManager::Start();
+  frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
+  m_container.drivetrain.SetWantedDrive(DriveMode::DISABLE);
 }
 
 void Robot::RobotPeriodic() {
@@ -27,7 +28,7 @@ void Robot::RobotPeriodic() {
   {
     m_led.SetSpeed(-0.39);
   }
-  else if(m_container.m_gripper.GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
+  else if(m_container.gripper.GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
   {
     m_led.SetSpeed(-0.37);
   }
@@ -37,70 +38,31 @@ void Robot::RobotPeriodic() {
   }
 }
 
-
-// void Robot::CenterToL4() {
-//   m_container.m_camera.Update();
-//   switch (m_state)
-//   {
-//   case AutoState::Leave:
-//     if(m_container.m_camera.HasTargets() && (m_container.m_camera.GetDistance(m_container.m_camera.GetBestTarget()) <0.62) )
-//     {
-//       m_container.m_drivetrain.SetPower(0.0);
-//       m_state = AutoState::Elevate;
-//       m_container.m_elevator.SetDesiredStage(Stage::L4);
-//     }
-//     else
-//     {
-//       m_container.m_drivetrain.SetPower(0.2);
-//       m_container.m_elevator.SetDesiredStage(Stage::L2); // position to detect targets
-//     }
-//     break;
-  
-//   case AutoState::Elevate :
-//     if(m_container.m_elevator.IsAtL4())
-//     {
-//       m_state = AutoState::Align;
-//       m_container.m_straffer.m_state = Straffer::State::SEEK_APRIL_TAG;
-//       m_container.m_straffer.m_counter = strafferConstants::Counter::SEEK_APRIL_TAG; // counter for State::SEEK_APRIL_TAG 
-//       m_container.m_straffer.m_targetOffset = -0.17; //LeftOffSet
-//        m_container.m_straffer.m_lowestAmbiguity = 1.0;
-//     }
-//     break;
-  
-//   case AutoState::Align : 
-//     if(m_container.m_straffer.m_state == Straffer::State::AT_REEF)
-//       {
-//         m_state = AutoState::Shoot;
-//         m_container.m_gripper.SetWantedState(GripperSubsystem::WantedState::SCORE);
-//       }
-//     break;
-  
-//   case AutoState::Shoot :
-//     if(m_container.m_gripper.GetSystemState() == GripperSubsystem::SystemState::REST_EMPTY)
-//     {
-//       m_container.m_elevator.SetDesiredStage(Stage::CORAL_STATION);
-//     }
-//     break;
-//   default:
-//     break;
-//   }
-// }
 void Robot::DisabledInit() {
+  m_container.drivetrain.SetWantedDrive(DriveMode::DISABLE);
 }
 
 void Robot::DisabledPeriodic() {
 }
 
 void Robot::DisabledExit() {
-  m_container.m_superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
+  m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
 }
 
 void Robot::AutonomousInit() {
-  m_container.m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::AUTO_PATH_FOLLOWER);
-  m_autonomousCommand = m_container.GetAutonomousCommand();
-  if (m_autonomousCommand) {
-    m_autonomousCommand->Schedule();
-  }
+  m_container.drivetrain.SetWantedDrive(DriveMode::AUTO_PATH_FOLLOWER);
+
+  // // if (choreo.has_value()) {
+  // //       // Get the initial pose of the trajectory
+  // //       // if (auto initialPose = choreo.value().GetInitialPose()) { // is red ?
+  // //       //     // Reset odometry to the start of the trajectory
+  // //       //     // driveSubsystem.ResetOdometry(initialPose.value());
+  // //       // }
+  // //   }
+
+  //   // Reset and start the timer when the autonomous period begins
+  //   // timer.Restart();
+  //   m_container.drivetrain.SetDesiredAutoTrajectory(choreo.value());
 }
 
 void Robot::AutonomousPeriodic() {
@@ -110,16 +72,13 @@ void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
-  m_container.m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::ARCADE_DRIVE);
-  if (m_autonomousCommand) {
-    m_autonomousCommand->Cancel();
-  }
+  m_container.drivetrain.SetWantedDrive(driveConstants::desiredDriveControl);
 }
 
 void Robot::TeleopPeriodic() {
   if(CanRumble)
   {
-    if(m_container.m_gripper.CanRumble || m_container.m_straffer.CanRumble)
+    if(m_container.gripper.CanRumble || m_container.straffer.CanRumble)
     {
       CanRumble = false;
       m_rumbleCounter = 11;
@@ -131,13 +90,13 @@ void Robot::TeleopPeriodic() {
     if(m_rumbleCounter == 0)
     {
       CanRumble = true;
-      m_container.m_straffer.CanRumble = false;
-      m_container.m_gripper.CanRumble = false;
-      m_container.m_controllerCopilot.SetRumble(Operator::RumbleType::kBothRumble, 0.0);
+      m_container.straffer.CanRumble = false;
+      m_container.gripper.CanRumble = false;
+      m_container.CopilotController.SetRumble(Operator::RumbleType::kBothRumble, 0.0);
     }
     else 
     {
-      m_container.m_controllerCopilot.SetRumble(Operator::RumbleType::kBothRumble, 0.5553);
+      m_container.CopilotController.SetRumble(Operator::RumbleType::kBothRumble, 0.5553);
     }
   }
 }

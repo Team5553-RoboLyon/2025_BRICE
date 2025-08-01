@@ -1,5 +1,5 @@
 #pragma once
-
+#include "frc/kinematics/ChassisSpeeds.h"
 
 struct DrivetrainIOInputs
 {
@@ -39,7 +39,9 @@ public:
 
     virtual void UpdateInputs(DrivetrainIOInputs& inputs) = 0; //COMMENTME
 
-    virtual void SetVoltage(double leftSideVoltage, double rightSideVoltage) = 0; //COMMENTME
-    virtual void SetDutyCycle(double leftSideDutyCycle, double rightSideDutyCycle) = 0; //COMMENTME
+    virtual void SetVoltage(const double leftSideVoltage, const double rightSideVoltage) = 0; //COMMENTME
+    virtual void SetDutyCycle(const double leftSideDutyCycle, const double rightSideDutyCycle) = 0; //COMMENTME
+    virtual void SetChassisSpeed(const frc::ChassisSpeeds &speeds) = 0;
+
     virtual void ResetPosition() = 0; //COMMENTME
 };

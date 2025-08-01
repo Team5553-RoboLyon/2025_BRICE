@@ -258,6 +258,7 @@ void Superstructure::Periodic()
                     m_pStrafferSubsystem->SetWantedState(StrafferSubsystem::WantedState::GO_TO_STATION);
                     m_pGripperSubsystem->SetWantedState(GripperSubsystem::WantedState::STAND_BY);
                 }
+                break;
             default:
                 DEBUG_ASSERT(false, "SuperStructure : impossible state");
                 break;

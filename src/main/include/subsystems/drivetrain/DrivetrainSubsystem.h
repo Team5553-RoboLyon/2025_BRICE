@@ -5,47 +5,54 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
+#include "frc/kinematics/ChassisSpeeds.h"
 
 #include <functional>
+#include <optional>
+
+#include "lib/RateLimiter.h"
+#include "lib/Alert.h"
+#include "lib/PidRBL.h"
+#include "lib/TimerRBL.h"
+
 #include "DrivetrainIO.h"
 #include "DrivetrainIOLogger.h"
-#include "lib/RateLimiter.h"
 #include "DrivetrainConstants.h"
-#include "lib/Alert.h"
+
+#include "choreo/trajectory/DifferentialSample.h"
+#include "choreo/trajectory/Trajectory.h"
 
 class DrivetrainSubsystem : public frc2::SubsystemBase 
 {
  public:
+  enum class SystemDrive
+  {
+    ARCADE_DRIVE,
+    CURVE_DRIVE,
+    AUTO_PATH_FOLLOWER,
+    DISABLE  
+  };
+
   DrivetrainSubsystem(DrivetrainIO *pIO);
   DrivetrainSubsystem(DrivetrainIO *pIO, 
                      std::function<double()> fxForwardAxis,
                      std::function<double()> fxRotationAxis,
                      std::function<bool()> fxSlowDriveButton,
+                     std::function<bool()> fxDriveActionButton,
                      std::function<double()> fxHeightFactor);
-  
-  enum class WantedDrive
-  {
-    STAND_BY,
-    ARCADE_DRIVE,
-    REVERSE_DRIVE,
-    AUTO_PATH_FOLLOWER
-  };
-  enum class SystemDrive
-  {
-    ARCADE_DRIVE,
-    REVERSE_ARCADE_DRIVE,
-    // CURVE_DRIVE,
-    // REVERSED_CURVE_DRIVE,
-    // TANK_DRIVE,
-    // REVERSED_TANK_DRIVE,
-    AUTO_PATH_FOLLOWER
-  };
 
-  void SetWantedDrive(const WantedDrive wantedDrive);
+  void SetWantedDrive(const DriveMode wantedDrive);
+  SystemDrive GetSystemDrive() const;
   void ConfigureManualAxis(const std::function<double()> fxForwardAxis,
                           const std::function<double()> fxRotationAxis,
                           const std::function<bool()> fxSlowDriveButton,
+                          const std::function<bool()> fxDriveActionButton,
                           const std::function<double()> fxHeightFactor);
+  
+  void SetAlliance(frc::DriverStation::Alliance alliance);
+
+  void SetDesiredAutoTrajectory(choreo::Trajectory<choreo::DifferentialSample> trajectory);
+  
   void Periodic() override;
 
  private:
@@ -53,10 +60,10 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   DrivetrainIOInputs inputs;
   DrivetrainIOLogger m_logger{frc::DataLogManager::GetLog(), "/Drivetrain"};
 
-  WantedDrive m_wantedDrive = WantedDrive::STAND_BY;
-  SystemDrive m_systemDrive = SystemDrive::ARCADE_DRIVE;
+  DriveMode m_wantedDrive = DriveMode::DISABLE;
+  SystemDrive m_systemDrive = SystemDrive::DISABLE;
 
-  std::pair<double, double> m_output{0.0, 0.0};
+  frc::ChassisSpeeds m_output;
 
   Alert m_frontLeftMotorDisconnected{"Drivetrain Front Left Motor: Disconnected", Alert::AlertType::ERROR};
   Alert m_frontRightMotorDisconnected{"Drivetrain Front Right Motor: Disconnected", Alert::AlertType::ERROR};
@@ -76,19 +83,34 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   std::function<double()> m_fxForwardAxis;
   std::function<double()> m_fxRotationAxis;
   std::function<bool()> m_fxSlowDriveButton;
+  std::function<bool()> m_fxDriveActionButton; //Reverse in Arcade | QuickTurn in Curve
   std::function<double()> m_fxHeightFactor; //temporary
   bool m_axisAreActive;
 
+  RateLimiter m_forwardLimitedAxis;
+  RateLimiter m_rotationLimitedAxis;
+
+
   //ARCADE
   double m_rotationSigma{0.0}; // Weight for rotation in arcade drive
-  RateLimiter m_forwardLimitedAxis{driveConstants::Settings::TIME_TO_REACH_FULL_FORWARD};
-  RateLimiter m_rotationLimitedAxis{driveConstants::Settings::TIME_TO_REACH_FULL_ROTATION};
 
   //CURVE //TODO
+  double m_previousRotation{0.0};
+  double m_negInertiaAccumulator{0.0};
+  double m_quickStopAccumulator{0.0};
+  const frc::ChassisSpeeds restSpeeds;
 
-  std::pair<double, double> ArcadeDrive(const double forward, const double rotation);
-  //TODO
-  // std::pair<double, double> TankDrive();
-  // std::pair<double, double> CurveDrive();
-  // std::pair<double, double> FollowPath();
+  //AUTO
+  choreo::Trajectory<choreo::DifferentialSample> m_desiredAutoTrajectory;
+  TimerRBL m_autoTimer;
+  std::optional<choreo::DifferentialSample> m_autoSampleToBeApplied;
+
+
+  frc::DriverStation::Alliance m_alliance;
+
+  frc::ChassisSpeeds ArcadeDrive(const std::pair<double, double> percentage);
+  frc::ChassisSpeeds CurveDrive(const std::pair<double, double> percentage, const bool quickTurnEnabled);
+  frc::ChassisSpeeds FollowPath();
+
+  std::pair<double, double> GetSafetyPercentages(); // first = Fwd, Second = rotation
 };

@@ -40,4 +40,10 @@ namespace ControlPanelConstants {
         constexpr int ROTATION_ID = 1;
         constexpr int COPILOT_CONTROLLER_ID = 2;
     }
+    namespace Button {
+        // FORWARD Joystick
+        constexpr int ACTION_DRIVE_BUTTON = 1; //Reverse in arcarde | QuickTurn in Curve
+        // ROTATION Joystick
+        constexpr int SLOW_DRIVE_BUTTON = 1;
+    }
 }

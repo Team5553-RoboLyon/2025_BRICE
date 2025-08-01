@@ -14,63 +14,58 @@ RobotContainer::RobotContainer()
 {
     ConfigureBindings();
 
-    m_superstructure.ConfigureManualAxis([this] { return m_controllerCopilot.GetLeftY(); },
-                                         [this] { return m_controllerCopilot.GetRightX(); },
-                                         [this] { return (-m_controllerCopilot.GetL2Axis() + m_controllerCopilot.GetR2Axis()); });
+    superstructure.ConfigureManualAxis([this] { return CopilotController.GetLeftY(); },
+                                         [this] { return CopilotController.GetRightX(); },
+                                         [this] { return (-CopilotController.GetL2Axis() + CopilotController.GetR2Axis()); });
 
-    m_drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-m_joystickForward.GetY(), driveConstants::Settings::DEADBAND); },
-                                      [this] { return NDEADBAND(m_joystickRotation.GetZ(), driveConstants::Settings::DEADBAND); },
+    drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-forwardJoystick.GetY(), driveConstants::Settings::DEADBAND); },
+                                      [this] { return NDEADBAND(rotationJoystick.GetZ(), driveConstants::Settings::DEADBAND); },
                                       [this] { return m_SlowDriveButton.Get(); },
-                                      [this] { return NORMALIZE_HEIGHT(m_elevator.GetHeight()); });
+                                      [this] { return m_driveActionButton.Get();},
+                                      [this] { return NORMALIZE_HEIGHT(elevator.GetHeight()); });
 }
 
 void RobotContainer::ConfigureBindings() {
-  m_ReversedDriveButton.OnTrue(frc2::InstantCommand([this] { m_drivetrain.SetWantedDrive(DrivetrainSubsystem::WantedDrive::REVERSE_DRIVE);}).ToPtr());
-
 
   //SUPERSTRUCTURE CONTROLLER BINDINGS
-  m_controllerCopilot.scoreButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::SCORE)
+  CopilotController.scoreButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::SCORE)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelIncoming));
-  m_controllerCopilot.intakeButton.WhileTrue(
-    frc2::ConditionalCommand(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::TOGGLE),
-                            SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::COLLECT),
-                            m_superstructure.HasCoral()).WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelIncoming));
+  CopilotController.intakeButton.WhileTrue(
+    frc2::ConditionalCommand(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::TOGGLE),
+                            SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::COLLECT),
+                            superstructure.HasCoral()).WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelIncoming));
 
-  m_controllerCopilot.stageCoralStationButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::MOVE_TO_STATION)
+  CopilotController.stageCoralStationButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::MOVE_TO_STATION)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageHomeButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::MOVE_TO_HOME)
+  CopilotController.stageHomeButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::MOVE_TO_HOME)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
   
-  m_controllerCopilot.stageL1Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L1)
+  CopilotController.stageL1Button.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L1)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL2Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2)
+  CopilotController.stageL2Button.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L2)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL3Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3)
+  CopilotController.stageL3Button.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L3)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL4Button.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4)
+  CopilotController.stageL4Button.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L4)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL2AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2_A)
+  CopilotController.stageL2AButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L2_A)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL2BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L2_B)
+  CopilotController.stageL2BButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L2_B)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL3AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3_A)
+  CopilotController.stageL3AButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L3_A)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL3BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L3_B)
+  CopilotController.stageL3BButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L3_B)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL4AButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4_A)
+  CopilotController.stageL4AButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L4_A)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf));
-  m_controllerCopilot.stageL4BButton.OnTrue(SetWantedSuperStateCmd(&m_superstructure, Superstructure::WantedSuperState::ALIGN_L4_B)
+  CopilotController.stageL4BButton.OnTrue(SetWantedSuperStateCmd(&superstructure, Superstructure::WantedSuperState::ALIGN_L4_B)
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf)); 
 
-  m_controllerCopilot.toggleAlignAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAlignAssist(); }).ToPtr());
-  m_controllerCopilot.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleShootAssist(); }).ToPtr());
-  m_controllerCopilot.toggleAssistModeButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleAssistMode(); }).ToPtr());
+  CopilotController.toggleAlignAssistButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleAlignAssist(); }).ToPtr());
+  CopilotController.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleShootAssist(); }).ToPtr());
+  CopilotController.toggleAssistModeButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleAssistMode(); }).ToPtr());
 
-  m_controllerCopilot.toggleElevatorManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleElevatorControlMode(); }).ToPtr());
-  m_controllerCopilot.toggleStrafferManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleStrafferControlMode(); }).ToPtr());
-  m_controllerCopilot.toggleGripperManualControlButton.OnTrue(frc2::InstantCommand([this] { m_superstructure.ToggleGripperControlMode(); }).ToPtr());
-}
-
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  return frc2::cmd::Print("No autonomous command configured");
+  CopilotController.toggleElevatorManualControlButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleElevatorControlMode(); }).ToPtr());
+  CopilotController.toggleStrafferManualControlButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleStrafferControlMode(); }).ToPtr());
+  CopilotController.toggleGripperManualControlButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleGripperControlMode(); }).ToPtr());
 }
