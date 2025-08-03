@@ -46,7 +46,8 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::DisabledExit() {
-  m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
+    m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
+  m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{4.0}, units::meter_t{7.0}, frc::Rotation2d{units::radian_t{0.0}}});
 }
 
 void Robot::AutonomousInit() {

@@ -3,7 +3,9 @@
 #include "DrivetrainIO.h"
 #include "rev/SparkFlex.h"
 #include "DrivetrainConstants.h"
+// #include <frc/smartdashboard/Field2d.h>
 #include "frc/Encoder.h"
+#include "localization/OdometryTracker.h"
 
 class DrivetrainIOFlex  final : public DrivetrainIO
 {
@@ -29,6 +31,12 @@ class DrivetrainIOFlex  final : public DrivetrainIO
                             driveConstants::Encoder::RIGHT_ID_ENCODER_B,
                             driveConstants::Encoder::RIGHT_REVERSE_ENCODER};
 
+  double m_realLeftSideSpeed{0.0};
+  double m_realRightSideSpeed{0.0};
+
+  // frc::Field2d field; for sim only
+  TankOdometryTracker m_odometry{&m_realLeftSideSpeed, &m_realRightSideSpeed};
+
   public:
     DrivetrainIOFlex();
     ~DrivetrainIOFlex() = default;
@@ -39,5 +47,5 @@ class DrivetrainIOFlex  final : public DrivetrainIO
     void SetDutyCycle(const double leftSideDutyCycle, const double rightSideDutyCycle) override;
     void SetChassisSpeed(const frc::ChassisSpeeds &speeds) override;
     
-    void ResetPosition() override;
+    void ResetPosition(const frc::Pose2d position) override;
 };

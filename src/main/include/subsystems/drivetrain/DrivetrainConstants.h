@@ -83,7 +83,7 @@ namespace driveConstants
     namespace CurveDrive //COMMENTME
     {
         constexpr double TIME_TO_REACH_FULL_FORWARD = 0.8; //TUNEME
-        constexpr double TIME_TO_STOP_FORWARD = 0.7; //TUNEME
+        constexpr double TIME_TO_STOP_FORWARD = 0.6; //TUNEME
 
         constexpr double SINUSOIDAL_CURVATURE_INTENSITY = 0.5; //TUNEME
         constexpr double DENOMINATOR = 0.7071067812; // Precomputed value of sin(SINUSOIDAL_CURVATURE_INTENSITY{0.5} * M_PI_2)

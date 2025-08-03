@@ -52,6 +52,7 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   void SetAlliance(frc::DriverStation::Alliance alliance);
 
   void SetDesiredAutoTrajectory(choreo::Trajectory<choreo::DifferentialSample> trajectory);
+  void ResetOdometryPose(const frc::Pose2d pose);
   
   void Periodic() override;
 

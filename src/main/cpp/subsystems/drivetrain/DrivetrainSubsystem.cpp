@@ -24,7 +24,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(DrivetrainIO *pIO,
                     m_fxDriveActionButton(fxDriveActionButton),
                     m_fxHeightFactor(fxHeightFactor),
                     m_axisAreActive(true)
-{}
+{
+}
 void DrivetrainSubsystem::SetWantedDrive(const DriveMode wantedDrive)
 {
     m_wantedDrive = wantedDrive;
@@ -58,6 +59,10 @@ void DrivetrainSubsystem::SetDesiredAutoTrajectory(choreo::Trajectory<choreo::Di
 {
     m_desiredAutoTrajectory = trajectory;
     m_autoTimer.Restart();
+}
+void DrivetrainSubsystem::ResetOdometryPose(const frc::Pose2d pose)
+{
+    m_pTankDriveIO->ResetPosition(pose);
 }
 
 void DrivetrainSubsystem::Periodic()
@@ -196,7 +201,6 @@ frc::ChassisSpeeds DrivetrainSubsystem::ArcadeDrive(const std::pair<double, doub
 
 frc::ChassisSpeeds DrivetrainSubsystem::CurveDrive(const std::pair<double, double> percentage, const bool quickTurnEnabled)
 {
-    DEBUG_ASSERT(false, "work in progress...");
     frc::ChassisSpeeds output;
     bool QuickTurn = quickTurnEnabled;
 
@@ -240,9 +244,7 @@ frc::ChassisSpeeds DrivetrainSubsystem::CurveDrive(const std::pair<double, doubl
         if (m_quickStopAccumulator > 1.0)       m_quickStopAccumulator -= 1.0;
         else if (m_quickStopAccumulator < -1.0) m_quickStopAccumulator += 1.0;
         else                                    m_quickStopAccumulator = 0.0;
-
-        double leftOutput = m_forwardLimitedAxis.GetCurrentSpeed() - angularPower;
-        double rightOutput = m_forwardLimitedAxis.GetCurrentSpeed() + angularPower;
+        
         output.vx = (units::velocity::meters_per_second_t)m_forwardLimitedAxis.GetCurrentSpeed() *
                     driveConstants::Specifications::MAX_LINEAR_SPEED;
         
@@ -281,7 +283,7 @@ std::pair<double, double> DrivetrainSubsystem::GetSafetyPercentages()
     std::pair<double, double> output;
     DEBUG_ASSERT(m_axisAreActive, "DrivetrainSubsystem : Manual Functions aren't assigned");
 
-    double fwdPercentage = NCLAMP(-1.0, -m_fxForwardAxis(), 1.0);
+    double fwdPercentage = NCLAMP(-1.0, m_fxForwardAxis(), 1.0);
     double rotationPercentage = NCLAMP(-1.0, m_fxRotationAxis(), 1.0);
 
     if (m_fxSlowDriveButton()) 

@@ -73,11 +73,19 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
     inputs.frontLeftMotorTemperature = m_motorFrontLeft.GetMotorTemperature();
     inputs.frontRightMotorTemperature = m_motorFrontRight.GetMotorTemperature();
 
-    inputs.leftDistance = m_encoderLeft.GetDistance();
-    inputs.leftVelocity = m_encoderLeft.GetRate();
-    inputs.rightDistance = m_encoderRight.GetDistance();
-    inputs.rightVelocity = m_encoderRight.GetRate();
+    inputs.leftSideTraveledDistance = m_encoderLeft.GetDistance();
+    inputs.leftSideVelocity = m_encoderLeft.GetRate();
+    inputs.rightSideTraveledDistance = m_encoderRight.GetDistance();
+    inputs.rightSideVelocity = m_encoderRight.GetRate();
 
+    m_realLeftSideSpeed = inputs.leftSideVelocity;
+    m_realRightSideSpeed = inputs.rightSideVelocity;
+
+    inputs.robotPosition = m_odometry.UpdateOdometryFromDistances(inputs.leftSideTraveledDistance, inputs.rightSideTraveledDistance);
+    // inputs.robotPosition = m_odometry.UpdateOdometryFromVelocity(0.02);
+
+    // field.SetRobotPose(inputs.robotPosition); //for sim
+    // frc::SmartDashboard::PutData("Field",&field);
     frc::SmartDashboard::PutBoolean("TDlf.Connection", inputs.isFrontLeftMotorConnected);
     frc::SmartDashboard::PutBoolean("TDrb.Connection", inputs.isBackRightMotorConnected);
     frc::SmartDashboard::PutBoolean("TDrf.Connection", inputs.isFrontRightMotorConnected);
@@ -133,7 +141,6 @@ void DrivetrainIOFlex::SetChassisSpeed(const frc::ChassisSpeeds &speeds)
 
 
     //TODO : add SparkPID
-
     //HACK : speed to voltage
     m_motorBackLeft.SetVoltage(units::volt_t(leftOutput / driveConstants::Specifications::MOTOR_FREE_SPEED 
                                             * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION));
@@ -141,8 +148,10 @@ void DrivetrainIOFlex::SetChassisSpeed(const frc::ChassisSpeeds &speeds)
                                             * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION));
 }
 
-void DrivetrainIOFlex::ResetPosition()
+void DrivetrainIOFlex::ResetPosition(const frc::Pose2d position)
 {
     m_encoderLeft.Reset();
     m_encoderRight.Reset();
+
+    m_odometry.ResetPose2D(position);
 }
