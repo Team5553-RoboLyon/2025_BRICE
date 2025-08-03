@@ -92,6 +92,13 @@ void Superstructure::ConfigureManualAxis(const std::function<double()> fxElevato
     m_axisAreActive = true;
 }
 
+void Superstructure::ResetAllSubsystemsToMainControlMode()
+{
+    m_pElevatorSubsystem->SetControlMode(elevatorConstants::MainControlMode);
+    m_pGripperSubsystem->SetControlMode(gripperConstants::MainControlMode);
+    m_pStrafferSubsystem->SetControlMode(gripperConstants::MainControlMode);
+    UpdateSuperControlMode();
+}
 void Superstructure::ToggleElevatorControlMode()
 {
     m_pElevatorSubsystem->ToggleControlMode();
@@ -108,6 +115,11 @@ void Superstructure::ToggleStrafferControlMode()
 {
     m_pStrafferSubsystem->ToggleControlMode();
     UpdateSuperControlMode();
+}
+
+Superstructure::SuperControlMode Superstructure::GetSuperControlMode()
+{
+    return m_SuperControlMode;
 }
 
 std::function<bool()> Superstructure::HasCoral() const

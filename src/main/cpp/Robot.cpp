@@ -73,6 +73,11 @@ void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
+  m_container.superstructure.ResetAllSubsystemsToMainControlMode();
+  if(m_container.superstructure.GetSuperControlMode() == Superstructure::SuperControlMode::SuperStateMachine)
+  {
+    m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
+  }
   m_container.drivetrain.SetWantedDrive(driveConstants::desiredDriveControl);
 }
 

@@ -6,16 +6,13 @@
 TankOdometryTracker::TankOdometryTracker(double *pLeftSideVelocity, double *pRightSideVelocity)
                                         : m_pLeftSideVelocity(pLeftSideVelocity),
                                         m_pRightSideVelocity(pRightSideVelocity)
-{
-}
+{}
 
 TankOdometryTracker::TankOdometryTracker(double *pLeftSideVelocity, double *pRightSideVelocity, double alpha)
                                         : m_pLeftSideVelocity(pLeftSideVelocity),
                                         m_pRightSideVelocity(pRightSideVelocity),
                                         m_alpha(alpha)
-{
-}
-
+{}
 
 void TankOdometryTracker::ResetPose2D(const frc::Pose2d newPose)
 {
@@ -33,7 +30,7 @@ void TankOdometryTracker::SetAlpha(const double alpha)
     }
 }
 
-frc::Pose2d TankOdometryTracker::UpdateOdometryFromDistances(const double leftDistance, const double rightDistance)
+frc::Pose2d TankOdometryTracker::UpdateUsingICCFromDistances(const double leftDistance, const double rightDistance)
 {
     double deltaLeftDistance = leftDistance - m_lastLeftDistance;
     double deltaRightDistance = rightDistance - m_lastRightDistance;
@@ -48,7 +45,7 @@ frc::Pose2d TankOdometryTracker::UpdateOdometryFromDistances(const double leftDi
     }
     else
     {   
-        //instantaneous center of curvature radius
+        // Instantaneous Center of Curvature (ICC) model
         double IccRadius = deltaBaseDistance / deltaBaseTheta;
 
         double dx = IccRadius * std::sin(deltaBaseTheta);
@@ -64,78 +61,80 @@ frc::Pose2d TankOdometryTracker::UpdateOdometryFromDistances(const double leftDi
     m_lastLeftDistance = leftDistance;
     m_lastRightDistance = rightDistance;
 
-    m_lastPose = frc::Pose2d{(units::length::meter_t)m_generalDeltaX + m_lastPose.X(), 
-                            (units::length::meter_t)m_generalDeltaY + m_lastPose.Y(),
+    m_lastPose = frc::Pose2d{units::length::meter_t(m_generalDeltaX) + m_lastPose.X(), 
+                            units::length::meter_t(m_generalDeltaY) + m_lastPose.Y(),
                             frc::Rotation2d{units::radian_t(WRAP_ANGLE_0_TO_2PI(deltaBaseTheta + double(m_lastPose.Rotation().Radians())))}};
 
     return m_lastPose;
 }
 
-//IFBUG : toggle velocity to distances : lastDistances ?
-frc::Pose2d TankOdometryTracker::UpdateOdometryFromVelocity(const double dt)
+frc::Pose2d TankOdometryTracker::UpdateUsingTwistExpFromDistances(const double leftDistance, const double rightDistance)
 {
-    DEBUG_ASSERT(dt >0.0, "dt must be positive");
-    double v = (*m_pLeftSideVelocity + *m_pRightSideVelocity) / 2.0;
-    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / driveConstants::Specifications::TRACKWIDTH;
+    double deltaLeftDistance = leftDistance - m_lastLeftDistance;
+    double deltaRightDistance = rightDistance - m_lastRightDistance;
 
-    frc::Twist2d twist{(units::meter_t)v * dt, (units::meter_t)0_m, (units::radian_t)omega * dt};
+    units::meter_t deltaBaseDistance = units::meter_t((deltaLeftDistance + deltaRightDistance) /2.0);
+    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH);
+
+    m_lastLeftDistance = leftDistance;
+    m_lastRightDistance = rightDistance;
+
+    frc::Twist2d twist{deltaBaseDistance, units::meter_t(0.0), deltaBaseTheta};
     m_lastPose = m_lastPose.Exp(twist);
 
     return m_lastPose;
 }
 
-frc::Pose2d TankOdometryTracker::UpdateFiltredOdometry(const double leftDistance, const double rightDistance, const double dt)
+frc::Pose2d TankOdometryTracker::UpdateUsingTwistExpFromVelocity(double dt)
 {
-    //TODO : differente ref : Exp and Geom. How does it affect the pose ? Move filter before ?
-    DEBUG_ASSERT(dt >0.0, "dt must be positive");
-    //distances : 
+    // Ensure dt is positive; fallback to 0.02 seconds (standard dt in FRC) if not.
+    DEBUG_ASSERT(dt > 0.0, "dt must be positive");
+    dt = (dt > 0.0) ? dt : 0.02;
+
+    double v = (*m_pLeftSideVelocity + *m_pRightSideVelocity) / 2.0;
+    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / driveConstants::Specifications::TRACKWIDTH;
+
+    m_lastLeftDistance += *m_pLeftSideVelocity * dt;
+    m_lastRightDistance += *m_pRightSideVelocity * dt;
+    frc::Twist2d twist{units::meter_t(v * dt), units::meter_t(0.0), units::radian_t(omega * dt)};
+    m_lastPose = m_lastPose.Exp(twist);
+
+    return m_lastPose;
+}
+
+frc::Pose2d TankOdometryTracker::UpdateUsingFusionTwistExp(const double leftDistance, const double rightDistance, double dt)
+{
+    // Ensure dt is positive; fallback to 0.02 seconds (standard dt in FRC) if not.
+    DEBUG_ASSERT(dt > 0.0, "dt must be positive");
+    dt = (dt > 0.0) ? dt : 0.02;
+
+    // Distance-based twist
     double deltaLeftDistance = leftDistance - m_lastLeftDistance;
     double deltaRightDistance = rightDistance - m_lastRightDistance;
 
-    double deltaBaseDistance = (deltaLeftDistance + deltaRightDistance) /2.0;
-    double deltaBaseTheta = (deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH;
-
-    if(NABS(deltaBaseTheta) < 1e-6)
-    {
-        m_generalDeltaX = deltaBaseDistance * std::cos((double)m_lastPose.Rotation().Radians());
-        m_generalDeltaY = deltaBaseDistance * std::sin((double)m_lastPose.Rotation().Radians());
-    }
-    else
-    {   
-        //instantaneous center of curvature radius
-        double IccRadius = deltaBaseDistance / deltaBaseTheta;
-
-        double dx = IccRadius * std::sin(deltaBaseTheta);
-        double dy = IccRadius * (1 - std::cos(deltaBaseTheta));
-
-        m_generalDeltaX = std::cos((double)m_lastPose.Rotation().Radians()) * dx 
-                        - std::sin((double)m_lastPose.Rotation().Radians()) * dy;
-        
-        m_generalDeltaY = std::sin((double)m_lastPose.Rotation().Radians()) * dx 
-                        - std::cos((double)m_lastPose.Rotation().Radians()) * dy;
-    }
+    units::meter_t deltaBaseDistance = units::meter_t((deltaLeftDistance + deltaRightDistance) /2.0);
+    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH);
 
     m_lastLeftDistance = leftDistance;
     m_lastRightDistance = rightDistance;
 
-    //Velocity :
+    frc::Twist2d twistDistance{deltaBaseDistance, units::meter_t(0.0), deltaBaseTheta};
+
+    // Velocity-based twist 
     double v = (*m_pLeftSideVelocity + *m_pRightSideVelocity) / 2.0;
     double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / driveConstants::Specifications::TRACKWIDTH;
 
-    frc::Twist2d twist{(units::meter_t)v * dt, (units::meter_t)0_m, (units::radian_t)omega * dt};
+    frc::Twist2d twistVelocity{units::meter_t(v * dt), units::meter_t(0.0), units::radian_t(omega * dt)};
 
-    //Filtred :
-    double m_filtredX = (1.0 - m_alpha) * (double)m_lastPose.Exp(twist).X() + m_alpha * (m_generalDeltaX + double(m_lastPose.X()));
-    double m_filtredY = (1.0 - m_alpha) * (double)m_lastPose.Exp(twist).Y() + m_alpha * (m_generalDeltaY + double(m_lastPose.Y()));
-    double m_filtredTheta = WRAP_ANGLE_0_TO_2PI((1.0 - m_alpha) * WRAP_ANGLE_0_TO_2PI((double)m_lastPose.Exp(twist).Rotation().Radians()) 
-                            + m_alpha * WRAP_ANGLE_0_TO_2PI(deltaBaseTheta + double(m_lastPose.Rotation().Radians())));
+    // Linear interpolation between the two twist estimates
+    frc::Twist2d twistFiltred{
+    (1.0 - m_alpha) * twistVelocity.dx + m_alpha * twistDistance.dx,
+    (1.0 - m_alpha) * twistVelocity.dy + m_alpha * twistDistance.dy,
+    (1.0 - m_alpha) * twistVelocity.dtheta + m_alpha * twistDistance.dtheta};
+    m_lastPose = m_lastPose.Exp(twistFiltred);
 
-    m_lastPose = frc::Pose2d{(units::length::meter_t)m_filtredX,
-                            (units::length::meter_t)m_filtredY,
-                            units::radian_t(m_filtredTheta)};
     return m_lastPose;
 }
-
 
 frc::Pose2d TankOdometryTracker::GetPose()
 {

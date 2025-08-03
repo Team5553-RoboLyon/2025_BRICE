@@ -81,7 +81,7 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
     m_realLeftSideSpeed = inputs.leftSideVelocity;
     m_realRightSideSpeed = inputs.rightSideVelocity;
 
-    inputs.robotPosition = m_odometry.UpdateOdometryFromDistances(inputs.leftSideTraveledDistance, inputs.rightSideTraveledDistance);
+    inputs.robotPosition = m_odometry.UpdateUsingFusionTwistExp(inputs.leftSideTraveledDistance, inputs.rightSideTraveledDistance, TIME_PER_CYCLE);
     // inputs.robotPosition = m_odometry.UpdateOdometryFromVelocity(0.02);
 
     // field.SetRobotPose(inputs.robotPosition); //for sim
