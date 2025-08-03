@@ -21,10 +21,11 @@ DrivetrainIOLogger::DrivetrainIOLogger(wpi::log::DataLog& log, const std::string
           backRightMotorBusVoltage(log, path + "/backRightMotorBusVoltage"),
           backRightMotorCurrent(log, path + "/backRightMotorCurrent"),
           backRightMotorTemperature(log, path + "/backRightMotorTemperature"),
-          leftDistance(log, path + "/leftDistance"),
-          leftVelocity(log, path + "/leftVelocity"),
-          rightDistance(log, path + "/rightDistance"),
-          rightVelocity(log, path + "/rightVelocity")
+          leftSideTraveledDistance(log, path + "/leftSideTraveledDistance"),
+          leftSideVelocity(log, path + "/leftSideVelocity"),
+          rightSideTraveledDistance(log, path + "/rightSideTraveledDistance"),
+          rightSideVelocity(log, path + "/rightSideVelocity"),
+          robotPosition(log, path + "/robotPosition")
 {}
 
 void DrivetrainIOLogger::Log(const DrivetrainIOInputs& inputs) {
@@ -48,8 +49,9 @@ void DrivetrainIOLogger::Log(const DrivetrainIOInputs& inputs) {
     backRightMotorBusVoltage.Append(inputs.backRightMotorBusVoltage);
     backRightMotorCurrent.Append(inputs.backRightMotorCurrent);
     backRightMotorTemperature.Append(inputs.backRightMotorTemperature);
-    leftDistance.Append(inputs.leftDistance);
-    leftVelocity.Append(inputs.leftVelocity);
-    rightDistance.Append(inputs.rightDistance);
-    rightVelocity.Append(inputs.rightVelocity);
+    leftSideTraveledDistance.Append(inputs.leftSideTraveledDistance);
+    leftSideVelocity.Append(inputs.leftSideVelocity);
+    rightSideTraveledDistance.Append(inputs.rightSideTraveledDistance);
+    rightSideVelocity.Append(inputs.rightSideVelocity);
+    robotPosition.Append(inputs.robotPosition);
 }

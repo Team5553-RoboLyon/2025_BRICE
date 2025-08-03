@@ -1,5 +1,6 @@
 #pragma once
 
+#include <frc/geometry/Pose2d.h>
 #include <frc/DataLogManager.h>
 #include <frc/DriverStation.h>
 #include <wpi/DataLog.h>
@@ -31,8 +32,10 @@ private:
     wpi::log::DoubleLogEntry backRightMotorBusVoltage;
     wpi::log::DoubleLogEntry backRightMotorCurrent;
     wpi::log::DoubleLogEntry backRightMotorTemperature;
-    wpi::log::DoubleLogEntry leftDistance;
-    wpi::log::DoubleLogEntry leftVelocity;
-    wpi::log::DoubleLogEntry rightDistance;
-    wpi::log::DoubleLogEntry rightVelocity;
+    wpi::log::DoubleLogEntry leftSideTraveledDistance;
+    wpi::log::DoubleLogEntry leftSideVelocity;
+    wpi::log::DoubleLogEntry rightSideTraveledDistance;
+    wpi::log::DoubleLogEntry rightSideVelocity;
+
+    wpi::log::StructLogEntry<frc::Pose2d> robotPosition;
 };

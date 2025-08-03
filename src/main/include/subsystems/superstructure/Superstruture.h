@@ -82,9 +82,14 @@ class Superstructure : public frc2::SubsystemBase {
   void ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
                           const std::function<double()> fxStrafferAxis,
                           const std::function<double()> fxGripperAxis);
+
+
   void ToggleGripperControlMode();
   void ToggleElevatorControlMode();
   void ToggleStrafferControlMode();
+  void ResetAllSubsystemsToMainControlMode();
+  SuperControlMode GetSuperControlMode();
+
   
   std::function<bool()> HasCoral() const;
   void SetWantedSuperState(const WantedSuperState wantedSuperState);

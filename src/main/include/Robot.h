@@ -30,23 +30,10 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
   void TestExit() override;
 
-  void Leave(double target);
-  void CenterToL4();
-
  private:
-  std::optional<frc2::CommandPtr> m_autonomousCommand;
   RobotContainer m_container;
   int m_rumbleCounter;
   bool CanRumble = true;
-  double initialPosition;
   frc::PWM m_led{9};
   Camera m_camera;
-
-  enum class AutoState {
-    Leave, 
-    Elevate,
-    Align, 
-    Shoot
-  };
-  AutoState m_state = AutoState::Leave;
 };

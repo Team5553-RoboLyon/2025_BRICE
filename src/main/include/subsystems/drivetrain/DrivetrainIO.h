@@ -1,5 +1,6 @@
 #pragma once
-
+#include "frc/kinematics/ChassisSpeeds.h"
+#include "frc/geometry/Pose2d.h"
 
 struct DrivetrainIOInputs
 {
@@ -26,10 +27,12 @@ struct DrivetrainIOInputs
     double backRightMotorCurrent = 0.0;
     double backRightMotorTemperature = 0.0;
 
-    double leftDistance = 0.0;
-    double leftVelocity = 0.0;
-    double rightDistance = 0.0;
-    double rightVelocity = 0.0;
+    double leftSideTraveledDistance = 0.0;
+    double leftSideVelocity = 0.0;
+    double rightSideTraveledDistance = 0.0;
+    double rightSideVelocity = 0.0;
+
+    frc::Pose2d robotPosition;
 };
 
 
@@ -39,7 +42,9 @@ public:
 
     virtual void UpdateInputs(DrivetrainIOInputs& inputs) = 0; //COMMENTME
 
-    virtual void SetVoltage(double leftSideVoltage, double rightSideVoltage) = 0; //COMMENTME
-    virtual void SetDutyCycle(double leftSideDutyCycle, double rightSideDutyCycle) = 0; //COMMENTME
-    virtual void ResetPosition() = 0; //COMMENTME
+    virtual void SetVoltage(const double leftSideVoltage, const double rightSideVoltage) = 0; //COMMENTME
+    virtual void SetDutyCycle(const double leftSideDutyCycle, const double rightSideDutyCycle) = 0; //COMMENTME
+    virtual void SetChassisSpeed(const frc::ChassisSpeeds &speeds) = 0;
+
+    virtual void ResetPosition(const frc::Pose2d position) = 0; //COMMENTME
 };
