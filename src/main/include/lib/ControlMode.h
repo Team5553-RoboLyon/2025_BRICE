@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : ControlMode.h (v1.1)
+ * File        : ControlMode.h (v1.2)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Defines various control modes used in the robot's state machine 
  *               and manual control.
@@ -28,6 +28,9 @@ enum class ControlMode {
     VELOCITY_VOLTAGE_PID,       // Velocity PID controller with output applied as voltage (Volts)
     VELOCITY_DUTYCYCLE_PID,     // Velocity PID controller with output applied as duty cycle (%)
 
+    VELOCITY_VOLTAGE,           // Open-loop velocity control based on a feedforward model: (velocity / maxVelocity) * maxVoltage
+    VELOCITY_DUTY_CYCLE,        // Open-loop velocity control using feedforward: (velocity / maxVelocity) as a duty cycle
+    
     VOLTAGE,                   // Direct voltage control (open loop)
     DUTY_CYCLE,                // Direct duty cycle control (open loop)
 
@@ -50,6 +53,8 @@ enum class ControlMode {
                                     (mode) == ControlMode::POSITION_DUTYCYCLE_PID || \
                                     (mode) == ControlMode::VELOCITY_VOLTAGE_PID || \
                                     (mode) == ControlMode::VELOCITY_DUTYCYCLE_PID || \
+                                    (mode) == ControlMode::VELOCITY_DUTY_CYCLE || \
+                                    (mode) == ControlMode::VELOCITY_VOLTAGE || \
                                     (mode) == ControlMode::VOLTAGE || \
                                     (mode) == ControlMode::DUTY_CYCLE)
 
@@ -73,10 +78,12 @@ enum class ControlMode {
 #define IS_VOLTAGE_OUTPUT_MODE(mode) ((mode) == ControlMode::POSITION_VOLTAGE_PID || \
                                       (mode) == ControlMode::VELOCITY_VOLTAGE_PID || \
                                       (mode) == ControlMode::VOLTAGE || \
+                                      (mode) == ControlMode::VELOCITY_VOLTAGE || \
                                       (mode) == ControlMode::MANUAL_VOLTAGE)
             
 #define IS_DUTYCYCLE_OUTPUT_MODE(mode) ((mode) == ControlMode::POSITION_DUTYCYCLE_PID || \
                                         (mode) == ControlMode::VELOCITY_DUTYCYCLE_PID || \
+                                        (mode) == ControlMode::VELOCITY_DUTY_CYCLE|| \
                                         (mode) == ControlMode::DUTY_CYCLE || \
                                         (mode) == ControlMode::MANUAL_DUTY_CYCLE)
 
@@ -90,6 +97,8 @@ inline const char* ToString(const ControlMode mode) {
         case ControlMode::POSITION_DUTYCYCLE_PID: return "POSITION_DUTYCYCLE_PID";
         case ControlMode::VELOCITY_VOLTAGE_PID:   return "VELOCITY_VOLTAGE_PID";
         case ControlMode::VELOCITY_DUTYCYCLE_PID: return "VELOCITY_DUTYCYCLE_PID";
+        case ControlMode::VELOCITY_DUTY_CYCLE:    return "VELOCITY_DUTY_CYCLE";
+        case ControlMode::VELOCITY_VOLTAGE:       return "VELOCITY_VOLTAGE";
         case ControlMode::VOLTAGE:                 return "VOLTAGE";
         case ControlMode::DUTY_CYCLE:              return "DUTY_CYCLE";
         case ControlMode::MANUAL_SETPOINT:         return "MANUAL_SETPOINT";

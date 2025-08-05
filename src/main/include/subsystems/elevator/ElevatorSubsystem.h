@@ -65,29 +65,32 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
 
     void Periodic() override;
   private:
-    WantedState m_wantedState = WantedState::STAND_BY;
-    WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
-    SystemState m_systemState = SystemState::IDLE;
-    ControlMode m_controlMode = elevatorConstants::MainControlMode;
-    ElevatorIO *m_pElevatorIO;
-    ElevatorIOInputs inputs;
-    ElevatorIOLogger m_logger{frc::DataLogManager::GetLog(), "/Elevator"};
-
-    double m_output{0.0};
-    double m_manualControlInput{0.0};
-    double m_timestamp{0.0};
-    bool m_isInitialized = false;
-    bool m_isEncoderAlreadyReset = false;
-
-    PidRBL m_elevatorPIDController;
-    RateLimiter m_rateLimiter{elevatorConstants::Settings::TIME_TO_REACH_FULL_SPEED};
-
-    Alert m_leftMotorDisconnected{"Elevator Left Motor: Disconnected", Alert::AlertType::ERROR};
-    Alert m_rightMotorDisconnected{"Elevator Right Motor: Disconnected", Alert::AlertType::ERROR};
-    Alert m_leftMotorHot{"Elevator Left Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
-    Alert m_rightMotorHot{"Elevator RightMotor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
-    Alert m_leftMotorOverheating{"Elevator Left Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
-    Alert m_rightMotorOverheating{"Elevator Right Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
-
-    void RunStateMachine();
+    // === Hardware & IO Interfaces ===
+      ElevatorIO *m_pElevatorIO;
+      ElevatorIOInputs inputs;
+      ElevatorIOLogger m_logger{frc::DataLogManager::GetLog(), "/Elevator"};
+    // === System States & Control Modes ===
+      WantedState m_wantedState = WantedState::STAND_BY;
+      WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
+      SystemState m_systemState = SystemState::IDLE;
+      ControlMode m_controlMode = elevatorConstants::MainControlMode;
+    // === Motion Control (PID / Filters) ===
+      PidRBL m_elevatorPIDController;
+      RateLimiter m_rateLimiter{elevatorConstants::Settings::TIME_TO_REACH_FULL_SPEED};
+    // === Control Inputs / Outputs ===
+      double m_output{0.0};
+      double m_manualControlInput{0.0};
+      double m_timestamp{0.0};
+    // === Status Flags ===
+      bool m_isInitialized = false;
+      bool m_isEncoderAlreadyReset = false;
+    // === System Alerts ===
+      Alert m_leftMotorDisconnected{"Elevator Left Motor: Disconnected", Alert::AlertType::ERROR};
+      Alert m_rightMotorDisconnected{"Elevator Right Motor: Disconnected", Alert::AlertType::ERROR};
+      Alert m_leftMotorHot{"Elevator Left Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
+      Alert m_rightMotorHot{"Elevator RightMotor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
+      Alert m_leftMotorOverheating{"Elevator Left Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
+      Alert m_rightMotorOverheating{"Elevator Right Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
+    // === Internal Methods ===
+      void RunStateMachine();
 };

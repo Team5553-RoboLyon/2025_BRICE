@@ -19,6 +19,13 @@ void Robot::RobotInit()
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
   m_container.drivetrain.SetWantedDrive(DriveMode::DISABLE);
+
+  m_pilot.Set(true);
+  m_pilot.SetText("Pilot currently driving : " + PILOT);
+  m_operator.Set(true);
+  m_operator.SetText("Operator currently operatoring : " + OPERATOR);
+  m_robot.Set(true);
+  m_robot.SetText("Robot used : " + ROBOT_MODEL);
 }
 
 void Robot::RobotPeriodic() {
@@ -37,18 +44,27 @@ void Robot::RobotPeriodic() {
   {
     m_led.SetSpeed(-0.41);
   }
+
+  m_isNotCompetitionRobot.Set(ROBOT_MODEL != BRICE_COMPETITION);
 }
 
 void Robot::DisabledInit() {
   m_container.drivetrain.SetWantedDrive(DriveMode::DISABLE);
+  m_container.elevator.SetControlMode(ControlMode::DISABLED);
+  m_container.gripper.SetControlMode(ControlMode::DISABLED);
+  m_container.straffer.SetControlMode(ControlMode::DISABLED);
 }
 
 void Robot::DisabledPeriodic() {
 }
 
 void Robot::DisabledExit() {
+  if(m_container.superstructure.GetSuperControlMode() == Superstructure::SuperControlMode::SuperStateMachine)
+  {
     m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
-  m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{4.0}, units::meter_t{7.0}, frc::Rotation2d{units::radian_t{0.0}}});
+  }
+  m_container.superstructure.ResetAllSubsystemsToMainControlMode();
+  // m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{4.0}, units::meter_t{7.0}, frc::Rotation2d{units::radian_t{0.0}}});
 }
 
 void Robot::AutonomousInit() {
@@ -74,11 +90,6 @@ void Robot::AutonomousExit() {
 }
 
 void Robot::TeleopInit() {
-  m_container.superstructure.ResetAllSubsystemsToMainControlMode();
-  if(m_container.superstructure.GetSuperControlMode() == Superstructure::SuperControlMode::SuperStateMachine)
-  {
-    m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
-  }
   m_container.drivetrain.SetWantedDrive(driveConstants::desiredDriveControl);
 }
 

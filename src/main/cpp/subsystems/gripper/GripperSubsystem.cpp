@@ -10,12 +10,44 @@ GripperSubsystem::GripperSubsystem(GripperIO *pIo) :
 }
 void GripperSubsystem::SetControlMode(const ControlMode mode)
 {
-    m_controlMode = mode;
-    m_wantedState = WantedState::STAND_BY;
-    m_systemState = SystemState::IDLE;
-    m_feederOutput = 0.0;
-    m_outtakeOutput = 0.0;
-    m_manualControlInput = 0.0;
+    switch (mode)
+    {
+    case ControlMode::DUTY_CYCLE :
+        m_feederOutput = feederConstants::Velocity::REST;
+        m_outtakeOutput = outtakeConstants::Velocity::REST;
+        m_wantedState = WantedState::STAND_BY;
+        m_currentWantedState = m_wantedState;
+        m_systemState = SystemState::IDLE;
+
+        m_controlMode = mode;
+        break; //end of ControlMode::DISABLED
+    case ControlMode::VELOCITY_VOLTAGE_PID :
+        m_feederOutput = feederConstants::Velocity::REST;
+        m_outtakeOutput = outtakeConstants::Velocity::REST;
+        m_wantedState = WantedState::STAND_BY;
+        m_currentWantedState = m_wantedState;
+        m_systemState = SystemState::IDLE;
+        
+        m_controlMode = mode;
+        break; //end of ControlMode::DISABLED
+    case ControlMode::MANUAL_DUTY_CYCLE :
+        m_feederOutput = feederConstants::Velocity::REST;
+        m_outtakeOutput = outtakeConstants::Velocity::REST;
+        m_manualControlInput = 0.0;
+
+        m_controlMode = mode;
+        break; //end of ControlMode::DISABLED
+    case ControlMode::DISABLED : 
+        m_feederOutput = feederConstants::Velocity::REST;
+        m_outtakeOutput = outtakeConstants::Velocity::REST;
+
+        m_controlMode = mode;
+        break; //end of ControlMode::DISABLED
+    
+    default:
+        DEBUG_ASSERT(false,"Straffer : SetControlMode impossible with an unrecognized mode.");
+        break; //end of default
+    }
 }
 ControlMode GripperSubsystem::GetControlMode()
 {
@@ -23,22 +55,17 @@ ControlMode GripperSubsystem::GetControlMode()
 }
 void GripperSubsystem::ToggleControlMode()
 {
-    m_wantedState = WantedState::STAND_BY;
-    m_systemState = SystemState::IDLE;
-    m_feederOutput = 0.0;
-    m_outtakeOutput = 0.0;
-    m_manualControlInput = 0.0;
     switch (m_controlMode)
     {
     case gripperConstants::MainControlMode :
-        m_controlMode = gripperConstants::EmergencyControlMode;
-        break;
+        SetControlMode(gripperConstants::EmergencyControlMode);
+        break; //end of gripperConstants::MainControlMode
     case gripperConstants::EmergencyControlMode : 
-        m_controlMode = gripperConstants::MainControlMode;
-        break;
+        SetControlMode(gripperConstants::MainControlMode);
+        break; //end of gripperConstants::EmergencyControlMode
     default:
         DEBUG_ASSERT(false,"Gripper : Toggle impossible with an unrecognized mode.");
-        break;
+        break; //end of default
     }
 }
 void GripperSubsystem::SetWantedState(const WantedState wantedState)
@@ -163,7 +190,7 @@ void GripperSubsystem::Periodic()
 
         default:
             DEBUG_ASSERT(false, "Gripper : impossible state");
-            break;
+            break; //end of default
         }
 
         m_pGripperIO->SetFeederDutyCycle(m_feederOutput);
@@ -238,7 +265,7 @@ void GripperSubsystem::Periodic()
 
         default:
             DEBUG_ASSERT(false, "Gripper : impossible state");
-            break;
+            break; //end of default
         }
 
         m_pGripperIO->SetFeederRPM(m_feederOutput);
@@ -252,14 +279,17 @@ void GripperSubsystem::Periodic()
         m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
         break; //end of ControlMode::MANUAL_DUTY_CYCLE
 
+    case ControlMode::DISABLED :
+        m_feederOutput = feederConstants::Velocity::REST; // protection
+        m_outtakeOutput = outtakeConstants::Velocity::REST; // protection
+        break; //end of ControlMode::DISABLED
     default:
         DEBUG_ASSERT(false, "Gripper : wrong ControlMode chosen");
         m_feederOutput = 0.0; // protection
         m_outtakeOutput = 0.0; // protection
-        break;
+        break; //end of default
     }
 
-    //LOG
     frc::SmartDashboard::PutNumber("Gripper/WantedState", (int)m_currentWantedState);
     frc::SmartDashboard::PutNumber("Gripper/SystemState", (int)m_systemState);
     frc::SmartDashboard::PutNumber("Gripper/ControlMode", (int)m_controlMode);
@@ -319,7 +349,7 @@ void GripperSubsystem::RunStateMachine()
 
     default:
         DEBUG_ASSERT(false, "Gripper : impossible state");
-        break;
+        break; //end of default
     } // switch(m_currentWantedState)
 
     switch (m_systemState) // Change System State
@@ -351,14 +381,14 @@ void GripperSubsystem::RunStateMachine()
         {
             m_systemState = SystemState::FEEDING_FORWARD_SHY;
         }
-        break;
+        break; //end of SystemState::FEEDING_BACKWARD
 
     case SystemState::FEEDING_FORWARD : 
         if(!(inputs.IRBreakerUp || inputs.IRBreakerUp2))
         {
             m_systemState = SystemState::FEEDING_BACKWARD;
         }
-        break;
+        break; //end of SystemState::FEEDING_FORWARD
     
     case SystemState::FEEDING_FORWARD_SHY :
         if(!(inputs.IRBreakerUp || inputs.IRBreakerUp2))
@@ -368,7 +398,7 @@ void GripperSubsystem::RunStateMachine()
             m_wantedState = WantedState::STAND_BY;
             CanRumble = true;
         }
-        break;
+        break; //end of SystemState::FEEDING_FORWARD_SHY
     
     case SystemState::PRESCORE :
         if(m_counter!=0)
@@ -379,20 +409,20 @@ void GripperSubsystem::RunStateMachine()
             {
             case WantedState::SCORE_HIGH :
                 m_systemState = SystemState::HIGH_SCORING;
-                break;
+                break; //end of  WantedState::SCORE_HIGH
             case WantedState::SCORE_MIDDLE :
                 m_systemState = SystemState::MIDDLE_SCORING;
-                break;
+                break; //end of  WantedState::SCORE_MIDDLE
             case WantedState::SCORE_LOW :
                 m_systemState = SystemState::HIGH_SCORING;
-                break;
+                break; //end of  WantedState::SCORE_LOW
             default:
                 DEBUG_ASSERT(false, "Gripper : No score desired after PreScore ???");
-                break;
+                break; //end of default
             }
             m_counter = gripperConstants::Counter::SCORE;
         }
-        break;
+        break; //end of SystemState::PRESCORE
 
     case SystemState::REJECTING_BACKWARD :
         if(m_counter!=0)
@@ -404,7 +434,7 @@ void GripperSubsystem::RunStateMachine()
             m_wantedState = WantedState::STAND_BY;
             CanRumble = true;
         }
-        break;
+        break; //end of SystemState::REJECTING_BACKWARD
     
     case SystemState::REJECTING_FORWARD :
         if(m_counter!=0) 
@@ -416,7 +446,7 @@ void GripperSubsystem::RunStateMachine()
             m_wantedState = WantedState::STAND_BY;
             CanRumble = true;
         }
-        break;
+        break; //end of SystemState::REJECTING_FORWARD
     
     case SystemState::SHIFTING_FORWARD : 
         if(m_counter!=0)
@@ -428,7 +458,7 @@ void GripperSubsystem::RunStateMachine()
             m_wantedState = WantedState::STAND_BY;
             CanRumble = true;
         }
-        break;
+        break; //end of SystemState::SHIFTING_FORWARD
     
     case SystemState::HIGH_SCORING :
     case SystemState::MIDDLE_SCORING :
@@ -442,15 +472,15 @@ void GripperSubsystem::RunStateMachine()
             m_currentWantedState = WantedState::STAND_BY;
             CanRumble = true;
         }
-        break;
+        break; //end of SystemState::(scoring)
     
     case SystemState::REST_EMPTY :
     case SystemState::REST_LOADED : 
     case SystemState::REST_SHIFTED :
-        break;
+        break; //end of SystemState::(rest)
 
     default:
         DEBUG_ASSERT(false, "Gripper : impossible state");
-        break;
+        break; //end of default
     }
 }

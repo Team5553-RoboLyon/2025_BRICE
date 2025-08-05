@@ -58,24 +58,28 @@ class GripperSubsystem : public frc2::SubsystemBase {
 
   bool CanRumble = false;
  private:
-  WantedState m_wantedState = WantedState::STAND_BY;
-  WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
-  SystemState m_systemState = SystemState::IDLE;
-  ControlMode m_controlMode = gripperConstants::MainControlMode;
-  GripperIO *m_pGripperIO;
-  GripperIOInputs inputs;
-  GripperIOLogger m_logger{frc::DataLogManager::GetLog(), "/Gripper"};
-
-  int m_counter{0};
-  double m_manualControlInput{0.0};
-  double m_feederOutput{0.0};
-  double m_outtakeOutput{0.0};
-  Alert m_feederMotorDisconnected{"Feeder Motor: Disconnected", Alert::AlertType::ERROR};
-  Alert m_outtakeMotorDisconnected{"Outtake Motor: Disconnected", Alert::AlertType::ERROR};
-  Alert m_feederHot{"Feeder Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
-  Alert m_outtakeHot{"Outtake Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
-  Alert m_feederOverheating{"Feeder Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
-  Alert m_outtakeOverheating{"Outtake Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
-
-  void RunStateMachine();
+  // === Hardware & IO Interfaces ===
+    GripperIO *m_pGripperIO;
+    GripperIOInputs inputs;
+    GripperIOLogger m_logger{frc::DataLogManager::GetLog(), "/Gripper"};
+  // === System States & Control Modes ===
+    WantedState m_wantedState = WantedState::STAND_BY;
+    WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
+    SystemState m_systemState = SystemState::IDLE;
+    ControlMode m_controlMode = gripperConstants::MainControlMode;
+  // === Control Inputs / Outputs ===
+    double m_manualControlInput{0.0};
+    double m_feederOutput{0.0};
+    double m_outtakeOutput{0.0};
+  // === Internal Calculations ===
+    int m_counter{0};
+  // === System Alerts ===
+    Alert m_feederMotorDisconnected{"Feeder Motor: Disconnected", Alert::AlertType::ERROR};
+    Alert m_outtakeMotorDisconnected{"Outtake Motor: Disconnected", Alert::AlertType::ERROR};
+    Alert m_feederHot{"Feeder Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
+    Alert m_outtakeHot{"Outtake Motor: Temperature exceeds 60°C", Alert::AlertType::WARNING};
+    Alert m_feederOverheating{"Feeder Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
+    Alert m_outtakeOverheating{"Outtake Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
+  // === Internal Methods ===
+    void RunStateMachine();
 };

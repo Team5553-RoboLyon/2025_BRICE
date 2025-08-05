@@ -33,6 +33,9 @@ void Alert::Set(bool newActive) {
                 FRC_ReportError(frc::warn::Warning, text.c_str());
                 break;
             case AlertType::INFO:
+                // The INFO type is only available for read in NetworkTables.
+                break;
+            case AlertType::PRINT:
                 std::cout << text << "\n";
                 break;
         }
@@ -50,6 +53,9 @@ void Alert::SetText(const std::string& newText) {
                 FRC_ReportError(frc::warn::Warning, newText.c_str());
                 break;
             case AlertType::INFO:
+                // The INFO type is only available for read in NetworkTables.
+                break;
+            case AlertType::PRINT:
                 std::cout << newText << "\n";
                 break;
         }
@@ -100,6 +106,14 @@ void Alert::SendableAlerts::InitSendable(wpi::SendableBuilder& builder) {
         "infos",
         [this]() -> std::vector<std::string> {
             return GetStrings(Alert::AlertType::INFO);
+        },
+        nullptr
+    );
+
+    builder.AddStringArrayProperty(
+        "prints",
+        [this]() -> std::vector<std::string> {
+            return GetStrings(Alert::AlertType::PRINT);
         },
         nullptr
     );

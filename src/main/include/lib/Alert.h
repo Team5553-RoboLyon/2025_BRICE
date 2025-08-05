@@ -1,11 +1,12 @@
 /*******************************************************************************
  * 
- * File        : Alert.h (v1.1)
+ * File        : Alert.h (v1.2)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Persistent alert system for displaying categorized runtime messages
  *               to the SmartDashboard using NetworkTables.
  * 
  * Authors     : AKA (2025), last update by AKA (2025)
+ *                             and inspired by Team 63
  * Organization: Robo'Lyon - FRC Team 5553
  *               Lycée Notre-Dame-de-Bellegarde, France
  * Repository  : https://github.com/Team5553-RoboLyon
@@ -25,7 +26,8 @@ public:
     enum class AlertType {
         ERROR,
         WARNING,
-        INFO
+        INFO,
+        PRINT
     };
 
     Alert(const std::string& text, AlertType type);

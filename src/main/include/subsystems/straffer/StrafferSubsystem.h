@@ -57,31 +57,42 @@ class StrafferSubsystem : public frc2::SubsystemBase {
     bool CanRumble = false; //COMMENTME
 
   private:
-    WantedState m_wantedState = WantedState::STAND_BY;
-    WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
-    SystemState m_systemState = SystemState::IDLE;
-    ControlMode m_controlMode = strafferConstants::MainControlMode;
-    StrafferIO *m_pStrafferIO;
-    StrafferIOInputs inputs;
-    StrafferIOLogger m_logger{frc::DataLogManager::GetLog(), "/Straffer"};
-    Camera *m_pCamera;
+    // === Hardware & IO Interfaces ===
+      Camera *m_pCamera;
+      StrafferIO *m_pStrafferIO;
+      StrafferIOInputs inputs;
+      StrafferIOLogger m_logger{frc::DataLogManager::GetLog(), "/Straffer"};
 
-    int m_counter{0};
-    double m_output{0.0}; 
-    double m_manualControlInput{0.0};
-    double m_timestamp{0.0};
-    double m_selectedReefWidthPosition{0.0}; //COMMENTME
-    double m_lowestAmbiguity{1.0}; //COMMENTME
-    double m_bestAprilTagOffset{0.0}; //COMMENTME
-    bool m_isInitialized = false; 
-    bool m_isEncoderAlreadyReset = false;
+    // === System States & Control Modes ===
+      WantedState m_wantedState = WantedState::STAND_BY;
+      WantedState m_currentWantedState = m_wantedState; //Local discrete snapshot of m_wantedState for each cycle
+      SystemState m_systemState = SystemState::IDLE;
+      ControlMode m_controlMode = strafferConstants::MainControlMode;
 
-    PidRBL m_strafferPIDController;
-    RateLimiter m_rateLimiter{strafferConstants::Settings::TIME_TO_REACH_FULL_SPEED};
+    // === Motion Control (PID / Filters) ===
+      PidRBL m_strafferPIDController;
+      RateLimiter m_rateLimiter{strafferConstants::Settings::TIME_TO_REACH_FULL_SPEED};
 
-    Alert m_motorDisconnected{"Straffer Motor: Disconnected", Alert::AlertType::ERROR};
-    Alert m_motorHot{"Straffer Motor: Temperature exceeds 55°C", Alert::AlertType::WARNING};
-    Alert m_motorOverheating{"Straffer Motor: Temperature exceeds 70°C", Alert::AlertType::ERROR};
+    // === Control Inputs / Outputs ===
+      double m_manualControlInput{0.0};
+      double m_timestamp{0.0};
+      double m_output{0.0}; 
 
-    void RunStateMachine();
+    // === Internal Calculations ===
+      int m_counter{0};
+      double m_selectedReefWidthPosition{0.0}; //COMMENTME
+      double m_lowestAmbiguity{1.0}; //COMMENTME
+      double m_bestAprilTagOffset{0.0}; //COMMENTME
+
+    // === Status Flags ===
+      bool m_isInitialized = false; 
+      bool m_isEncoderAlreadyReset = false;
+
+    // === System Alerts ===
+      Alert m_motorDisconnected{"Straffer Motor: Disconnected", Alert::AlertType::ERROR};
+      Alert m_motorHot{"Straffer Motor: Temperature exceeds 55°C", Alert::AlertType::WARNING};
+      Alert m_motorOverheating{"Straffer Motor: Temperature exceeds 70°C", Alert::AlertType::ERROR};
+      
+    // === Internal Methods ===
+      void RunStateMachine();
 };
