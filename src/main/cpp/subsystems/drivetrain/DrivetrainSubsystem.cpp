@@ -163,8 +163,8 @@ void DrivetrainSubsystem::Periodic()
 
     //TODO : NavX protection
 
-    frc::SmartDashboard::PutNumber("TD.SystemDrive", (int)m_systemDrive);
-    frc::SmartDashboard::PutNumber("TD.WantedDrive", (int)m_wantedDrive);
+    frc::SmartDashboard::PutNumber("Drivetrain/SystemDrive", (int)m_systemDrive);
+    frc::SmartDashboard::PutNumber("Drivetrain/WantedDrive", (int)m_wantedDrive);
 
     m_pTankDriveIO->SetChassisSpeed(m_output);
 }

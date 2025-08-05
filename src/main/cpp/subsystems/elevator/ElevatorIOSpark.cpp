@@ -54,12 +54,12 @@ void ElevatorIOSpark::UpdateInputs(ElevatorIOInputs& inputs)
 
     inputs.heightPosition = m_encoder.GetDistance();
 
-    frc::SmartDashboard::PutBoolean("El.Connection", inputs.isLeftMotorConnected);
-    frc::SmartDashboard::PutBoolean("Er.Connection", inputs.isRightMotorConnected);
+    frc::SmartDashboard::PutBoolean("Elevator/Motors/Left/Connection", inputs.isLeftMotorConnected);
+    frc::SmartDashboard::PutBoolean("Elevator/Motors/Right/Connection", inputs.isRightMotorConnected);
 
-    frc::SmartDashboard::PutBoolean("E.LimitSwitch", inputs.limitSwitchBottom);
-    frc::SmartDashboard::PutBoolean("E.LimitSwitch2", inputs.limitSwitchBottom2);
-    frc::SmartDashboard::PutNumber("E.Height Position", inputs.heightPosition);
+    frc::SmartDashboard::PutBoolean("Elevator/Sensors/LimitSwitch", inputs.limitSwitchBottom);
+    frc::SmartDashboard::PutBoolean("Elevator/Sensors/LimitSwitch2", inputs.limitSwitchBottom2);
+    frc::SmartDashboard::PutNumber("Elevator/Height Position", inputs.heightPosition);
 }
 
 void ElevatorIOSpark::SetVoltage(double voltage)

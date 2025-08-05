@@ -260,9 +260,9 @@ void GripperSubsystem::Periodic()
     }
 
     //LOG
-    frc::SmartDashboard::PutNumber("G.WantedState", (int)m_currentWantedState);
-    frc::SmartDashboard::PutNumber("G.SystemState", (int)m_systemState);
-    frc::SmartDashboard::PutNumber("G.ControlMode", (int)m_controlMode);
+    frc::SmartDashboard::PutNumber("Gripper/WantedState", (int)m_currentWantedState);
+    frc::SmartDashboard::PutNumber("Gripper/SystemState", (int)m_systemState);
+    frc::SmartDashboard::PutNumber("Gripper/ControlMode", (int)m_controlMode);
 }
 
 void GripperSubsystem::RunStateMachine()

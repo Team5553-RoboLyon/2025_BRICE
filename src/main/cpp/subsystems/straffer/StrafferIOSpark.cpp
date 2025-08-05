@@ -33,10 +33,10 @@ void StrafferIOSpark::UpdateInputs(StrafferIOInputs& inputs)
     inputs.limitSwitchRight = m_limitSwitchRight.Get() == strafferConstants::LimitSwitch::IS_TRIGGERED;
     inputs.widthPosition = m_encoder.GetDistance() + m_H2Offset; //COMMENTME
 
-    frc::SmartDashboard::PutBoolean("S.Connection", inputs.isMotorConnected);
-    frc::SmartDashboard::PutBoolean("S.Left LimitSwitch", inputs.limitSwitchLeft);
-    frc::SmartDashboard::PutBoolean("S.Right LimitSwitch", inputs.limitSwitchRight);
-    frc::SmartDashboard::PutNumber("S.Width Position", inputs.widthPosition);
+    frc::SmartDashboard::PutBoolean("Straffer/Motor/Connection", inputs.isMotorConnected);
+    frc::SmartDashboard::PutBoolean("Straffer/Sensors/Left LimitSwitch", inputs.limitSwitchLeft);
+    frc::SmartDashboard::PutBoolean("Straffer/Sensors/Right LimitSwitch", inputs.limitSwitchRight);
+    frc::SmartDashboard::PutNumber("Straffer/Width Position", inputs.widthPosition);
 }
 
 void StrafferIOSpark::SetVoltage(const double voltage) 

@@ -85,10 +85,10 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
 
     // field.SetRobotPose(inputs.robotPosition); //for sim
     // frc::SmartDashboard::PutData("Field",&field);
-    frc::SmartDashboard::PutBoolean("TDlf.Connection", inputs.isFrontLeftMotorConnected);
-    frc::SmartDashboard::PutBoolean("TDrb.Connection", inputs.isBackRightMotorConnected);
-    frc::SmartDashboard::PutBoolean("TDrf.Connection", inputs.isFrontRightMotorConnected);
-    frc::SmartDashboard::PutBoolean("TDlb.Connection", inputs.isBackLeftMotorConnected);
+    frc::SmartDashboard::PutBoolean("Drivetrain/LeftSide/Front/Connection", inputs.isFrontLeftMotorConnected);
+    frc::SmartDashboard::PutBoolean("Drivetrain/RightSide/Back/Connection", inputs.isBackRightMotorConnected);
+    frc::SmartDashboard::PutBoolean("Drivetrain/RightSide/Front/Connection", inputs.isFrontRightMotorConnected);
+    frc::SmartDashboard::PutBoolean("Drivetrain/LeftSide/Back/Connection", inputs.isBackLeftMotorConnected);
 }
 
 void DrivetrainIOFlex::SetVoltage(const double leftSideVoltage, const double rightSideVoltage)

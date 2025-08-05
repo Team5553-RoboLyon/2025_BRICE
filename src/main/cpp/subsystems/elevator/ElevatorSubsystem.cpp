@@ -290,11 +290,11 @@ void ElevatorSubsystem::Periodic()
 
 
         //LOG
-    frc::SmartDashboard::PutNumber("E.WantedState", (int)m_currentWantedState);
-    frc::SmartDashboard::PutNumber("E.SystemState", (int)m_systemState);
-    frc::SmartDashboard::PutNumber("E.ControlMode", (int)m_controlMode);
-    frc::SmartDashboard::PutNumber("E.Setpoint", m_elevatorPIDController.GetSetpoint());
-    frc::SmartDashboard::PutBoolean("E.isInit", m_isInitialized);
+    frc::SmartDashboard::PutNumber("Elevator/WantedState", (int)m_currentWantedState);
+    frc::SmartDashboard::PutNumber("Elevator/SystemState", (int)m_systemState);
+    frc::SmartDashboard::PutNumber("Elevator/ControlMode", (int)m_controlMode);
+    frc::SmartDashboard::PutNumber("Elevator/Setpoint", m_elevatorPIDController.GetSetpoint());
+    frc::SmartDashboard::PutBoolean("Elevator/isInit", m_isInitialized);
 }
 
 void ElevatorSubsystem::RunStateMachine()

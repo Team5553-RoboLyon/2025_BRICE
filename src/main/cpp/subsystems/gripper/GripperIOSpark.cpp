@@ -66,12 +66,12 @@ void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
     inputs.IRBreakerDown = m_IRBreakerDown.Get() == gripperConstants::IRbreaker::IS_TRIGGERED;
     inputs.IRBreakerUp2 = m_IRBreakerUp2.Get() == gripperConstants::IRbreaker::IS_TRIGGERED;
 
-    frc::SmartDashboard::PutBoolean("O.Connection", inputs.isOuttakeMotorConnected);
-    frc::SmartDashboard::PutBoolean("F.Connection", inputs.isFeederMotorConnected);
+    frc::SmartDashboard::PutBoolean("Gripper/Outtake/Connection", inputs.isOuttakeMotorConnected);
+    frc::SmartDashboard::PutBoolean("Gripper/Feeder/Connection", inputs.isFeederMotorConnected);
 
-    frc::SmartDashboard::PutBoolean("G.Up IRbreaker", inputs.IRBreakerUp);
-    frc::SmartDashboard::PutBoolean("G.Up2 IRbreaker", inputs.IRBreakerUp2);
-    frc::SmartDashboard::PutBoolean("G.Down IRbreaker", inputs.IRBreakerDown);
+    frc::SmartDashboard::PutBoolean("Gripper/Sensors/Up IRbreaker", inputs.IRBreakerUp);
+    frc::SmartDashboard::PutBoolean("Gripper/Sensors/Up2 IRbreaker", inputs.IRBreakerUp2);
+    frc::SmartDashboard::PutBoolean("Gripper/Sensors/Down IRbreaker", inputs.IRBreakerDown);
 }
 
 void GripperIOSpark::SetFeederVoltage(const double voltage) 

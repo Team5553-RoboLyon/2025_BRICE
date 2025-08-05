@@ -276,11 +276,11 @@ void StrafferSubsystem::Periodic()
 
 
     //LOG
-    frc::SmartDashboard::PutNumber("S.WantedState", (int)m_currentWantedState);
-    frc::SmartDashboard::PutNumber("S.SystemState", (int)m_systemState);
-    frc::SmartDashboard::PutNumber("S.ControlMode", (int)m_controlMode);
-    frc::SmartDashboard::PutNumber("S.Setpoint", m_strafferPIDController.GetSetpoint());
-    frc::SmartDashboard::PutBoolean("S.isInit", m_isInitialized);
+    frc::SmartDashboard::PutNumber("Straffer/WantedState", (int)m_currentWantedState);
+    frc::SmartDashboard::PutNumber("Straffer/SystemState", (int)m_systemState);
+    frc::SmartDashboard::PutNumber("Straffer/ControlMode", (int)m_controlMode);
+    frc::SmartDashboard::PutNumber("Straffer/Setpoint", m_strafferPIDController.GetSetpoint());
+    frc::SmartDashboard::PutBoolean("Straffer/isInit", m_isInitialized);
 }
 
 void StrafferSubsystem::RunStateMachine()
