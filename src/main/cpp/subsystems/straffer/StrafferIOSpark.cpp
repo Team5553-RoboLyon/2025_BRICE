@@ -17,7 +17,7 @@ StrafferIOSpark::StrafferIOSpark()
     m_motor.ClearFaults();
 
     m_encoder.Reset();
-    m_encoder.SetDistancePerPulse(strafferConstants::Sensor::Encoder::DISTANCE_PER_PULSE);
+    m_encoder.SetDistancePerPulse(strafferConstants::Encoder::DISTANCE_PER_PULSE);
 }
 
 void StrafferIOSpark::UpdateInputs(StrafferIOInputs& inputs)
@@ -29,8 +29,8 @@ void StrafferIOSpark::UpdateInputs(StrafferIOInputs& inputs)
     inputs.current = m_motor.GetOutputCurrent();
     inputs.temperature = m_motor.GetMotorTemperature();
 
-    inputs.limitSwitchLeft = m_limitSwitchLeft.Get() == strafferConstants::Sensor::LimitSwitch::IS_TRIGGERED;
-    inputs.limitSwitchRight = m_limitSwitchRight.Get() == strafferConstants::Sensor::LimitSwitch::IS_TRIGGERED;
+    inputs.limitSwitchLeft = m_limitSwitchLeft.Get() == strafferConstants::LimitSwitch::IS_TRIGGERED;
+    inputs.limitSwitchRight = m_limitSwitchRight.Get() == strafferConstants::LimitSwitch::IS_TRIGGERED;
     inputs.widthPosition = m_encoder.GetDistance() + m_H2Offset; //COMMENTME
 
     frc::SmartDashboard::PutBoolean("S.Connection", inputs.isMotorConnected);

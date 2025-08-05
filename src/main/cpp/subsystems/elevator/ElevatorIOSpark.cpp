@@ -1,7 +1,9 @@
 #include "subsystems/elevator/ElevatorIOSpark.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
+
 #include "lib/DebugUtils.h"
+
 ElevatorIOSpark::ElevatorIOSpark()
 {
     // Set the left motor configs

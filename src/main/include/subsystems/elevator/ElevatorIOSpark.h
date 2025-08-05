@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ElevatorIO.h"
-#include "rev/SparkMax.h"
 #include <frc/DigitalInput.h>
-#include "ElevatorConstants.h"
+#include "rev/SparkMax.h"
 #include "frc/Encoder.h"
-//TODO : verif comment utiliser encoder avec motion
+
+#include "ElevatorIO.h"
+#include "ElevatorConstants.h"
 
 class ElevatorIOSpark  final : public ElevatorIO
 {

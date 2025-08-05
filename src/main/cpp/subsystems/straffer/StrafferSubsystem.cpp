@@ -1,9 +1,10 @@
 #include "subsystems/straffer/StrafferSubsystem.h"
+
 #include "frc/smartdashboard/SmartDashboard.h"
 #include "lib/TimerRBL.h"
 #include "lib/DebugUtils.h"
 
-//FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG 
+//FIXME : implement straffer length in SystemState::SEEKING_APRIL_TAG
 StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) : 
                                                     m_pStrafferIO(pIo),
                                                     m_pCamera(pCamera)
@@ -50,6 +51,7 @@ void StrafferSubsystem::SetControlMode(const ControlMode mode)
         m_strafferPIDController.SetTolerance(strafferConstants::Gains::MANUAL_SETPOINT_PID::TOLERANCE);
     }
     m_output = strafferConstants::Speed::REST;
+    m_manualControlInput = 0.0;
 }
 ControlMode StrafferSubsystem::GetControlMode()
 {
@@ -60,6 +62,7 @@ void StrafferSubsystem::ToggleControlMode()
     m_wantedState = WantedState::STAND_BY;
     m_systemState = SystemState::IDLE;
     m_output = strafferConstants::Speed::REST;
+    m_manualControlInput = 0.0;
     m_rateLimiter.Reset();
     m_strafferPIDController.Reset(m_timestamp);
     switch (m_controlMode)
@@ -112,7 +115,7 @@ void StrafferSubsystem::SetManualAxis(const double value)
     {
         DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
             , "Straffer Manual value out of range");
-        m_output = value;
+        m_manualControlInput = value;
     }
     else 
     {
@@ -215,15 +218,15 @@ void StrafferSubsystem::Periodic()
             //TODO : later
             break;
         case ControlMode::MANUAL_DUTY_CYCLE :
-            m_output = m_rateLimiter.Update(std::sin(m_output * (M_PI / 2.0)));
+            m_output = m_rateLimiter.Update(std::sin(m_manualControlInput * (M_PI / 2.0)));
             break;
         case ControlMode::MANUAL_SETPOINT :
             //adapt the manual value to changing setpoint
-            m_output = m_strafferPIDController.GetSetpoint() + m_output * strafferConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+            m_manualControlInput = m_strafferPIDController.GetSetpoint() + m_manualControlInput * strafferConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
             
-            m_strafferPIDController.SetFeedforward(NSIGN(m_output - inputs.widthPosition) * 
+            m_strafferPIDController.SetFeedforward(NSIGN(m_manualControlInput - inputs.widthPosition) * 
                                     strafferConstants::Gains::MANUAL_SETPOINT_PID::KS);
-            m_output = m_strafferPIDController.CalculateWithRealTime(m_output,
+            m_output = m_strafferPIDController.CalculateWithRealTime(m_manualControlInput,
                                                                         inputs.widthPosition,
                                                                         m_timestamp);
             break;

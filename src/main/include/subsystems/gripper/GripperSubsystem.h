@@ -1,11 +1,13 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
+
+#include "GripperConstants.h"
+#include "GripperIOLogger.h"
 #include "GripperIO.h"
 #include "Constants.h"
-#include "GripperConstants.h"
+
 #include "lib/Alert.h"
-#include "GripperIOLogger.h"
 
 class GripperSubsystem : public frc2::SubsystemBase {
  public:
@@ -52,7 +54,6 @@ class GripperSubsystem : public frc2::SubsystemBase {
 
   bool IsResting();
   void SetManualAxis(const double value);
-  void SetManualAxis(const double feederValue, const double outtakeValue);
   void Periodic() override;
 
   bool CanRumble = false;
@@ -66,6 +67,7 @@ class GripperSubsystem : public frc2::SubsystemBase {
   GripperIOLogger m_logger{frc::DataLogManager::GetLog(), "/Gripper"};
 
   int m_counter{0};
+  double m_manualControlInput{0.0};
   double m_feederOutput{0.0};
   double m_outtakeOutput{0.0};
   Alert m_feederMotorDisconnected{"Feeder Motor: Disconnected", Alert::AlertType::ERROR};

@@ -1,13 +1,15 @@
 #pragma once
-//TODO : change implement Cam with a proper way
+
 #include <frc2/command/SubsystemBase.h>
-#include "StrafferIO.h"
-#include "StrafferIOLogger.h"
-#include "StrafferConstants.h"
-#include "lib/Alert.h"
-#include "lib/PidRBL.h"
-#include "lib/RateLimiter.h"
+
 #include "subsystems/vision/Camera.h"
+#include "StrafferConstants.h"
+#include "StrafferIOLogger.h"
+#include "StrafferIO.h"
+
+#include "lib/RateLimiter.h"
+#include "lib/PidRBL.h"
+#include "lib/Alert.h"
 
 class StrafferSubsystem : public frc2::SubsystemBase {
   public:
@@ -66,6 +68,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
 
     int m_counter{0};
     double m_output{0.0}; 
+    double m_manualControlInput{0.0};
     double m_timestamp{0.0};
     double m_selectedReefWidthPosition{0.0}; //COMMENTME
     double m_lowestAmbiguity{1.0}; //COMMENTME

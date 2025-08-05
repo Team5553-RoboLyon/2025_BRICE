@@ -1,7 +1,9 @@
 #include "subsystems/gripper/GripperSubsystem.h"
+
 #include "frc/smartdashboard/SmartDashboard.h"
 
 #include "lib/DebugUtils.h"
+
 GripperSubsystem::GripperSubsystem(GripperIO *pIo) : 
                                                     m_pGripperIO(pIo)
 {
@@ -13,6 +15,7 @@ void GripperSubsystem::SetControlMode(const ControlMode mode)
     m_systemState = SystemState::IDLE;
     m_feederOutput = 0.0;
     m_outtakeOutput = 0.0;
+    m_manualControlInput = 0.0;
 }
 ControlMode GripperSubsystem::GetControlMode()
 {
@@ -24,6 +27,7 @@ void GripperSubsystem::ToggleControlMode()
     m_systemState = SystemState::IDLE;
     m_feederOutput = 0.0;
     m_outtakeOutput = 0.0;
+    m_manualControlInput = 0.0;
     switch (m_controlMode)
     {
     case gripperConstants::MainControlMode :
@@ -51,28 +55,11 @@ void GripperSubsystem::SetManualAxis(const double value)
     {
         DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
             , "Gripper Manual value out of range");
-        m_feederOutput = value;
-        m_outtakeOutput = value;
+        m_manualControlInput = value;
     }
     else 
     {
         DEBUG_ASSERT(false,"Gripper : Open Loop Output set while Closed Loop is used");
-    }
-}
-void GripperSubsystem::SetManualAxis(const double feederValue, const double outtakeValue)
-{
-    if(BYPASS_STATE_MACHINE(m_controlMode))
-    {
-        DEBUG_ASSERT((feederValue <= 1.0) && (feederValue >= -1.0) 
-            , "Feeder Duty Cycle out of range");
-        DEBUG_ASSERT((outtakeValue <= 1.0) && (outtakeValue >= -1.0) 
-            , "Outtake Duty Cycle out of range");
-        m_outtakeOutput = outtakeValue;
-        m_feederOutput = feederValue;
-    }
-    else 
-    {
-        DEBUG_ASSERT(false, "Gripper : Open Loop Output set while Closed Loop is used");
     }
 }
 bool GripperSubsystem::IsResting()
@@ -187,66 +174,66 @@ void GripperSubsystem::Periodic()
         switch (m_systemState)
         {
         case SystemState::COLLECTING_EMPTY :
-            m_feederOutput = feederConstants::RPM::COLLECTING;
-            m_outtakeOutput = outtakeConstants::RPM::FEEDING_EMPTY;
+            m_feederOutput = feederConstants::Velocity::COLLECTING;
+            m_outtakeOutput = outtakeConstants::Velocity::FEEDING_EMPTY;
             break; //end of SystemState::COLLECTING_EMPTY
 
         case SystemState::FEEDING_BACKWARD : 
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::FEEDING_BACKWARD;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::FEEDING_BACKWARD;
             break; //end of SystemState::FEEDING_BACKWARD
 
         case SystemState::FEEDING_FORWARD : 
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::FEEDING_FORWARD;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::FEEDING_FORWARD;
             break; //end of SystemState::FEEDING_FORWARD
 
         case SystemState::FEEDING_FORWARD_SHY :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::SHY;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::SHY;
             break; //end of SystemState::FEEDING_FORWARD_SHY
 
         case SystemState::PRESCORE :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::PRESCORE;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::PRESCORE;
             break; //end of SystemState::PRESCORE
 
         case SystemState::REJECTING_BACKWARD :
-            m_feederOutput = feederConstants::RPM::REJECTING_BACKWARD;
-            m_outtakeOutput = outtakeConstants::RPM::REJECTING_BACKWARD;
+            m_feederOutput = feederConstants::Velocity::REJECTING_BACKWARD;
+            m_outtakeOutput = outtakeConstants::Velocity::REJECTING_BACKWARD;
             break; //end of SystemState::REJECTING_BACKWARD
 
         case SystemState::REJECTING_FORWARD :
-            m_feederOutput = feederConstants::RPM::REJECTING_FORWARD;
-            m_outtakeOutput = outtakeConstants::RPM::REJECTING_FORWARD;
+            m_feederOutput = feederConstants::Velocity::REJECTING_FORWARD;
+            m_outtakeOutput = outtakeConstants::Velocity::REJECTING_FORWARD;
             break; //end of SystemState::REJECTING_FORWARD
 
         case SystemState::SHIFTING_FORWARD : 
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::SHIFTING;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::SHIFTING;
             break; //end of SystemState::SHIFTING_FORWARD
 
         case SystemState::HIGH_SCORING :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::HIGH_SCORING;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::HIGH_SCORING;
             break; //end of SystemState::HIGH_SCORING
 
         case SystemState::MIDDLE_SCORING :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::MIDDLE_SCORING;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::MIDDLE_SCORING;
             break; //end of SystemState::MIDDLE_SCORING
         
         case SystemState::LOW_SCORING :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::LOW_SCORING;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::LOW_SCORING;
             break; //end of SystemState::LOW_SCORING
 
         case SystemState::REST_EMPTY :
         case SystemState::REST_LOADED : 
         case SystemState::REST_SHIFTED :
         case SystemState::IDLE :
-            m_feederOutput = feederConstants::RPM::REST;
-            m_outtakeOutput = outtakeConstants::RPM::REST;
+            m_feederOutput = feederConstants::Velocity::REST;
+            m_outtakeOutput = outtakeConstants::Velocity::REST;
             break; //end of "resting" states
 
         default:
@@ -259,8 +246,8 @@ void GripperSubsystem::Periodic()
         break; //end of ControlMode::Velocity
 
     case ControlMode::MANUAL_DUTY_CYCLE :
-        m_feederOutput = (std::sin(m_feederOutput * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
-        m_outtakeOutput = (std::sin(m_outtakeOutput * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        m_feederOutput = (std::sin(m_manualControlInput * (M_PI / 2.0)) /gripperConstants::OPEN_LOOP_REDUC);
+        m_outtakeOutput = m_feederOutput;
         m_pGripperIO->SetFeederDutyCycle(m_feederOutput);
         m_pGripperIO->SetOuttakeDutyCycle(m_outtakeOutput);
         break; //end of ControlMode::MANUAL_DUTY_CYCLE

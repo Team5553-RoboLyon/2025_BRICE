@@ -4,9 +4,9 @@
 
 #pragma once
 
+#include <frc2/command/CommandPtr.h>
 #include <frc/TimedRobot.h>
 #include <frc/PWM.h>
-#include <frc2/command/CommandPtr.h>
 
 #include "RobotContainer.h"
 #include "lib/DebugUtils.h"

@@ -3,21 +3,20 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #pragma once
-#include <frc/Joystick.h>
 #include <frc2/command/button/JoystickButton.h>
+#include <frc/Joystick.h>
 
+#include "subsystems/drivetrain/DrivetrainSubsystem.h"
 #include "subsystems/superstructure/Superstruture.h"
 #include "subsystems/straffer/StrafferSubsystem.h"
 #include "subsystems/elevator/ElevatorSubsystem.h"
 #include "subsystems/gripper/GripperSubsystem.h"
-#include "subsystems/drivetrain/DrivetrainSubsystem.h"
-#include "subsystems/drivetrain/DrivetrainConstants.h"
 #include "subsystems/vision/Camera.h"
 
+#include "subsystems/drivetrain/DrivetrainIOFlex.h"
 #include "subsystems/elevator/ElevatorIOSpark.h"
 #include "subsystems/straffer/StrafferIOSpark.h"
 #include "subsystems/gripper/GripperIOSpark.h"
-#include "subsystems/drivetrain/DrivetrainIOFlex.h"
 
 #include "subsystems/operator/Operator.h"
 

@@ -14,7 +14,7 @@ RobotContainer::RobotContainer()
 {
     ConfigureBindings();
 
-    superstructure.ConfigureManualAxis([this] { return CopilotController.GetLeftY(); },
+    superstructure.ConfigureManualAxis([this] { return -CopilotController.GetLeftY(); },
                                          [this] { return CopilotController.GetRightX(); },
                                          [this] { return (-CopilotController.GetL2Axis() + CopilotController.GetR2Axis()); });
 

@@ -6,12 +6,13 @@
 
 #include <frc2/command/SubsystemBase.h>
 
-#include "ElevatorIO.h"
-#include "ElevatorIOLogger.h"
-#include "Constants.h"
 #include "ElevatorConstants.h"
-#include "lib/pidRBL.h"
+#include "ElevatorIOLogger.h"
+#include "ElevatorIO.h"
+#include "Constants.h"
+
 #include "lib/RateLimiter.h"
+#include "lib/pidRBL.h"
 #include "lib/Alert.h"
 
 class ElevatorSubsystem : public frc2::SubsystemBase {
@@ -73,6 +74,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
     ElevatorIOLogger m_logger{frc::DataLogManager::GetLog(), "/Elevator"};
 
     double m_output{0.0};
+    double m_manualControlInput{0.0};
     double m_timestamp{0.0};
     bool m_isInitialized = false;
     bool m_isEncoderAlreadyReset = false;

@@ -4,20 +4,20 @@
 
 #pragma once
 
-#include <frc2/command/SubsystemBase.h>
 #include "frc/kinematics/ChassisSpeeds.h"
+#include <frc2/command/SubsystemBase.h>
 
 #include <functional>
 #include <optional>
+
+#include "DrivetrainIO.h"
+#include "DrivetrainIOLogger.h"
+#include "DrivetrainConstants.h"
 
 #include "lib/RateLimiter.h"
 #include "lib/Alert.h"
 #include "lib/PidRBL.h"
 #include "lib/TimerRBL.h"
-
-#include "DrivetrainIO.h"
-#include "DrivetrainIOLogger.h"
-#include "DrivetrainConstants.h"
 
 #include "choreo/trajectory/DifferentialSample.h"
 #include "choreo/trajectory/Trajectory.h"
@@ -95,7 +95,7 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   //ARCADE
   double m_rotationSigma{0.0}; // Weight for rotation in arcade drive
 
-  //CURVE //TODO
+  //CURVE
   double m_previousRotation{0.0};
   double m_negInertiaAccumulator{0.0};
   double m_quickStopAccumulator{0.0};

@@ -1,10 +1,13 @@
 #pragma once
 
-#include "GripperIO.h"
-#include "rev/SparkMax.h"
 #include <frc/DigitalInput.h>
+#include "rev/SparkMax.h"
+
 #include "GripperConstants.h"
+#include "GripperIO.h"
+
 #include  "lib/pidRBL.h"
+
 class GripperIOSpark final : public GripperIO
 {
   private:
@@ -19,16 +22,16 @@ class GripperIOSpark final : public GripperIO
     frc::DigitalInput m_IRBreakerUp2{gripperConstants::IRbreaker::UP2_ID};
 
     PidRBL m_feederVelocityPID{
-        feederConstants::VelocityPID::KP, 
-        feederConstants::VelocityPID::KI,
-        feederConstants::VelocityPID::KD,
-        feederConstants::VelocityPID::KS
+        feederConstants::Gains::VelocityPID::KP, 
+        feederConstants::Gains::VelocityPID::KI,
+        feederConstants::Gains::VelocityPID::KD,
+        feederConstants::Gains::VelocityPID::KS
     };
     PidRBL m_outtakeVelocityPID{
-        outtakeConstants::VelocityPID::KP,
-        outtakeConstants::VelocityPID::KI,
-        outtakeConstants::VelocityPID::KD,
-        outtakeConstants::VelocityPID::KS
+        outtakeConstants::Gains::VelocityPID::KP,
+        outtakeConstants::Gains::VelocityPID::KI,
+        outtakeConstants::Gains::VelocityPID::KD,
+        outtakeConstants::Gains::VelocityPID::KS
     };
 
     double m_feederVelocity{0.0};

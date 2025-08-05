@@ -2,22 +2,21 @@
 
 #include "frc/smartdashboard/SmartDashboard.h"
 
-
 DrivetrainIOFlex::DrivetrainIOFlex()
 {
     // Set the back left motor configs
-    m_motorBackLeftConfig.SetIdleMode(driveConstants::Motors::MOTOR_IDLE_MODE)
+    m_motorBackLeftConfig.SetIdleMode(driveConstants::Motors::IDLE_MODE)
         .Inverted(driveConstants::Motors::LEFT_MOTOR_INVERTED)
-        .SmartCurrentLimit(driveConstants::Motors::MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(driveConstants::Motors::MOTOR_RAMP)
-        .VoltageCompensation(driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION);
+        .SmartCurrentLimit(driveConstants::Motors::CURRENT_LIMIT)
+        .ClosedLoopRampRate(driveConstants::Motors::RAMP_RATE)
+        .VoltageCompensation(driveConstants::Motors::VOLTAGE_COMPENSATION);
 
     // Set the back right motor configs
-    m_motorBackRightConfig.SetIdleMode(driveConstants::Motors::MOTOR_IDLE_MODE)
+    m_motorBackRightConfig.SetIdleMode(driveConstants::Motors::IDLE_MODE)
         .Inverted(driveConstants::Motors::RIGHT_MOTORS_INVERTED)
-        .SmartCurrentLimit(driveConstants::Motors::MOTOR_CURRENT_LIMIT)
-        .ClosedLoopRampRate(driveConstants::Motors::MOTOR_RAMP)
-        .VoltageCompensation(driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION);
+        .SmartCurrentLimit(driveConstants::Motors::CURRENT_LIMIT)
+        .ClosedLoopRampRate(driveConstants::Motors::RAMP_RATE)
+        .VoltageCompensation(driveConstants::Motors::VOLTAGE_COMPENSATION);
 
     m_motorFrontLeftConfig.Apply(m_motorBackLeftConfig).Follow(m_motorBackLeft);
     m_motorFrontRightConfig.Apply(m_motorBackRightConfig).Follow(m_motorBackRight);
@@ -53,10 +52,10 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
     inputs.isFrontLeftMotorConnected = (m_motorFrontLeft.GetBusVoltage() != 0.0) && !m_motorFrontLeft.GetFaults().can;
     inputs.isFrontRightMotorConnected = (m_motorFrontRight.GetBusVoltage() != 0.0) && !m_motorFrontRight.GetFaults().can;
 
-    inputs.backLeftMotorAppliedVoltage = m_motorBackLeft.GetAppliedOutput() * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION;
-    inputs.backRightMotorAppliedVoltage = m_motorBackRight.GetAppliedOutput() * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION;
-    inputs.frontLeftMotorAppliedVoltage = m_motorFrontLeft.GetAppliedOutput() * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION;
-    inputs.frontRightMotorAppliedVoltage = m_motorFrontRight.GetAppliedOutput() * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION;
+    inputs.backLeftMotorAppliedVoltage = m_motorBackLeft.GetAppliedOutput() * driveConstants::Motors::VOLTAGE_COMPENSATION;
+    inputs.backRightMotorAppliedVoltage = m_motorBackRight.GetAppliedOutput() * driveConstants::Motors::VOLTAGE_COMPENSATION;
+    inputs.frontLeftMotorAppliedVoltage = m_motorFrontLeft.GetAppliedOutput() * driveConstants::Motors::VOLTAGE_COMPENSATION;
+    inputs.frontRightMotorAppliedVoltage = m_motorFrontRight.GetAppliedOutput() * driveConstants::Motors::VOLTAGE_COMPENSATION;
 
     inputs.backLeftMotorBusVoltage = m_motorBackLeft.GetBusVoltage();
     inputs.backRightMotorBusVoltage = m_motorBackRight.GetBusVoltage();
@@ -94,12 +93,12 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
 
 void DrivetrainIOFlex::SetVoltage(const double leftSideVoltage, const double rightSideVoltage)
 {
-    DEBUG_ASSERT((leftSideVoltage <= driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION) 
-        && (leftSideVoltage >= -driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((leftSideVoltage <= driveConstants::Motors::VOLTAGE_COMPENSATION) 
+        && (leftSideVoltage >= -driveConstants::Motors::VOLTAGE_COMPENSATION) 
         ,"Drivetrain left side Voltage out of range");
 
-    DEBUG_ASSERT((rightSideVoltage <= driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION) 
-        && (rightSideVoltage >= -driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION) 
+    DEBUG_ASSERT((rightSideVoltage <= driveConstants::Motors::VOLTAGE_COMPENSATION) 
+        && (rightSideVoltage >= -driveConstants::Motors::VOLTAGE_COMPENSATION) 
         ,"Drivetrain right side Voltage out of range");
     
     m_motorBackLeft.SetVoltage(units::volt_t(leftSideVoltage));
@@ -143,9 +142,9 @@ void DrivetrainIOFlex::SetChassisSpeed(const frc::ChassisSpeeds &speeds)
     //TODO : add SparkPID
     //HACK : speed to voltage
     m_motorBackLeft.SetVoltage(units::volt_t(leftOutput / driveConstants::Specifications::MOTOR_FREE_SPEED 
-                                            * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION));
+                                            * driveConstants::Motors::VOLTAGE_COMPENSATION));
     m_motorBackRight.SetVoltage(units::volt_t(rightOutput / driveConstants::Specifications::MOTOR_FREE_SPEED 
-                                            * driveConstants::Motors::MOTOR_VOLTAGE_COMPENSATION));
+                                            * driveConstants::Motors::VOLTAGE_COMPENSATION));
 }
 
 void DrivetrainIOFlex::ResetPosition(const frc::Pose2d position)

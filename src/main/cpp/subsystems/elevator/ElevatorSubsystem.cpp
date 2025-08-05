@@ -1,6 +1,7 @@
 #include "subsystems/elevator/ElevatorSubsystem.h"
 
 #include "frc/smartdashboard/SmartDashboard.h"
+
 #include "lib/TimerRBL.h"
 #include "lib/DebugUtils.h"
 
@@ -70,6 +71,7 @@ void ElevatorSubsystem::SetControlMode(const ControlMode mode)
     }
     m_elevatorPIDController.Reset(m_timestamp);
     m_output = elevatorConstants::Speed::REST;
+    m_manualControlInput = 0.0;
 }
 
 ControlMode ElevatorSubsystem::GetControlMode()
@@ -83,6 +85,7 @@ void ElevatorSubsystem::ToggleControlMode()
     m_systemState = SystemState::IDLE;
     m_rateLimiter.Reset();
     m_output = elevatorConstants::Speed::REST;
+    m_manualControlInput = 0.0;
     switch (m_controlMode)
     {
     case elevatorConstants::MainControlMode :
@@ -131,7 +134,7 @@ void ElevatorSubsystem::SetManualAxis(const double value)
     {
         DEBUG_ASSERT((value <= 1.0) && (value >= -1.0) 
             , "Elevator Duty Cycle out of range");
-        m_output = value;
+        m_manualControlInput = value;
     }
     else 
     {
@@ -234,13 +237,13 @@ void ElevatorSubsystem::Periodic()
             }
             break; //end of ControlMode::POSITION_PID
         case ControlMode::MANUAL_DUTY_CYCLE :
-            m_output = m_rateLimiter.Update((std::sin(m_output * (M_PI / 2.0)) / elevatorConstants::Settings::OPEN_LOOP_REDUC) );
+            m_output = m_rateLimiter.Update((std::sin(m_manualControlInput * (M_PI / 2.0)) / elevatorConstants::Settings::OPEN_LOOP_REDUC) );
             break; //end of ControlMode::MANUAL_DUTY_CYCLE
         case ControlMode::MANUAL_SETPOINT :
-            m_output = m_elevatorPIDController.GetSetpoint() + m_output * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
+            m_manualControlInput = m_elevatorPIDController.GetSetpoint() + m_manualControlInput * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
 
             m_elevatorPIDController.SetFeedforward(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KG);
-            m_output = m_elevatorPIDController.CalculateWithRealTime(m_output,
+            m_output = m_elevatorPIDController.CalculateWithRealTime(m_manualControlInput,
                                                                         inputs.heightPosition,
                                                                         m_timestamp);
             break; //end of ControlMode::MANUAL_DUTY_CYCLE 

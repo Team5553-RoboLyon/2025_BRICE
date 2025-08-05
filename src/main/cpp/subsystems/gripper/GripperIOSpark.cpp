@@ -1,7 +1,8 @@
 #include "subsystems/gripper/GripperIOSpark.h"
 
-#include "lib/DebugUtils.h"
 #include <frc/smartdashboard/SmartDashboard.h>
+
+#include "lib/DebugUtils.h"
 #include "lib/TimerRBL.h"
 
 GripperIOSpark::GripperIOSpark()
@@ -28,24 +29,24 @@ GripperIOSpark::GripperIOSpark()
     m_feederMotor.ClearFaults();
     m_outtakeMotor.ClearFaults();
 
-    m_feederVelocityPID.SetOutputLimits(feederConstants::VelocityPID::MIN, 
-                                        feederConstants::VelocityPID::MAX);
-    m_outtakeVelocityPID.SetOutputLimits(outtakeConstants::VelocityPID::MIN, 
-                                        outtakeConstants::VelocityPID::MAX); 
+    m_feederVelocityPID.SetOutputLimits(feederConstants::Gains::VelocityPID::MIN, 
+                                        feederConstants::Gains::VelocityPID::MAX);
+    m_outtakeVelocityPID.SetOutputLimits(outtakeConstants::Gains::VelocityPID::MIN, 
+                                        outtakeConstants::Gains::VelocityPID::MAX); 
     m_feederVelocityPID.SetInputLimits(true);
-    m_feederVelocityPID.SetInputLimits(feederConstants::RPM::MIN, 
-                                        feederConstants::RPM::MAX);
+    m_feederVelocityPID.SetInputLimits(feederConstants::Velocity::MIN, 
+                                        feederConstants::Velocity::MAX);
     m_outtakeVelocityPID.SetInputLimits(true);
-    m_outtakeVelocityPID.SetInputLimits(outtakeConstants::RPM::MIN,
-                                        outtakeConstants::RPM::MAX);
+    m_outtakeVelocityPID.SetInputLimits(outtakeConstants::Velocity::MIN,
+                                        outtakeConstants::Velocity::MAX);
     
 
     }
 
 void GripperIOSpark::UpdateInputs(GripperIOInputs& inputs)
 {
-    m_feederVelocity = m_feederMotor.GetEncoder().GetVelocity() / feederConstants::GEAR_RATIO;
-    m_outtakeVelocity = m_outtakeMotor.GetEncoder().GetVelocity() / outtakeConstants::GEAR_RATIO;
+    m_feederVelocity = m_feederMotor.GetEncoder().GetVelocity() / feederConstants::Specifications::GEAR_RATIO;
+    m_outtakeVelocity = m_outtakeMotor.GetEncoder().GetVelocity() / feederConstants::Specifications::GEAR_RATIO;
 
     inputs.isFeederMotorConnected = (m_feederMotor.GetBusVoltage() !=0.0) && !m_feederMotor.GetFaults().can;
     inputs.isOuttakeMotorConnected = (m_outtakeMotor.GetBusVoltage() != 0.0) && !m_outtakeMotor.GetFaults().can;
@@ -121,7 +122,7 @@ void GripperIOSpark::SetFeederRPM(const double RPM)
 {
     m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_feederVelocityPID.SetFeedforward(NSIGN(RPM - m_feederVelocity) * 
-                                        feederConstants::VelocityPID::KS);
+                                        feederConstants::Gains::VelocityPID::KS);
     m_feederMotor.SetVoltage(units::volt_t(m_feederVelocityPID.CalculateWithRealTime(RPM, m_feederVelocity, m_timestamp)));
 }
 
@@ -129,6 +130,6 @@ void GripperIOSpark::SetOuttakeRPM(const double RPM)
 {
     m_timestamp = TimerRBL::GetFPGATimestampInSeconds();
     m_outtakeVelocityPID.SetFeedforward(NSIGN(RPM - m_outtakeVelocity) * 
-                                        outtakeConstants::VelocityPID::KS);
+                                        outtakeConstants::Gains::VelocityPID::KS);
     m_outtakeMotor.SetVoltage(units::volt_t(m_outtakeVelocityPID.CalculateWithRealTime(RPM, m_outtakeVelocity, m_timestamp)));
 }

@@ -5,10 +5,11 @@
 #include "Robot.h"
 
 #include <frc2/command/CommandScheduler.h>
-#include <iostream>
 #include <frc/DataLogManager.h>
 #include <frc/DriverStation.h>
 #include <frc/RobotBase.h>
+
+#include <iostream>
 
 Robot::Robot() {
 }

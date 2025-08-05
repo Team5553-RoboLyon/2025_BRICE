@@ -1,7 +1,7 @@
 #pragma once
+#include "frc/DriverStation.h"
 #include "rev/SparkMax.h"
 #include "lib/UtilsRBL.h"
-#include "frc/DriverStation.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
