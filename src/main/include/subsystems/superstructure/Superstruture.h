@@ -43,7 +43,6 @@ class Superstructure : public frc2::SubsystemBase {
       // GOODBYE_ALGAE,    //TODO
       // LE_CASSE_DE_BRICE //TODO
     };
-    //BUG? : prevent moving to stage after shooting while collecting 
 
     enum class SystemSuperState
     {
@@ -74,10 +73,10 @@ class Superstructure : public frc2::SubsystemBase {
     };
 
 
-  void SetAssistMode(const bool alignAssist, const bool shootAssist); //TEST
+  void SetAssistMode(const bool alignAssist, const bool scoreAssit); //TEST
   void ToggleAssistMode(); //TEST
   void ToggleAlignAssist();//TEST
-  void ToggleShootAssist();//TEST
+  void ToggleScoreAssist();//TEST
 
   void ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
                           const std::function<double()> fxStrafferAxis,
@@ -101,7 +100,7 @@ class Superstructure : public frc2::SubsystemBase {
     void UpdateSuperControlMode();
     void RunSuperStateMachine();
     bool m_alignAssistEnabled{false};
-    bool m_shootAssistEnabled{false};
+    bool m_scoreAssistEnabled{false};
 
     WantedSuperState m_wantedSuperState{WantedSuperState::STAND_BY};
     WantedSuperState m_currentWantedSuperState{m_wantedSuperState}; //Local discrete snapshot of m_wantedSuperState for each cycle

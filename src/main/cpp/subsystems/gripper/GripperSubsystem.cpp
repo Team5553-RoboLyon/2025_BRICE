@@ -387,10 +387,10 @@ void GripperSubsystem::RunStateMachine()
                 m_systemState = SystemState::HIGH_SCORING;
                 break;
             default:
-                DEBUG_ASSERT(false, "Gripper : No shoot desired after Preshoot ???");
+                DEBUG_ASSERT(false, "Gripper : No score desired after PreScore ???");
                 break;
             }
-            m_counter = gripperConstants::Counter::SHOOT;
+            m_counter = gripperConstants::Counter::SCORE;
         }
         break;
 

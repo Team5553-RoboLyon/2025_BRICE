@@ -62,7 +62,7 @@ void RobotContainer::ConfigureBindings() {
                                   .WithInterruptBehavior(frc2::Command::InterruptionBehavior::kCancelSelf)); 
 
   CopilotController.toggleAlignAssistButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleAlignAssist(); }).ToPtr());
-  CopilotController.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleShootAssist(); }).ToPtr());
+  CopilotController.toggleScoreAssistButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleScoreAssist(); }).ToPtr());
   CopilotController.toggleAssistModeButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleAssistMode(); }).ToPtr());
 
   CopilotController.toggleElevatorManualControlButton.OnTrue(frc2::InstantCommand([this] { superstructure.ToggleElevatorControlMode(); }).ToPtr());

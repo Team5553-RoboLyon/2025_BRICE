@@ -22,7 +22,7 @@ namespace gripperConstants
     namespace Counter 
     {
         constexpr int PRESCORE = 10; //TUNEME
-        constexpr int SHOOT = 20; //TUNEME
+        constexpr int SCORE = 20; //TUNEME
     }
     constexpr double OPEN_LOOP_REDUC = 2.0; //TUNEME
 
@@ -163,7 +163,7 @@ namespace gripperConstants
     namespace Counter 
     {
         constexpr int PRESCORE = 10; //TUNEME
-        constexpr int SHOOT = 20; //TUNEME
+        constexpr int SCORE = 20; //TUNEME
     }
     constexpr double OPEN_LOOP_REDUC = 2.0; //TUNEME
 

@@ -55,7 +55,7 @@ void Superstructure::SetWantedSuperState(const WantedSuperState wantedState)
     {
         m_wantedSuperState = wantedState;
     }
-    frc::SmartDashboard::PutNumber("WantedSuperState", (int)m_wantedSuperState);
+    frc::SmartDashboard::PutNumber("SuperStructure/WantedSuperState", (int)m_wantedSuperState);
 }
 
 Superstructure::SystemSuperState Superstructure::GetSystemSuperState() const
@@ -63,23 +63,23 @@ Superstructure::SystemSuperState Superstructure::GetSystemSuperState() const
     return m_systemSuperState;
 }
 
-void Superstructure::SetAssistMode(const bool alignAssist, const bool shootAssist)
+void Superstructure::SetAssistMode(const bool alignAssist, const bool scoreAssist)
 {
     m_alignAssistEnabled = alignAssist;
-    m_shootAssistEnabled = shootAssist;
+    m_scoreAssistEnabled = scoreAssist;
 }
 void Superstructure::ToggleAssistMode()
 {
     m_alignAssistEnabled = !m_alignAssistEnabled;
-    m_shootAssistEnabled = !m_shootAssistEnabled;
+    m_scoreAssistEnabled = !m_scoreAssistEnabled;
 }
 void Superstructure::ToggleAlignAssist()
 {
     m_alignAssistEnabled = !m_alignAssistEnabled;
 }
-void Superstructure::ToggleShootAssist()
+void Superstructure::ToggleScoreAssist()
 {
-    m_shootAssistEnabled = !m_shootAssistEnabled;
+    m_scoreAssistEnabled = !m_scoreAssistEnabled;
 }
 
 void Superstructure::ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
@@ -147,8 +147,8 @@ void Superstructure::Periodic()
     if(m_SuperControlMode == SuperControlMode::SuperStateMachine)
     {
         m_currentWantedSuperState = m_wantedSuperState;
-        frc::SmartDashboard::PutNumber("CurrentWantedSuperState", (int)m_currentWantedSuperState);
-        frc::SmartDashboard::PutNumber("SystemSuperState", (int)m_systemSuperState);
+        frc::SmartDashboard::PutNumber("SuperStructure/CurrentWantedSuperState", (int)m_currentWantedSuperState);
+        frc::SmartDashboard::PutNumber("SuperStructure/SystemSuperState", (int)m_systemSuperState);
 
         if(m_currentWantedSuperState == WantedSuperState::INITIALIZATION)
         {
@@ -459,7 +459,7 @@ void Superstructure::RunSuperStateMachine()
     case SystemSuperState::READY_TO_SCORE_AT_L2:
     case SystemSuperState::READY_TO_SCORE_AT_L3:
     case SystemSuperState::READY_TO_SCORE_AT_L4:
-        if(m_shootAssistEnabled)
+        if(m_scoreAssistEnabled)
         {
             m_systemSuperState = SystemSuperState::SCORING;
         }
