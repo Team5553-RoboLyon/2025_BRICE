@@ -1,18 +1,48 @@
-#include "localization/OdometryTracker.h"
+#include "lib/localization/TankOdometryTracker.h"
 
 #include <cmath>
 #include "lib/DebugUtils.h"
 
-TankOdometryTracker::TankOdometryTracker(double *pLeftSideVelocity, double *pRightSideVelocity)
-                                        : m_pLeftSideVelocity(pLeftSideVelocity),
-                                        m_pRightSideVelocity(pRightSideVelocity)
-{}
-
-TankOdometryTracker::TankOdometryTracker(double *pLeftSideVelocity, double *pRightSideVelocity, double alpha)
+TankOdometryTracker::TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity, double trackwidth)
                                         : m_pLeftSideVelocity(pLeftSideVelocity),
                                         m_pRightSideVelocity(pRightSideVelocity),
-                                        m_alpha(alpha)
-{}
+                                        m_alpha(0.5)
+{
+    if(trackwidth > 0.0)
+    {
+        m_drivetrainTrackwidth = trackwidth;
+    }
+    else
+    {
+        DEBUG_ASSERT(false, "trackwidth impossible");
+        m_drivetrainTrackwidth = 0.5; //default value for protection
+    }
+}
+
+TankOdometryTracker::TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity, double trackwidth, double alpha)
+                                        : m_pLeftSideVelocity(pLeftSideVelocity),
+                                        m_pRightSideVelocity(pRightSideVelocity)
+{
+    if(trackwidth > 0.0)
+    {
+        m_drivetrainTrackwidth = trackwidth;
+    }
+    else
+    {
+        DEBUG_ASSERT(false, "trackwidth impossible");
+        m_drivetrainTrackwidth = 0.5; //default value for protection
+    }
+
+    if((alpha >= 0.0) && (alpha <= 1.0))
+    {
+        m_alpha = alpha;
+    }
+    else
+    {
+        DEBUG_ASSERT(false, "invalid range alpha factor");
+        m_alpha = 0.5; //default value for protection
+    }
+}
 
 void TankOdometryTracker::ResetPose2D(const frc::Pose2d newPose)
 {
@@ -36,7 +66,7 @@ frc::Pose2d TankOdometryTracker::UpdateUsingICCFromDistances(const double leftDi
     double deltaRightDistance = rightDistance - m_lastRightDistance;
 
     double deltaBaseDistance = (deltaLeftDistance + deltaRightDistance) /2.0;
-    double deltaBaseTheta = (deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH;
+    double deltaBaseTheta = (deltaRightDistance - deltaLeftDistance) / m_drivetrainTrackwidth;
 
     if(NABS(deltaBaseTheta) < 1e-6)
     {
@@ -74,7 +104,7 @@ frc::Pose2d TankOdometryTracker::UpdateUsingTwistExpFromDistances(const double l
     double deltaRightDistance = rightDistance - m_lastRightDistance;
 
     units::meter_t deltaBaseDistance = units::meter_t((deltaLeftDistance + deltaRightDistance) /2.0);
-    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH);
+    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / m_drivetrainTrackwidth);
 
     m_lastLeftDistance = leftDistance;
     m_lastRightDistance = rightDistance;
@@ -92,7 +122,7 @@ frc::Pose2d TankOdometryTracker::UpdateUsingTwistExpFromVelocity(double dt)
     dt = (dt > 0.0) ? dt : 0.02;
 
     double v = (*m_pLeftSideVelocity + *m_pRightSideVelocity) / 2.0;
-    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / driveConstants::Specifications::TRACKWIDTH;
+    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / m_drivetrainTrackwidth;
 
     m_lastLeftDistance += *m_pLeftSideVelocity * dt;
     m_lastRightDistance += *m_pRightSideVelocity * dt;
@@ -113,7 +143,7 @@ frc::Pose2d TankOdometryTracker::UpdateUsingFusionTwistExp(const double leftDist
     double deltaRightDistance = rightDistance - m_lastRightDistance;
 
     units::meter_t deltaBaseDistance = units::meter_t((deltaLeftDistance + deltaRightDistance) /2.0);
-    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / driveConstants::Specifications::TRACKWIDTH);
+    units::radian_t deltaBaseTheta = units::radian_t((deltaRightDistance - deltaLeftDistance) / m_drivetrainTrackwidth);
 
     m_lastLeftDistance = leftDistance;
     m_lastRightDistance = rightDistance;
@@ -122,7 +152,7 @@ frc::Pose2d TankOdometryTracker::UpdateUsingFusionTwistExp(const double leftDist
 
     // Velocity-based twist 
     double v = (*m_pLeftSideVelocity + *m_pRightSideVelocity) / 2.0;
-    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / driveConstants::Specifications::TRACKWIDTH;
+    double omega = (*m_pRightSideVelocity - *m_pLeftSideVelocity) / m_drivetrainTrackwidth;
 
     frc::Twist2d twistVelocity{units::meter_t(v * dt), units::meter_t(0.0), units::radian_t(omega * dt)};
 

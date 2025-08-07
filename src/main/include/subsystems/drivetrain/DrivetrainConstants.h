@@ -103,6 +103,8 @@ namespace driveConstants
     {
         constexpr double SLOW_RATE = 2.0; //TUNEME
         constexpr double DEADBAND = 0.05; 
+
+        constexpr double ALPHA_ODOMETRY = 0.6;
     }
 }
 

@@ -1,10 +1,32 @@
+/*******************************************************************************
+ * 
+ * File        : TankOdometryTracker.h (v1.1)
+ * Library     : LyonLib (from 2025_BRICE)
+ * Description : Provides odometry tracking for tank drive systems using : 
+ *              - ICC model.
+ *              - Twist exponential integration.
+ *              - Fusion of distance and velocity data.
+ * 
+ * Authors     : AKA (2025), last update by AKA (2025)
+ * Organization: Robo'Lyon - FRC Team 5553
+ *               Lycée Notre-Dame-de-Bellegarde, France
+ * Github      : https://github.com/Team5553-RoboLyon
+ * 
+ *******************************************************************************/
+
 #pragma once 
 #include "frc/geometry/Pose2d.h"
-#include "subsystems/drivetrain/DrivetrainSubsystem.h"
 
 class TankOdometryTracker
 {
 private:
+
+    double *m_pLeftSideVelocity;
+    double *m_pRightSideVelocity;
+
+    double m_alpha;
+    double m_drivetrainTrackwidth;
+
     frc::Pose2d m_lastPose;
     double m_lastLeftDistance{0.0};
     double m_lastRightDistance{0.0};
@@ -12,15 +34,33 @@ private:
     double m_generalDeltaX{0.0};
     double m_generalDeltaY{0.0};
 
-    double *m_pLeftSideVelocity;
-    double *m_pRightSideVelocity;
-    double m_alpha{0.5};
-
 public:
-    // These pointers must remain valid throughout the life of the object.
-    TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity, double alpha);
-    // These pointers must remain valid throughout the life of the object.
-    TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity);
+    /**
+     * @brief Constructs a TankOdometryTracker object to track the odometry of a tank drive system.
+     * 
+     * @param pLeftSideVelocity Pointer to the velocity of the left side of the drivetrain (in meters per second).
+     * @param pRightSideVelocity Pointer to the velocity of the right side of the drivetrain (in meters per second).
+     * @param trackwidth The distance between the left and right wheels of the drivetrain (in meters). 
+     *                   Must be greater than 0.0. If an invalid value is provided, a default value of 0.5 meters is used.
+     * @param alpha A double value in the range [0.0, 1.0] representing the blending factor of the alpha-filter.
+     *              Values outside this range are ignored.
+     * 
+     * @warning The trackwidth is a critical parameter for accurate odometry calculations. Ensure it is measured correctly.
+     */
+    TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity, double trackwidth, double alpha);
+    /**
+     * @brief Constructs a TankOdometryTracker object to track the odometry of a tank drive system.
+     * 
+     * @param pLeftSideVelocity Pointer to the velocity of the left side of the drivetrain (in meters per second).
+     * @param pRightSideVelocity Pointer to the velocity of the right side of the drivetrain (in meters per second).
+     * @param trackwidth The distance between the left and right wheels of the drivetrain (in meters). 
+     *                   Must be greater than 0.0. If an invalid value is provided, a default value of 0.5 meters is used.
+     * 
+     * @warning The trackwidth is a critical parameter for accurate odometry calculations. Ensure it is measured correctly.
+     * 
+     * @note A default alpha value of 0.5 is assigned. To change it, you should use "SetAlpha(const double alpha)"
+     */
+    TankOdometryTracker(double* pLeftSideVelocity, double* pRightSideVelocity, double trackwidth);
     ~TankOdometryTracker() = default;
 
     /**

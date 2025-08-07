@@ -5,7 +5,7 @@
 #include "DrivetrainConstants.h"
 // #include <frc/smartdashboard/Field2d.h>
 #include "frc/Encoder.h"
-#include "localization/OdometryTracker.h"
+#include "lib/localization/TankOdometryTracker.h"
 
 class DrivetrainIOFlex  final : public DrivetrainIO
 {
@@ -35,7 +35,9 @@ class DrivetrainIOFlex  final : public DrivetrainIO
   double m_realRightSideSpeed{0.0};
 
   // frc::Field2d field; for sim only
-  TankOdometryTracker m_odometry{&m_realLeftSideSpeed, &m_realRightSideSpeed};
+  TankOdometryTracker m_odometry{&m_realLeftSideSpeed, &m_realRightSideSpeed, 
+                                  driveConstants::Specifications::TRACKWIDTH, 
+                                  driveConstants::Settings::ALPHA_ODOMETRY};
 
   public:
     DrivetrainIOFlex();
