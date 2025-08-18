@@ -115,7 +115,7 @@ StrafferSubsystem::SystemState StrafferSubsystem::GetSystemState()
 {
     return m_systemState;
 }
-void StrafferSubsystem::SetManualAxis(const double value)
+void StrafferSubsystem::SetManualControlInput(const double value)
 {
     if(BYPASS_STATE_MACHINE(m_controlMode))
     {

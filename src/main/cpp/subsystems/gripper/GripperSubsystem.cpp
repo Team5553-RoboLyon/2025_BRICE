@@ -76,7 +76,7 @@ GripperSubsystem::SystemState GripperSubsystem::GetSystemState()
 {
     return m_systemState;
 }
-void GripperSubsystem::SetManualAxis(const double value)
+void GripperSubsystem::SetManualControlInput(const double value)
 {
     if(BYPASS_STATE_MACHINE(m_controlMode))
     {

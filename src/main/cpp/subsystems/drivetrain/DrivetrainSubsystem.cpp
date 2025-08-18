@@ -37,7 +37,7 @@ DrivetrainSubsystem::SystemDrive DrivetrainSubsystem::GetSystemDrive() const
     return m_systemDrive;
 }
 
-void DrivetrainSubsystem::ConfigureManualAxis(const std::function<double()> fxForwardAxis,
+void DrivetrainSubsystem::ConfigureManualControlInputsAxis(const std::function<double()> fxForwardAxis,
                                             const std::function<double()> fxRotationAxis,
                                             const std::function<bool()> fxSlowDriveButton,
                                             const std::function<bool()> fxDriveActionButton,

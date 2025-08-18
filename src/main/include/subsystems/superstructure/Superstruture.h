@@ -78,7 +78,7 @@ class Superstructure : public frc2::SubsystemBase {
   void ToggleAlignAssist();//TEST
   void ToggleScoreAssist();//TEST
 
-  void ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
+  void ConfigureManualControlInputsAxis(const std::function<double()> fxElevatorAxis,
                           const std::function<double()> fxStrafferAxis,
                           const std::function<double()> fxGripperAxis);
 

@@ -82,7 +82,7 @@ void Superstructure::ToggleScoreAssist()
     m_scoreAssistEnabled = !m_scoreAssistEnabled;
 }
 
-void Superstructure::ConfigureManualAxis(const std::function<double()> fxElevatorAxis,
+void Superstructure::ConfigureManualControlInputsAxis(const std::function<double()> fxElevatorAxis,
                           const std::function<double()> fxStrafferAxis,
                           const std::function<double()> fxGripperAxis)
 {
@@ -283,17 +283,17 @@ void Superstructure::Periodic()
         if(BYPASS_STATE_MACHINE(m_pGripperSubsystem->GetControlMode()))
         {
             double gripperOutput = m_fxGripperAxis();
-            m_pGripperSubsystem->SetManualAxis(gripperOutput);
+            m_pGripperSubsystem->SetManualControlInput(gripperOutput);
         }
         if(BYPASS_STATE_MACHINE(m_pElevatorSubsystem->GetControlMode()))
         {
             double elevatorOutput = m_fxElevatorAxis();
-            m_pElevatorSubsystem->SetManualAxis(elevatorOutput);
+            m_pElevatorSubsystem->SetManualControlInput(elevatorOutput);
         }
         if(BYPASS_STATE_MACHINE(m_pStrafferSubsystem->GetControlMode()))
         {
             double strafferOutput = m_fxStrafferAxis();
-            m_pStrafferSubsystem->SetManualAxis(strafferOutput);
+            m_pStrafferSubsystem->SetManualControlInput(strafferOutput);
         }
     }
 }

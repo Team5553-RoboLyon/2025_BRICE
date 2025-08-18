@@ -135,7 +135,7 @@ bool ElevatorSubsystem::IsResting()
             (m_systemState == SystemState::AT_VISION));
 }
 
-void ElevatorSubsystem::SetManualAxis(const double value)
+void ElevatorSubsystem::SetManualControlInput(const double value)
 {
     if(BYPASS_STATE_MACHINE(m_controlMode))
     {
