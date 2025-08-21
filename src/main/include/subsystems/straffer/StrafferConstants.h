@@ -10,7 +10,7 @@ using IdleMode = rev::spark::SparkBaseConfig::IdleMode;
 namespace strafferConstants 
 {
     constexpr ControlMode MainControlMode = ControlMode::POSITION_DUTYCYCLE_PID;
-    constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_SETPOINT;
+    constexpr ControlMode EmergencyControlMode = ControlMode::MANUAL_POSITION;
 
     namespace Motor
     {
