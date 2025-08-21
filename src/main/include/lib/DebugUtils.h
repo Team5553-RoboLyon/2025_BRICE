@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : DebugUtils.h (v1.1)
+ * File        : DebugUtils.h (v1.2)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Debugging utilities for logging and assertions.
  * 
@@ -23,7 +23,8 @@
     #define DEBUG_LOG(msg) \
         (std::cout << "[DEBUG] " << (msg) << "\n")
 #else
-    #define DEBUG_ASSERT(cond, msg) ((void)0)
+    #define DEBUG_ASSERT(cond, msg) ( \
+        (std::cout << "[ASSERT] " << (msg) << "\n"))
     #define DEBUG_LOG(msg) ((void)0)
 #endif
 
