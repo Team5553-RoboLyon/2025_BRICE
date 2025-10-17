@@ -105,6 +105,9 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   choreo::Trajectory<choreo::DifferentialSample> m_desiredAutoTrajectory;
   TimerRBL m_autoTimer;
   std::optional<choreo::DifferentialSample> m_autoSampleToBeApplied;
+  PidRBL m_pidAutoX{driveConstants::AutoDrive::FORWARD_KP, driveConstants::AutoDrive::FORWARD_KI, driveConstants::AutoDrive::FORWARD_KD};
+  PidRBL m_pidAutoTheta{driveConstants::AutoDrive::ROTATION_KP, driveConstants::AutoDrive::ROTATION_KI, driveConstants::AutoDrive::ROTATION_KD};
+  //TODO : set PID correctly
 
 
   frc::DriverStation::Alliance m_alliance;

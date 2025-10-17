@@ -93,6 +93,17 @@ namespace driveConstants
         constexpr double TURN_SENSITIVITY   = 1.0; //TUNEM
     }
 
+    namespace AutoDrive
+    {
+        constexpr double FORWARD_KP = 0.02; //TUNEME
+        constexpr double FORWARD_KI = 0.0; //TUNEME
+        constexpr double FORWARD_KD = 0.0; //TUNEME
+        
+        constexpr double ROTATION_KP = 0.015; //TUNEME
+        constexpr double ROTATION_KI = 0.0; //TUNEME
+        constexpr double ROTATION_KD = 0.0; //TUNEME
+    }
+
     namespace StabilityGuard
     {
         constexpr double MIN_MOVING_FORWARD = 0.07; //TUNEME

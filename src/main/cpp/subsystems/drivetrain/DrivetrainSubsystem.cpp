@@ -121,6 +121,7 @@ void DrivetrainSubsystem::Periodic()
         {
             m_systemDrive = SystemDrive::AUTO_PATH_FOLLOWER;
             m_autoTimer.Restart();
+            m_autoSampleToBeApplied = m_desiredAutoTrajectory.SampleAt(units::time::second_t(m_autoTimer.GetElapsedTimeSeconds()), IS_RED_ALLIANCE(m_alliance));
         }
         break;
 
@@ -140,8 +141,8 @@ void DrivetrainSubsystem::Periodic()
     {
     case SystemDrive::AUTO_PATH_FOLLOWER:
         DEBUG_ASSERT(false, "work in progress..");
-        //TODO : add follower
-        m_output = restSpeeds;
+        m_autoSampleToBeApplied = m_desiredAutoTrajectory.SampleAt((units::time::second_t)m_autoTimer.GetElapsedTimeSeconds(), IS_RED_ALLIANCE(m_alliance));
+        m_output = FollowPath();
         break;
 
     case SystemDrive::ARCADE_DRIVE :
@@ -259,23 +260,53 @@ frc::ChassisSpeeds DrivetrainSubsystem::CurveDrive(const std::pair<double, doubl
     return output;
 }
 
-frc::ChassisSpeeds DrivetrainSubsystem::FollowPath()
-{
-    frc::ChassisSpeeds output;
-    //     m_autoSampleToBeApplied = m_desiredAutoTrajectory.SampleAt(
-    //                                                             (units::time::second_t)m_autoTimer.GetElapsedTimeSeconds(), 
-    //                                                             IS_RED_ALLIANCE(m_alliance));
+frc::ChassisSpeeds DrivetrainSubsystem::FollowPath() {
+    frc::ChassisSpeeds output{};
 
-    // if(m_autoSampleToBeApplied.has_value())
-    // {   
-    //                 // frc::Pose2d pose{}; // from IOInputs
-    //     choreo::DifferentialSample currentSample = m_autoSampleToBeApplied.value();
-    //     frc::Pose2d pose{currentSample.GetPose()}; // from IOInputs
-    //     frc::ChassisSpeeds speed = currentSample.GetChassisSpeeds();
-    //     speed.vx = speed.vx + (units::velocity::meters_per_second_t)m_pidChoreoX.Calculate(currentSample.x.to<double>(), pose.X().to<double>());
-    //     speed.vy = speed.vy + (units::velocity::meters_per_second_t)m_pidChoreoY.Calculate(currentSample.y.to<double>(), pose.Y().to<double>());
-    //     speed.omega = speed.omega + (units::angular_velocity::radians_per_second_t)m_pidChoreoTheta.Calculate(currentSample.heading(), pose.Rotation().Radians().to<double>());
-    // }
+    // Verify if there is a sample to follow
+    if (!m_autoSampleToBeApplied.has_value()) {
+        return output; // Nothing to do
+    }
+
+    // Current target sample from the trajectory
+    const choreo::DifferentialSample& currentSample = m_autoSampleToBeApplied.value();
+    const frc::ChassisSpeeds targetSpeeds = currentSample.GetChassisSpeeds();
+    const frc::Pose2d targetPose = currentSample.GetPose();
+
+    // Current robot pose
+    const frc::Pose2d currentPose = inputs.robotPosition;
+    const double robotTheta = currentPose.Rotation().Radians().to<double>();
+
+    // --- Step 1 : Calcul of position error in field coordinates ---
+    const double dx = targetPose.X().to<double>() - currentPose.X().to<double>();
+    const double dy = targetPose.Y().to<double>() - currentPose.Y().to<double>();
+
+    // --- Step 2 : Projection of the position error in robot coordinates ---
+    // Rotation inverse de -θ
+    const double cosTheta = std::cos(robotTheta);
+    const double sinTheta = std::sin(robotTheta);
+
+    // Error in robot coordinates
+    const double errorX =  cosTheta * dx + sinTheta * dy;  // error forward/backward
+    // const double errorY = -sinTheta * dx + cosTheta * dy;  // error left/right
+
+    // --- Step 3 : Orientation error ---
+    double angleError = (targetPose.Rotation() - currentPose.Rotation()).Radians().to<double>();
+    // Wrapp in [-π, π]
+    while (angleError > M_PI)  angleError -= 2.0 * M_PI;
+    while (angleError < -M_PI) angleError += 2.0 * M_PI;
+
+    // --- Step 4 : PID corrections ---
+    // linear PID correcting the distance error in X
+    const double linearCorrection = m_pidAutoX.Calculate(errorX, 0.0);
+
+    // angular PID correcting the angle error
+    const double angularCorrection = m_pidAutoTheta.Calculate(angleError, 0.0);
+
+    // --- Step 5 : Apply corrections to target speeds ---
+    output.vx = targetSpeeds.vx + units::meters_per_second_t(linearCorrection);
+    output.omega = targetSpeeds.omega + units::radians_per_second_t(angularCorrection);
+
     return output;
 }
 
