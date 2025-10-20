@@ -53,7 +53,7 @@ class GripperSubsystem : public frc2::SubsystemBase {
   void ToggleControlMode();
 
   bool IsResting();
-  void SetManualAxis(const double value);
+  void SetManualControlInput(const double value);
   void Periodic() override;
 
   bool CanRumble = false;

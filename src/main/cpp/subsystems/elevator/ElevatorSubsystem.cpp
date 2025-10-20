@@ -15,7 +15,7 @@ ElevatorSubsystem::ElevatorSubsystem(ElevatorIO *pIO) :
                                 elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
         m_elevatorPIDController.SetTolerance(elevatorConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
     }
-    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    else if(m_controlMode == ControlMode::MANUAL_POSITION)
     {
         m_elevatorPIDController.SetGains(elevatorConstants::Gains::MANUAL_SETPOINT_PID::KP, 
                                 elevatorConstants::Gains::MANUAL_SETPOINT_PID::KI, 
@@ -68,7 +68,7 @@ void ElevatorSubsystem::SetControlMode(const ControlMode mode)
         m_controlMode = mode;
         break; //end of ControlMode::POSITION_DUTYCYCLE_PID
     
-    case ControlMode::MANUAL_SETPOINT:
+    case ControlMode::MANUAL_POSITION:
         m_output = elevatorConstants::Speed::REST;
         m_manualControlInput = inputs.heightPosition;
 
@@ -135,7 +135,7 @@ bool ElevatorSubsystem::IsResting()
             (m_systemState == SystemState::AT_VISION));
 }
 
-void ElevatorSubsystem::SetManualAxis(const double value)
+void ElevatorSubsystem::SetManualControlInput(const double value)
 {
     if(BYPASS_STATE_MACHINE(m_controlMode))
     {
@@ -239,7 +239,7 @@ void ElevatorSubsystem::Periodic()
         case ControlMode::MANUAL_DUTY_CYCLE :
             m_output = m_rateLimiter.Update((std::sin(m_manualControlInput * (M_PI / 2.0)) / elevatorConstants::Settings::OPEN_LOOP_REDUC) );
             break; //end of ControlMode::MANUAL_DUTY_CYCLE
-        case ControlMode::MANUAL_SETPOINT :
+        case ControlMode::MANUAL_POSITION :
             m_manualControlInput = m_elevatorPIDController.GetSetpoint() + m_manualControlInput * elevatorConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
 
             m_output = m_elevatorPIDController.CalculateWithRealTime(m_manualControlInput,

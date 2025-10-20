@@ -48,6 +48,7 @@ namespace feederConstants
         constexpr double GEAR_RATIO = (3.0 / 1.0) * (3.0 / 1.0); //ul
         constexpr int KV = 473; // RPM.V-1
         constexpr double MOTOR_FREE_SPEED = Motor::VOLTAGE_COMPENSATION * KV; //RPM
+        constexpr double FEEDER_MAX_SPEED = MOTOR_FREE_SPEED / GEAR_RATIO;  //RPM
     }
 
     namespace DutyCycle
@@ -63,7 +64,7 @@ namespace feederConstants
         constexpr double REST = 0.0;
         constexpr double REJECTING_FORWARD = 157.7; //TUNEME
         constexpr double REJECTING_BACKWARD = -157.7; //TUNEME
-        constexpr double MAX = 525; 
+        constexpr double MAX = Specifications::FEEDER_MAX_SPEED; 
         constexpr double MIN = -MAX; 
     }
 
@@ -100,6 +101,7 @@ namespace outtakeConstants
         constexpr double GEAR_RATIO = (3.0 / 1.0); //ul
         constexpr int KV = 559; // RPM.V-1
         constexpr double MOTOR_FREE_SPEED = Motor::VOLTAGE_COMPENSATION * KV; //RPM
+        constexpr double OUTTAKE_MAX_SPEED = MOTOR_FREE_SPEED / GEAR_RATIO;  //RPM
     }
 
     namespace DutyCycle
@@ -131,7 +133,7 @@ namespace outtakeConstants
         constexpr double HIGH_SCORING = 745.0; //TUNEME
         constexpr double MIDDLE_SCORING = 800.0; //TUNEME
         constexpr double LOW_SCORING = 150.0; //TUNEME
-        constexpr double MAX = 1860.0; //TUNEME  
+        constexpr double MAX = Specifications::OUTTAKE_MAX_SPEED;
         constexpr double MIN = -MAX;
     }
     

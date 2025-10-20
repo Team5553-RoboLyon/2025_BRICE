@@ -59,7 +59,7 @@ class ElevatorSubsystem : public frc2::SubsystemBase {
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME
-    void SetManualAxis(const double value);
+    void SetManualControlInput(const double value);
 
     double GetHeight() const { return inputs.heightPosition; } //COMMENTME
 

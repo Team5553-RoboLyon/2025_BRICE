@@ -205,20 +205,17 @@ double PidRBL::Calculate(const double setpoint, const double measurement) {
 }
 void PidRBL::Reset()
 {
-    m_setpoint = 0.0;
+    m_setpoint = m_setpoint - m_currentError; // Reset setpoint to current measurement 
     m_previousError = 0.0;
     m_currentError = 0.0;
     m_output = 0.0;
-    m_integrative = 0.0;
+    ResetIntegrative();
 }
 
 void PidRBL::Reset(const double timestamp)
 {
     m_lastTimestamp = timestamp;
-    m_previousError = 0.0;
-    m_currentError = 0.0;
-    m_output = 0.0;
-    m_integrative = 0.0;
+    Reset();
 }
 
 void PidRBL::ResetIntegrative()

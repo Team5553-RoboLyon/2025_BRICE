@@ -16,7 +16,7 @@ StrafferSubsystem::StrafferSubsystem(StrafferIO *pIo, Camera *pCamera) :
                                 strafferConstants::Gains::POSITION_DUTYCYCLE_PID::KD);
         m_strafferPIDController.SetTolerance(strafferConstants::Gains::POSITION_DUTYCYCLE_PID::TOLERANCE);
     }
-    else if(m_controlMode == ControlMode::MANUAL_SETPOINT)
+    else if(m_controlMode == ControlMode::MANUAL_POSITION)
     {
         m_strafferPIDController.SetGains(strafferConstants::Gains::MANUAL_SETPOINT_PID::KP, 
                                 strafferConstants::Gains::MANUAL_SETPOINT_PID::KI, 
@@ -57,7 +57,7 @@ void StrafferSubsystem::SetControlMode(const ControlMode mode)
         m_controlMode = mode;
         break; //end of ControlMode::MANUAL_DUTY_CYCLE
 
-    case ControlMode::MANUAL_SETPOINT:
+    case ControlMode::MANUAL_POSITION:
         m_output = strafferConstants::Speed::REST;
         m_manualControlInput = inputs.widthPosition;
 
@@ -115,7 +115,7 @@ StrafferSubsystem::SystemState StrafferSubsystem::GetSystemState()
 {
     return m_systemState;
 }
-void StrafferSubsystem::SetManualAxis(const double value)
+void StrafferSubsystem::SetManualControlInput(const double value)
 {
     if(BYPASS_STATE_MACHINE(m_controlMode))
     {
@@ -226,7 +226,7 @@ void StrafferSubsystem::Periodic()
         case ControlMode::MANUAL_DUTY_CYCLE :
             m_output = m_rateLimiter.Update(std::sin(m_manualControlInput * (M_PI / 2.0)));
             break; //end of ControlMode::MANUAL_DUTY_CYCLE
-        case ControlMode::MANUAL_SETPOINT :
+        case ControlMode::MANUAL_POSITION :
             //adapt the manual value to changing setpoint
             m_manualControlInput = m_strafferPIDController.GetSetpoint() + m_manualControlInput * strafferConstants::Settings::MANUAL_SETPOINT_CHANGE_LIMIT;
             

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : ControlMode.h (v1.2)
+ * File        : ControlMode.h (v1.3)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Defines various control modes used in the robot's state machine 
  *               and manual control.
@@ -18,33 +18,36 @@
 // It's recommended to use a StateMachine-enabled mode for Main Control Mode
 // and a Bypass StateMachine mode for Emergency Mode
 enum class ControlMode {
-    // ----- StateMachine-enabled modes (PID loops or motion profiling) -----
-    PROFILED_PID,               // Motion profiling combined with PID control
-    MOTION_PROFILING,           // Basic motion profiling without PID
+    // ----- High-level control -----
+    PROFILED_PID,               // Motion profiling + PID (trapezoidal, S-curve)
+    MOTION_PROFILING,           // Feedforward motion profiling only (open-loop trajectory)
 
-    POSITION_VOLTAGE_PID,       // Position PID controller with output applied as voltage (Volts)
-    POSITION_DUTYCYCLE_PID,     // Position PID controller with output applied as duty cycle (%)
+    // ----- Closed-loop control (PID + optional feedforward) -----
+    POSITION_VOLTAGE_PID,       // Position control (PID + volts output)
+    POSITION_DUTYCYCLE_PID,     // Position control (PID + duty cycle output)
+    VELOCITY_VOLTAGE_PID,       // Velocity control (PID + volts output)
+    VELOCITY_DUTYCYCLE_PID,     // Velocity control (PID + duty cycle output)
+    MODEL_CONTROLLED,           // Model-based control (dynamic system model + PID feedback) 
+    // ----- Open-loop control (feedforward or direct) -----
+    VELOCITY_VOLTAGE_FF,        // Open-loop velocity control (kS/kV/kA model, output in volts)
+    VELOCITY_DUTYCYCLE_FF,      // Open-loop velocity control (kS/kV/kA model, duty cycle output)
+    VOLTAGE,                    // Direct voltage control
+    DUTY_CYCLE,                 // Direct duty cycle control
+    CURRENT,                    // Current control (amps or % of max amps, if stable model available)
+    TORQUE,                     // Torque control (if stable model available)
 
-    VELOCITY_VOLTAGE_PID,       // Velocity PID controller with output applied as voltage (Volts)
-    VELOCITY_DUTYCYCLE_PID,     // Velocity PID controller with output applied as duty cycle (%)
+    // ----- Manual / Bypass modes (no state machine) -----
+    MANUAL_POSITION,            // Manual position or velocity command with PID
+    MANUAL_VOLTAGE,             // Manual voltage command
+    MANUAL_VELOCITY,            // Manual velocity command (PID or open-loop)
+    MANUAL_DUTY_CYCLE,          // Manual duty cycle command
 
-    VELOCITY_VOLTAGE,           // Open-loop velocity control based on a feedforward model: (velocity / maxVelocity) * maxVoltage
-    VELOCITY_DUTY_CYCLE,        // Open-loop velocity control using feedforward: (velocity / maxVelocity) as a duty cycle
-    
-    VOLTAGE,                   // Direct voltage control (open loop)
-    DUTY_CYCLE,                // Direct duty cycle control (open loop)
-
-    // ----- Manual / Bypass StateMachine modes -----
-    MANUAL_SETPOINT,           // Manual setpoint control (with PID)
-    MANUAL_VOLTAGE,            // Manual direct voltage control
-    MANUAL_VELOCITY,           // Manual velocity control (in volts with PID)
-    MANUAL_DUTY_CYCLE,         // Manual direct duty cycle control
-
-    // ----- Disabled mode -----
-    DISABLED,                  // Controller disabled, no output
+    // ----- Disabled / Safe mode -----
+    DISABLED                   // Controller output disabled
 
     // ----- Future advanced control modes -----
-    // ENERGY_MODEL,
+    // ENERGY_MODEL, 
+    // STATE_SPACE,                // Full state-space or model-based control (with observers)
 };
 
 #define ALLOWS_STATE_MACHINE(mode) ((mode) == ControlMode::PROFILED_PID || \
@@ -53,12 +56,15 @@ enum class ControlMode {
                                     (mode) == ControlMode::POSITION_DUTYCYCLE_PID || \
                                     (mode) == ControlMode::VELOCITY_VOLTAGE_PID || \
                                     (mode) == ControlMode::VELOCITY_DUTYCYCLE_PID || \
-                                    (mode) == ControlMode::VELOCITY_DUTY_CYCLE || \
-                                    (mode) == ControlMode::VELOCITY_VOLTAGE || \
+                                    (mode) == ControlMode::MODEL_CONTROLLED || \
+                                    (mode) == ControlMode::VELOCITY_VOLTAGE_FF || \
+                                    (mode) == ControlMode::VELOCITY_DUTYCYCLE_FF || \
                                     (mode) == ControlMode::VOLTAGE || \
+                                    (mode) == ControlMode::CURRENT || \
+                                    (mode) == ControlMode::TORQUE || \
                                     (mode) == ControlMode::DUTY_CYCLE)
 
-#define BYPASS_STATE_MACHINE(mode) ((mode) == ControlMode::MANUAL_SETPOINT || \
+#define BYPASS_STATE_MACHINE(mode) ((mode) == ControlMode::MANUAL_POSITION || \
                                     (mode) == ControlMode::MANUAL_VOLTAGE || \
                                     (mode) == ControlMode::MANUAL_VELOCITY || \
                                     (mode) == ControlMode::MANUAL_DUTY_CYCLE || \
@@ -69,7 +75,8 @@ enum class ControlMode {
                         (mode) == ControlMode::POSITION_DUTYCYCLE_PID || \
                         (mode) == ControlMode::VELOCITY_VOLTAGE_PID || \
                         (mode) == ControlMode::VELOCITY_DUTYCYCLE_PID || \
-                        (mode) == ControlMode::MANUAL_SETPOINT || \
+                        (mode) == ControlMode::MANUAL_POSITION || \
+                        (mode) == ControlMode::MODEL_CONTROLLED || \
                         (mode) == ControlMode::MANUAL_VELOCITY)
 
 #define IS_PROFILING(mode) ((mode) == ControlMode::PROFILED_PID || \
@@ -78,12 +85,12 @@ enum class ControlMode {
 #define IS_VOLTAGE_OUTPUT_MODE(mode) ((mode) == ControlMode::POSITION_VOLTAGE_PID || \
                                       (mode) == ControlMode::VELOCITY_VOLTAGE_PID || \
                                       (mode) == ControlMode::VOLTAGE || \
-                                      (mode) == ControlMode::VELOCITY_VOLTAGE || \
+                                      (mode) == ControlMode::VELOCITY_VOLTAGE_FF || \
                                       (mode) == ControlMode::MANUAL_VOLTAGE)
             
 #define IS_DUTYCYCLE_OUTPUT_MODE(mode) ((mode) == ControlMode::POSITION_DUTYCYCLE_PID || \
                                         (mode) == ControlMode::VELOCITY_DUTYCYCLE_PID || \
-                                        (mode) == ControlMode::VELOCITY_DUTY_CYCLE|| \
+                                        (mode) == ControlMode::VELOCITY_DUTYCYCLE_FF|| \
                                         (mode) == ControlMode::DUTY_CYCLE || \
                                         (mode) == ControlMode::MANUAL_DUTY_CYCLE)
 
@@ -97,11 +104,14 @@ inline const char* ToString(const ControlMode mode) {
         case ControlMode::POSITION_DUTYCYCLE_PID: return "POSITION_DUTYCYCLE_PID";
         case ControlMode::VELOCITY_VOLTAGE_PID:   return "VELOCITY_VOLTAGE_PID";
         case ControlMode::VELOCITY_DUTYCYCLE_PID: return "VELOCITY_DUTYCYCLE_PID";
-        case ControlMode::VELOCITY_DUTY_CYCLE:    return "VELOCITY_DUTY_CYCLE";
-        case ControlMode::VELOCITY_VOLTAGE:       return "VELOCITY_VOLTAGE";
-        case ControlMode::VOLTAGE:                 return "VOLTAGE";
+        case ControlMode::MODEL_CONTROLLED:       return "MODEL_CONTROLLED";
+        case ControlMode::VELOCITY_VOLTAGE_FF:    return "VELOCITY_VOLTAGE_FF";
+        case ControlMode::VELOCITY_DUTYCYCLE_FF:  return "VELOCITY_DUTYCYCLE_FF";
+        case ControlMode::VOLTAGE:                return "VOLTAGE";
         case ControlMode::DUTY_CYCLE:              return "DUTY_CYCLE";
-        case ControlMode::MANUAL_SETPOINT:         return "MANUAL_SETPOINT";
+        case ControlMode::CURRENT:                  return "CURRENT";
+        case ControlMode::TORQUE:                   return "TORQUE";
+        case ControlMode::MANUAL_POSITION:         return "MANUAL_POSITION";
         case ControlMode::MANUAL_VOLTAGE:           return "MANUAL_VOLTAGE";
         case ControlMode::MANUAL_VELOCITY:          return "MANUAL_VELOCITY";
         case ControlMode::MANUAL_DUTY_CYCLE:        return "MANUAL_DUTY_CYCLE";

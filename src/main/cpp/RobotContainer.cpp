@@ -14,11 +14,11 @@ RobotContainer::RobotContainer()
 {
     ConfigureBindings();
 
-    superstructure.ConfigureManualAxis([this] { return -CopilotController.GetLeftY(); },
+    superstructure.ConfigureManualControlInputsAxis([this] { return -CopilotController.GetLeftY(); },
                                          [this] { return CopilotController.GetRightX(); },
                                          [this] { return (-CopilotController.GetL2Axis() + CopilotController.GetR2Axis()); });
 
-    drivetrain.ConfigureManualAxis([this] { return NDEADBAND(-forwardJoystick.GetY(), driveConstants::Settings::DEADBAND); },
+    drivetrain.ConfigureManualControlInputsAxis([this] { return NDEADBAND(-forwardJoystick.GetY(), driveConstants::Settings::DEADBAND); },
                                       [this] { return NDEADBAND(rotationJoystick.GetZ(), driveConstants::Settings::DEADBAND); },
                                       [this] { return m_SlowDriveButton.Get(); },
                                       [this] { return m_driveActionButton.Get();},

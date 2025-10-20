@@ -1,6 +1,6 @@
 /*******************************************************************************
  * 
- * File        : PidRBL.h (v3.3)
+ * File        : PidRBL.h (v3.4)
  * Library     : LyonLib (from 2025_BRICE)
  * Description : Advanced PID controller class implementing 
  *               Proportional-Integral-Derivative control with optional 
@@ -143,17 +143,18 @@ public :
    /**
    * @brief Resets the PID controller state.
    * 
-   * This function initializes the PID controller by resetting the setpoint, previous error,
-   * current error, output, and integrative term to zero.
+   * This function adjusts the setpoint to match the current measurement.
+   * It also resets the previous error, current error, and output to zero.
+   * Additionally, it clears the integrative component of the PID controller.
    */
   void Reset();
   /**
-   * @brief Resets the PID controller state and the timestamp.
+   * @brief Resets the PID controller state and updates the last timestamp.
    * 
-   * This function initializes the PID controller by resetting the previous error,
-   * current error, output, and integrative term to zero. It also reset the timestamp.
+   * This method resets the internal state of the PID controller and sets
+   * the last timestamp to the provided value. Also it calls Reset() to clear the previous state.
    * 
-   * @param timestamp The current time in seconds, used for real-time calculations
+   * @param timestamp The current timestamp to set as the last timestamp.
    */
   void Reset(const double timestamp);
   /**
@@ -193,5 +194,5 @@ private:
   double m_tolerance{0.0};      // Tolerance for considering the measurement at the setpoint.
   
   double m_lastTimestamp{0.0};  // Last time the PID controller was updated
-  double m_dt{0.02}; // Time step for the PID controller, default in  FRC is 20ms
+  double m_dt{THEORETICAL_DT}; // Time step for the PID controller, default in  FRC is 20ms
 }; 

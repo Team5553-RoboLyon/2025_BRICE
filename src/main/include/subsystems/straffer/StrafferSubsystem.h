@@ -51,7 +51,7 @@ class StrafferSubsystem : public frc2::SubsystemBase {
 
     bool IsResting();
     bool IsInitialized() { return m_isInitialized; } //COMMENTME
-    void SetManualAxis(const double value);
+    void SetManualControlInput(const double value);
     void Periodic() override;
 
     bool CanRumble = false; //COMMENTME

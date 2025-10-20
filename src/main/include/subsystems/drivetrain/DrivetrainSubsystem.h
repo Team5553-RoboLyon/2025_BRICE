@@ -43,7 +43,7 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
 
   void SetWantedDrive(const DriveMode wantedDrive);
   SystemDrive GetSystemDrive() const;
-  void ConfigureManualAxis(const std::function<double()> fxForwardAxis,
+  void ConfigureManualControlInputsAxis(const std::function<double()> fxForwardAxis,
                           const std::function<double()> fxRotationAxis,
                           const std::function<bool()> fxSlowDriveButton,
                           const std::function<bool()> fxDriveActionButton,
