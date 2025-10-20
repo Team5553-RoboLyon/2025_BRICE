@@ -13,6 +13,9 @@
 
 #include "lib/Alert.h"
 
+#include "choreo/Choreo.h"
+#include <optional>
+
 
 class Robot : public frc::TimedRobot {
  public:
@@ -44,5 +47,6 @@ class Robot : public frc::TimedRobot {
   Alert m_pilot{"Pilot currently driving :", Alert::AlertType::INFO};
   Alert m_operator{"Operator currently operatoring :", Alert::AlertType::INFO};
   Alert m_robot{"Operator currently used :", Alert::AlertType::INFO};
-  
+
+  std::optional<choreo::Trajectory<choreo::DifferentialSample>> Traj = choreo::Choreo::LoadTrajectory<choreo::DifferentialSample>("New Path");
 };

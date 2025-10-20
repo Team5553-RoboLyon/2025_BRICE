@@ -19,9 +19,10 @@ void Robot::RobotInit()
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
   m_container.drivetrain.SetWantedDrive(DriveMode::DISABLE);
+  m_container.drivetrain.SetAlliance(frc::DriverStation::GetAlliance().value());
 
   m_pilot.Set(true);
-  m_pilot.SetText("Pilot currently driving : " + PILOT);
+  m_pilot.SetText("Pilot currently driving : " + (std::to_string)PILOT); //TODO : put names instead of numbers 
   m_operator.Set(true);
   m_operator.SetText("Operator currently operatoring : " + OPERATOR);
   m_robot.Set(true);
@@ -64,23 +65,21 @@ void Robot::DisabledExit() {
     m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
   }
   m_container.superstructure.ResetAllSubsystemsToMainControlMode();
-  // m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{4.0}, units::meter_t{7.0}, frc::Rotation2d{units::radian_t{0.0}}});
+  m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{10.0}, units::meter_t{4.0}, frc::Rotation2d{units::radian_t{0.0}}});
 }
 
 void Robot::AutonomousInit() {
   m_container.drivetrain.SetWantedDrive(DriveMode::AUTO_PATH_FOLLOWER);
-
-  // // if (choreo.has_value()) {
-  // //       // Get the initial pose of the trajectory
-  // //       // if (auto initialPose = choreo.value().GetInitialPose()) { // is red ?
-  // //       //     // Reset odometry to the start of the trajectory
-  // //       //     // driveSubsystem.ResetOdometry(initialPose.value());
-  // //       // }
-  // //   }
-
-  //   // Reset and start the timer when the autonomous period begins
-  //   // timer.Restart();
-  //   m_container.drivetrain.SetDesiredAutoTrajectory(choreo.value());
+  
+  if (Traj.has_value()) {
+        // Get the initial pose of the trajectory
+        std::optional<frc::Pose2d> initialPose = Traj.value().GetInitialPose(IS_RED_ALLIANCE(frc::DriverStation::GetAlliance()));
+        if (initialPose.has_value()) {
+            // Reset odometry to the start of the trajectory
+            m_container.drivetrain.ResetOdometryPose(initialPose.value());
+            m_container.drivetrain.SetDesiredAutoTrajectory(Traj.value());
+        }
+    }
 }
 
 void Robot::AutonomousPeriodic() {
