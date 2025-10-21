@@ -140,7 +140,6 @@ void DrivetrainSubsystem::Periodic()
     switch (m_systemDrive) //Calculate output from SystemDrive
     {
     case SystemDrive::AUTO_PATH_FOLLOWER:
-        DEBUG_ASSERT(false, "work in progress..");
         m_autoSampleToBeApplied = m_desiredAutoTrajectory.SampleAt((units::time::second_t)m_autoTimer.GetElapsedTimeSeconds(), IS_RED_ALLIANCE(m_alliance));
         m_output = FollowPath();
         break;
@@ -262,7 +261,6 @@ frc::ChassisSpeeds DrivetrainSubsystem::CurveDrive(const std::pair<double, doubl
 
 frc::ChassisSpeeds DrivetrainSubsystem::FollowPath() {
     frc::ChassisSpeeds output{};
-
     // Verify if there is a sample to follow
     if (!m_autoSampleToBeApplied.has_value()) {
         return output; // Nothing to do
@@ -272,14 +270,18 @@ frc::ChassisSpeeds DrivetrainSubsystem::FollowPath() {
     const choreo::DifferentialSample& currentSample = m_autoSampleToBeApplied.value();
     const frc::ChassisSpeeds targetSpeeds = currentSample.GetChassisSpeeds();
     const frc::Pose2d targetPose = currentSample.GetPose();
+    const double targetTheta = WRAP_ANGLE_NEG_PI_TO_PI(targetPose.Rotation().Radians().to<double>());
 
     // Current robot pose
     const frc::Pose2d currentPose = inputs.robotPosition;
-    const double robotTheta = currentPose.Rotation().Radians().to<double>();
-
+    const double robotTheta = WRAP_ANGLE_NEG_PI_TO_PI(currentPose.Rotation().Radians().to<double>());
+    
     // --- Step 1 : Calcul of position error in field coordinates ---
     const double dx = targetPose.X().to<double>() - currentPose.X().to<double>();
     const double dy = targetPose.Y().to<double>() - currentPose.Y().to<double>();
+
+    //Magnetude of the position error
+    const double positionErrorMag = std::sqrt(dx * dx + dy * dy);
 
     // --- Step 2 : Projection of the position error in robot coordinates ---
     // Rotation inverse de -θ
@@ -288,17 +290,14 @@ frc::ChassisSpeeds DrivetrainSubsystem::FollowPath() {
 
     // Error in robot coordinates
     const double errorX =  cosTheta * dx + sinTheta * dy;  // error forward/backward
-    // const double errorY = -sinTheta * dx + cosTheta * dy;  // error left/right
+    const double errorY = -sinTheta * dx + cosTheta * dy;  // error left/right
 
     // --- Step 3 : Orientation error ---
-    double angleError = (targetPose.Rotation() - currentPose.Rotation()).Radians().to<double>();
-    // Wrapp in [-π, π]
-    while (angleError > M_PI)  angleError -= 2.0 * M_PI;
-    while (angleError < -M_PI) angleError += 2.0 * M_PI;
+    double angleError = (targetTheta - robotTheta);
 
     // --- Step 4 : PID corrections ---
-    // linear PID correcting the distance error in X
-    const double linearCorrection = m_pidAutoX.Calculate(errorX, 0.0);
+    // linear PID correcting the distance
+    const double linearCorrection = m_pidAutoX.Calculate(positionErrorMag * NSIGN(errorX), 0.0);
 
     // angular PID correcting the angle error
     const double angularCorrection = m_pidAutoTheta.Calculate(angleError, 0.0);
@@ -306,6 +305,29 @@ frc::ChassisSpeeds DrivetrainSubsystem::FollowPath() {
     // --- Step 5 : Apply corrections to target speeds ---
     output.vx = targetSpeeds.vx + units::meters_per_second_t(linearCorrection);
     output.omega = targetSpeeds.omega + units::radians_per_second_t(angularCorrection);
+
+
+    // frc::SmartDashboard::PutNumber("auto/robotX", currentPose.X().to<double>());
+    // frc::SmartDashboard::PutNumber("auto/robotY", currentPose.Y().to<double>());
+    // frc::SmartDashboard::PutNumber("auto/robotTheta_deg", currentPose.Rotation().Degrees().to<double>());
+
+    // frc::SmartDashboard::PutNumber("auto/targetX", targetPose.X().to<double>());
+    // frc::SmartDashboard::PutNumber("auto/targetY", targetPose.Y().to<double>());
+    // frc::SmartDashboard::PutNumber("auto/targetTheta_deg", targetPose.Rotation().Degrees().to<double>());
+
+    // frc::SmartDashboard::PutNumber("auto/errorX", errorX);
+    // frc::SmartDashboard::PutNumber("auto/errorY", errorY);
+    // frc::SmartDashboard::PutNumber("auto/errorTheta_deg", angleError * 180.0 / M_PI);
+
+    // frc::SmartDashboard::PutNumber("auto/linearCorrection", linearCorrection);
+    // frc::SmartDashboard::PutNumber("auto/angularCorrection", angularCorrection);
+
+    // frc::SmartDashboard::PutNumber("auto/outputVx", output.vx.to<double>());
+    // frc::SmartDashboard::PutNumber("auto/outputVy", output.vy.to<double>());
+    // frc::SmartDashboard::PutNumber("auto/outputOmega", output.omega.to<double>());
+
+    // m_trajectoryField.SetRobotPose(targetPose);
+    // frc::SmartDashboard::PutData("auto/trajctory", &m_trajectoryField);
 
     return output;
 }

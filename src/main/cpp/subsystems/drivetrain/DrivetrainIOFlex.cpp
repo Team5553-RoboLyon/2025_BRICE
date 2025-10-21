@@ -81,10 +81,6 @@ void DrivetrainIOFlex::UpdateInputs(DrivetrainIOInputs& inputs)
     m_realRightSideSpeed = inputs.rightSideVelocity;
 
     inputs.robotPosition = m_odometry.UpdateUsingFusionTwistExp(inputs.leftSideTraveledDistance, inputs.rightSideTraveledDistance, TIME_PER_CYCLE);
-    // inputs.robotPosition = m_odometry.UpdateOdometryFromVelocity(0.02);
-
-    // field.SetRobotPose(inputs.robotPosition); //for sim
-    // frc::SmartDashboard::PutData("Field",&field);
     frc::SmartDashboard::PutBoolean("Drivetrain/LeftSide/Front/Connection", inputs.isFrontLeftMotorConnected);
     frc::SmartDashboard::PutBoolean("Drivetrain/RightSide/Back/Connection", inputs.isBackRightMotorConnected);
     frc::SmartDashboard::PutBoolean("Drivetrain/RightSide/Front/Connection", inputs.isFrontRightMotorConnected);
@@ -122,11 +118,10 @@ void DrivetrainIOFlex::SetChassisSpeed(const frc::ChassisSpeeds &speeds)
     DEBUG_ASSERT(speeds.vy() == 0.0, "Are You stupid ? Did you know that a tank can't move on the Y axis ?");
 
     //Differential :
-    // Vr = Vf + Rb * omega
-    // Vl = Vf - Rb * omega
-    double rightSideSpeed = speeds.vx() + driveConstants::Specifications::BASE_TRACK_RADIUS * speeds.omega();
-    double leftSideSpeed = speeds.vx() - driveConstants::Specifications::BASE_TRACK_RADIUS * speeds.omega();
-
+    // Vr = Vf - Rb * omega
+    // Vl = Vf + Rb * omega
+    double rightSideSpeed = speeds.vx() - driveConstants::Specifications::BASE_TRACK_RADIUS * speeds.omega();
+    double leftSideSpeed = speeds.vx() + driveConstants::Specifications::BASE_TRACK_RADIUS * speeds.omega();
     double highestSpeedSide = NMAX(NABS(rightSideSpeed), NABS(leftSideSpeed));
     if(highestSpeedSide > driveConstants::Specifications::MAX_LINEAR_SPEED)
     {

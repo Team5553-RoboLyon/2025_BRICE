@@ -21,6 +21,7 @@
 
 #include "choreo/trajectory/DifferentialSample.h"
 #include "choreo/trajectory/Trajectory.h"
+#include "frc/smartdashboard/Field2d.h"
 
 class DrivetrainSubsystem : public frc2::SubsystemBase 
 {
@@ -80,6 +81,8 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
   Alert m_frontRightMotorOverheating{"Drivetrain Front Right Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
   Alert m_backLeftMotorOverheating{"Drivetrain Back Left Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
   Alert m_backRightMotorOverheating{"Drivetrain Back Right Motor: Temperature exceeds 75°C", Alert::AlertType::ERROR};
+
+  frc::Field2d m_trajectoryField;
 
   std::function<double()> m_fxForwardAxis;
   std::function<double()> m_fxRotationAxis;
