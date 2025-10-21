@@ -96,7 +96,7 @@ void Superstructure::ResetAllSubsystemsToMainControlMode()
 {
     m_pElevatorSubsystem->SetControlMode(elevatorConstants::MainControlMode);
     m_pGripperSubsystem->SetControlMode(gripperConstants::MainControlMode);
-    m_pStrafferSubsystem->SetControlMode(gripperConstants::MainControlMode);
+    m_pStrafferSubsystem->SetControlMode(strafferConstants::MainControlMode);
     UpdateSuperControlMode();
 }
 void Superstructure::ToggleElevatorControlMode()
