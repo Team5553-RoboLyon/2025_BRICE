@@ -30,20 +30,8 @@ void Robot::RobotInit()
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
-  m_camera.Update();
 
-  if(m_camera.HasTargets()) // TODO : REVIEW led that doesn't seem to work properly
-  {
-    m_led.SetSpeed(-0.39);
-  }
-  else if(m_container.gripper.GetSystemState() == GripperSubsystem::SystemState::REST_LOADED)
-  {
-    m_led.SetSpeed(-0.37);
-  }
-  else
-  {
-    m_led.SetSpeed(-0.41);
-  }
+
 
   m_isNotCompetitionRobot.Set(ROBOT_MODEL != BRICE_COMPETITION);
 }
@@ -64,23 +52,10 @@ void Robot::DisabledExit() {
     m_container.superstructure.SetWantedSuperState(Superstructure::WantedSuperState::INITIALIZATION);
   }
   m_container.superstructure.ResetAllSubsystemsToMainControlMode();
-  // m_container.drivetrain.ResetOdometryPose(frc::Pose2d{units::meter_t{4.0}, units::meter_t{7.0}, frc::Rotation2d{units::radian_t{0.0}}});
 }
 
 void Robot::AutonomousInit() {
   m_container.drivetrain.SetWantedDrive(DriveMode::AUTO_PATH_FOLLOWER);
-
-  // // if (choreo.has_value()) {
-  // //       // Get the initial pose of the trajectory
-  // //       // if (auto initialPose = choreo.value().GetInitialPose()) { // is red ?
-  // //       //     // Reset odometry to the start of the trajectory
-  // //       //     // driveSubsystem.ResetOdometry(initialPose.value());
-  // //       // }
-  // //   }
-
-  //   // Reset and start the timer when the autonomous period begins
-  //   // timer.Restart();
-  //   m_container.drivetrain.SetDesiredAutoTrajectory(choreo.value());
 }
 
 void Robot::AutonomousPeriodic() {

@@ -6,7 +6,6 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc/TimedRobot.h>
-#include <frc/PWM.h>
 
 #include "RobotContainer.h"
 #include "lib/DebugUtils.h"
@@ -36,8 +35,6 @@ class Robot : public frc::TimedRobot {
   RobotContainer m_container;
   int m_rumbleCounter;
   bool CanRumble = true;
-  frc::PWM m_led{9};
-  Camera m_camera;
 
   Alert m_isNotCompetitionRobot{"Not CompBot used", Alert::AlertType::WARNING};
 

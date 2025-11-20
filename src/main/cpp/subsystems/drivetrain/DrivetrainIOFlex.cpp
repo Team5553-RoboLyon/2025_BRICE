@@ -1,5 +1,4 @@
 #include "subsystems/drivetrain/DrivetrainIOFlex.h"
-
 #include "frc/smartdashboard/SmartDashboard.h"
 
 DrivetrainIOFlex::DrivetrainIOFlex()
@@ -138,8 +137,6 @@ void DrivetrainIOFlex::SetChassisSpeed(const frc::ChassisSpeeds &speeds)
     double rightOutput = rightSideSpeed * driveConstants::Specifications::LINEAR_TO_MOTOR_SPEED_FACTOR;
     double leftOutput = leftSideSpeed * driveConstants::Specifications::LINEAR_TO_MOTOR_SPEED_FACTOR;
 
-
-    //TODO : add SparkPID
     //HACK : speed to voltage
     m_motorBackLeft.SetVoltage(units::volt_t(leftOutput / driveConstants::Specifications::MOTOR_FREE_SPEED 
                                             * driveConstants::Motors::VOLTAGE_COMPENSATION));

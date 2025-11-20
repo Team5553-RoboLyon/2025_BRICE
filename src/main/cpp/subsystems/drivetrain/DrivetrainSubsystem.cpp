@@ -140,7 +140,6 @@ void DrivetrainSubsystem::Periodic()
     {
     case SystemDrive::AUTO_PATH_FOLLOWER:
         DEBUG_ASSERT(false, "work in progress..");
-        //TODO : add follower
         m_output = restSpeeds;
         break;
 
@@ -160,8 +159,6 @@ void DrivetrainSubsystem::Periodic()
         DEBUG_ASSERT(false, "tu n'es pas censé lire ça. Sinon bravo, tu as activé une assert !");
         break;
     }
-
-    //TODO : NavX protection
 
     frc::SmartDashboard::PutNumber("Drivetrain/SystemDrive", (int)m_systemDrive);
     frc::SmartDashboard::PutNumber("Drivetrain/WantedDrive", (int)m_wantedDrive);
